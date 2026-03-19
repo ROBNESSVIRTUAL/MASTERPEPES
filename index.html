@@ -30,16 +30,16 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 .left{flex:0 0 58%;position:relative;border-right:0.5px solid var(--rl);overflow:hidden}
 
 /* BOOK VIEW */
-#bookView{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:10;background:var(--deep);transition:opacity 0.4s}
+#bookView{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.5vh,16px);z-index:10;background:var(--deep);transition:opacity 0.4s;padding:clamp(12px,3%,32px)}
 #bookView.hidden{opacity:0;pointer-events:none}
-#bookCanvas{width:280px;height:280px;cursor:grab;display:block}
+#bookCanvas{width:clamp(180px,38%,420px);height:clamp(180px,38%,420px);cursor:grab;display:block}
 #bookCanvas:active{cursor:grabbing}
 .book-hint{font-size:9px;letter-spacing:0.25em;color:var(--mut);animation:blink 2s infinite;text-align:center}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
-.book-desc{max-width:340px;text-align:center;border-top:0.5px solid var(--rl);padding-top:12px;width:100%}
-.book-desc-title{font-size:10px;letter-spacing:0.3em;color:var(--white);margin-bottom:6px}
-.book-desc-text{font-size:10px;letter-spacing:0.06em;color:var(--dim);line-height:1.8;margin-bottom:8px}
-.book-desc-link{font-size:9px;letter-spacing:0.2em;color:var(--gold);text-decoration:none;border-bottom:0.5px solid rgba(200,144,26,0.4);padding-bottom:2px;transition:all 0.2s}
+.book-desc{max-width:min(340px,90%);width:100%;text-align:center;border-top:0.5px solid var(--rl);padding-top:12px}
+.book-desc-title{font-size:clamp(8px,0.9vw,11px);letter-spacing:0.3em;color:var(--white);margin-bottom:6px}
+.book-desc-text{font-size:clamp(8px,0.85vw,10px);letter-spacing:0.06em;color:var(--dim);line-height:1.8;margin-bottom:8px}
+.book-desc-link{font-size:clamp(8px,0.8vw,10px);letter-spacing:0.2em;color:var(--gold);text-decoration:none;border-bottom:0.5px solid rgba(200,144,26,0.4);padding-bottom:2px;transition:all 0.2s}
 .book-desc-link:hover{color:var(--gold2)}
 #bookLoading{font-size:9px;letter-spacing:0.2em;color:var(--mut);text-align:center}
 
@@ -109,13 +109,13 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 .scnt{color:var(--gold2)}
 
 /* COUNTDOWN */
-.countdown-wrap{max-width:340px;width:100%;display:none;margin-top:4px}
+.countdown-wrap{max-width:min(340px,90%);width:100%;display:none;margin-top:4px}
 .countdown-wrap.visible{display:block}
-.countdown-label{font-size:9px;letter-spacing:0.3em;color:var(--mut);text-align:center;margin-bottom:8px}
+.countdown-label{font-size:clamp(8px,0.8vw,10px);letter-spacing:0.3em;color:var(--mut);text-align:center;margin-bottom:8px}
 .countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .cd-cell{background:var(--panel);border:0.5px solid var(--rl);padding:8px 4px;text-align:center}
-.cd-num{font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--gold2);line-height:1;text-transform:none}
-.cd-lbl{font-size:7px;letter-spacing:0.25em;color:var(--dim);margin-top:3px}
+.cd-num{font-family:'Cinzel Decorative',serif;font-size:clamp(12px,1.8vw,22px);color:var(--gold2);line-height:1;text-transform:none}
+.cd-lbl{font-size:clamp(6px,0.6vw,8px);letter-spacing:0.25em;color:var(--dim);margin-top:3px}
 </style>
 </head>
 <body>
@@ -327,7 +327,16 @@ function showBook() {
 
 // ── THREE.JS BOOK ───────────────────────────────────────
 const canvas = document.getElementById('bookCanvas');
-canvas.width = 280; canvas.height = 280;
+function resizeBookCanvas() {
+  const size = canvas.getBoundingClientRect();
+  const w = Math.round(size.width)  || 280;
+  const h = Math.round(size.height) || 280;
+  canvas.width  = w;
+  canvas.height = h;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
 const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
 renderer.setSize(280, 280);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -463,6 +472,7 @@ canvas.addEventListener('touchend', () => {
 
 (function animate() {
   requestAnimationFrame(animate);
+  resizeBookCanvas();
   if(bookModel) {
     if(autoRotate && !isDragging) rotY += 0.005;
     else if(!isDragging) { velY *= 0.94; velX *= 0.94; rotY += velY; rotX += velX; }
@@ -471,6 +481,7 @@ canvas.addEventListener('touchend', () => {
   }
   renderer.render(scene, camera);
 })();
+window.addEventListener('resize', resizeBookCanvas);
 
 // ── COUNTDOWN ───────────────────────────────────────────
 if(SHOW_COUNTDOWN) {

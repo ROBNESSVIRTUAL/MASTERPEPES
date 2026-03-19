@@ -244,9 +244,18 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
           <div class="ap-year" id="apYear"></div>
           <div class="ap-asset" id="apAsset"></div>
         </div>
-        <a class="ap-link" id="apPdfLink" href="#" target="_blank">Open in Book &rarr;</a>
+        <button class="ap-link" onclick="openPdfPanel()">Open in Book</button>
         <a class="ap-link" id="apLink" href="#" target="_blank">View on Chain &rarr;</a>
         <button class="ap-close" onclick="closePanel()">Close &times;</button>
+      </div>
+
+      <!-- INLINE PDF VIEWER -->
+      <div id="pdfPanel" style="position:absolute;inset:0;background:rgba(4,8,4,0.98);display:none;flex-direction:column;z-index:60;padding:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0">
+          <span style="font-size:9px;letter-spacing:0.3em;color:var(--gold)" id="pdfPanelTitle"></span>
+          <button onclick="closePdfPanel()" style="font-family:'Tenor Sans',serif;font-size:9px;letter-spacing:0.2em;color:var(--gold);cursor:pointer;border:0.5px solid var(--rl);padding:5px 14px;background:none;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='var(--gold)';this.style.color='var(--deep)'" onmouseout="this.style.background='none';this.style.color='var(--gold)'">Close &times;</button>
+        </div>
+        <iframe id="pdfFrame" src="" style="flex:1;width:100%;border:0.5px solid var(--rl);background:#111"></iframe>
       </div>
     </div>
 
@@ -342,6 +351,17 @@ GLTFScript.onload = () => {
   new THREE.GLTFLoader().load('masterpepes_book.glb',
     gltf => {
       bookModel = gltf.scene;
+      // Fix vertically flipped textures in Three.js r128
+      bookModel.traverse(child => {
+        if(child.isMesh && child.material) {
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          mats.forEach(mat => {
+            ['map','normalMap','roughnessMap','metalnessMap','emissiveMap','aoMap'].forEach(key => {
+              if(mat[key]) mat[key].flipY = false;
+            });
+          });
+        }
+      });
       const box = new THREE.Box3().setFromObject(bookModel);
       const center = box.getCenter(new THREE.Vector3());
       const size   = box.getSize(new THREE.Vector3());
@@ -525,14 +545,25 @@ function selectWork(idx) {
   document.getElementById('apYear').textContent  = p.y+' · '+p.mat;
   document.getElementById('apAsset').textContent = p.asset;
   document.getElementById('apLink').href = 'https://cp20.tokenscan.io/asset/'+p.asset;
-  const pdfPage = p.num + 3;
-  document.getElementById('apPdfLink').href = 'MASTERPEPESBOOK.pdf#page='+pdfPage;
+  currentPdfPage = p.num + 3;
   document.getElementById('assetPanel').classList.add('show');
 }
 function closePanel() {
   if(selectedIdx !== null) resetDot(selectedIdx);
   selectedIdx = null;
   document.getElementById('assetPanel').classList.remove('show');
+}
+
+let currentPdfPage = 4;
+function openPdfPanel() {
+  const p = PAGES[selectedIdx];
+  document.getElementById('pdfPanelTitle').textContent = 'No. '+p.num+' — '+p.t;
+  document.getElementById('pdfFrame').src = 'MASTERPEPESBOOK.pdf#page='+currentPdfPage;
+  document.getElementById('pdfPanel').style.display = 'flex';
+}
+function closePdfPanel() {
+  document.getElementById('pdfPanel').style.display = 'none';
+  document.getElementById('pdfFrame').src = '';
 }
 document.getElementById('museumSvg').addEventListener('click', closePanel);
 

@@ -328,17 +328,15 @@ function makeRedFloor(){
 function makePlaceholder(work){
   const C=document.createElement('canvas');C.width=512;C.height=512;
   const ctx=C.getContext('2d');
-  ctx.fillStyle='#C02820';ctx.fillRect(0,0,512,512);
-  ctx.strokeStyle='#DAA520';ctx.lineWidth=6;ctx.strokeRect(8,8,496,496);
-  ctx.strokeStyle='rgba(218,165,32,0.4)';ctx.lineWidth=2;ctx.strokeRect(22,22,468,468);
-  ctx.fillStyle='#FFD700';ctx.font='bold 36px Arial';ctx.textAlign='center';
-  ctx.fillText('No. '+work.num,256,80);
-  ctx.fillStyle='#FFE4C4';ctx.font='24px Arial';
-  const words=work.t.split(' ');let line='',y=150;
-  words.forEach(w=>{const test=line+w+' ';if(ctx.measureText(test).width>460&&line){ctx.fillText(line.trim(),256,y);line=w+' ';y+=34;}else line=test;});
+  // Very dark, nearly black — won't clash with anything
+  ctx.fillStyle='#0A0A0A';ctx.fillRect(0,0,512,512);
+  // Subtle number only — white text, no loud colors
+  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='28px Arial';ctx.textAlign='center';
+  ctx.fillText('No. '+work.num,256,240);
+  ctx.font='16px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';
+  const words=work.t.split(' ');let line='',y=280;
+  words.forEach(w=>{const test=line+w+' ';if(ctx.measureText(test).width>460&&line){ctx.fillText(line.trim(),256,y);line=w+' ';y+=22;}else line=test;});
   ctx.fillText(line.trim(),256,y);
-  ctx.fillStyle='rgba(255,215,0,0.7)';ctx.font='22px Arial';ctx.fillText(work.y,256,420);
-  ctx.fillStyle='rgba(255,228,196,0.5)';ctx.font='18px Arial';ctx.fillText('Walk closer to load',256,460);
   return new THREE.CanvasTexture(C);
 }
 
@@ -447,50 +445,32 @@ const MAX_CONCURRENT=4;
 
 function processQueue(){
   while(activeLoads<MAX_CONCURRENT&&LOAD_QUEUE.length>0){
-    const{artMat,art,frm,mat2,pl,rotY,anchorY,url}=LOAD_QUEUE.shift();
+    const{artMat,art,frameLines,rotY,anchorY,url}=LOAD_QUEUE.shift();
     activeLoads++;
     const img=new Image();img.crossOrigin='anonymous';
     img.onload=()=>{
       try{
-        // Build texture
         const tex=new THREE.Texture(img);
         tex.minFilter=THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;
         tex.needsUpdate=true;
         artMat.map=tex;artMat.needsUpdate=true;
 
-        // Compute correct dimensions — fit within AW×AH bounding box
+        // Fit real image dimensions inside AW×AH bounding box
         const ratio=img.naturalWidth/img.naturalHeight;
-        let rW,rH;
-        if(ratio>=1){
-          // Landscape or square — fix width to AW, adjust height
-          rW=AW; rH=AW/ratio;
-          // But don't exceed AH
-          if(rH>AH){rH=AH;rW=AH*ratio;}
-        } else {
-          // Portrait — fix height to AH, adjust width
-          rH=AH; rW=AH*ratio;
-          // But don't exceed AW
-          if(rW>AW){rW=AW;rH=AW/ratio;}
-        }
+        let rW=AW,rH=AH;
+        if(ratio>=1){rW=AW;rH=AW/ratio;if(rH>AH){rH=AH;rW=AH*ratio;}}
+        else        {rH=AH;rW=AH*ratio;if(rW>AW){rW=AW;rH=AW/ratio;}}
 
-        // Update art plane geometry
+        // Resize art plane
         art.geometry.dispose();
         art.geometry=new THREE.PlaneGeometry(rW,rH);
-
-        // Recentre art plane vertically on same anchor
-        const sin=Math.sin(rotY),cos=Math.cos(rotY);
         art.position.y=anchorY;
 
-        // Update gold frame to wrap the real dimensions
-        const FW=rW+0.7,FH=rH+0.7;
-        frm.geometry.dispose();frm.geometry=new THREE.BoxGeometry(FW,FH,0.25);
-        frm.position.y=anchorY;
-        mat2.geometry.dispose();mat2.geometry=new THREE.BoxGeometry(rW+0.18,rH+0.18,0.18);
-        mat2.position.y=anchorY;
-
-        // Reposition placard below real bottom edge
-        pl.geometry.dispose();pl.geometry=new THREE.BoxGeometry(Math.min(rW,4.5),0.55,0.12);
-        pl.position.y=anchorY-rH/2-0.55;
+        // Resize edge frame to match
+        frameLines.geometry.dispose();
+        const pad=0.4;
+        frameLines.geometry=new THREE.EdgesGeometry(new THREE.BoxGeometry(rW+pad,rH+pad,0.08));
+        frameLines.position.y=anchorY;
 
       }catch(e){}
       activeLoads--;processQueue();
@@ -523,35 +503,31 @@ function placeLine(works,wi,wallType,coord,isMin,rangeA,rangeB,gaps){
 }
 
 function placeFrame(work,x,y,z,rotY){
-  // Start with square placeholder proportions — will resize when real image loads
   const initW=AW, initH=AH;
-  const FW=initW+0.7, FH=initH+0.7;
   const sin=Math.sin(rotY),cos=Math.cos(rotY);
 
-  const frm=new THREE.Mesh(new THREE.BoxGeometry(FW,FH,0.25),frameHi);
-  frm.position.set(x,y,z);frm.rotation.y=rotY;scene.add(frm);
+  // ── Thin edge-outline frame (4 lines only, no solid face to z-fight) ──
+  const makeFrameLines=(w,h)=>{
+    const pad=0.4;
+    const geo=new THREE.EdgesGeometry(new THREE.BoxGeometry(w+pad,h+pad,0.08));
+    return new THREE.LineSegments(geo,new THREE.LineBasicMaterial({color:0xFFD700,linewidth:1}));
+  };
+  const frameLines=makeFrameLines(initW,initH);
+  frameLines.position.set(x,y,z);
+  frameLines.position.x+=sin*0.06;frameLines.position.z+=cos*0.06;
+  frameLines.rotation.y=rotY;scene.add(frameLines);
 
-  const mat2=new THREE.Mesh(new THREE.BoxGeometry(initW+0.18,initH+0.18,0.18),frameLo);
-  mat2.position.set(x,y,z);
-  mat2.position.x+=sin*0.05;mat2.position.z+=cos*0.05;
-  mat2.rotation.y=rotY;scene.add(mat2);
-
+  // ── Single artwork plane — placeholder immediately, real image swaps in ──
   const ph=makePlaceholder(work);
   const artMat=new THREE.MeshBasicMaterial({map:ph,side:THREE.FrontSide});
   const art=new THREE.Mesh(new THREE.PlaneGeometry(initW,initH),artMat);
   art.position.set(x,y,z);
-  art.position.x+=sin*0.14;art.position.z+=cos*0.14;
+  art.position.x+=sin*0.10;art.position.z+=cos*0.10;
   art.rotation.y=rotY;scene.add(art);
-
-  const pl=new THREE.Mesh(new THREE.BoxGeometry(Math.min(initW,4.5),0.55,0.12),frameLo);
-  pl.position.set(x,y-initH/2-0.55,z);
-  pl.position.x+=sin*0.12;pl.position.z+=cos*0.12;
-  pl.rotation.y=rotY;scene.add(pl);
 
   const spot=new THREE.Vector3(x,y,z);
   spot.x+=sin*1.5;spot.z+=cos*1.5;
-  // Store art, frm, mat2, pl refs so loader can resize them
-  artSpots.push({pos:spot,work,artMat,art,frm,mat2,pl,rotY,anchorY:y,loaded:false});
+  artSpots.push({pos:spot,work,artMat,art,frameLines,rotY,anchorY:y,loaded:false});
 }
 
 // ── ROOM PLACEMENT DEFINITIONS ─────────────────────────────────────────────────
@@ -744,7 +720,7 @@ function detectArt(){
     const d=cp.distanceTo(a.pos);
     if(!a.loaded&&d<LOAD_DIST){
         a.loaded=true;
-        LOAD_QUEUE.push({artMat:a.artMat,art:a.art,frm:a.frm,mat2:a.mat2,pl:a.pl,rotY:a.rotY,anchorY:a.anchorY,url:a.work.url});
+        LOAD_QUEUE.push({artMat:a.artMat,art:a.art,frameLines:a.frameLines,rotY:a.rotY,anchorY:a.anchorY,url:a.work.url});
         processQueue();
       }
     if(d<bd){bd=d;best=a;}

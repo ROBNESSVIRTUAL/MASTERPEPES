@@ -37,7 +37,11 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 .ai-m{font-size:8px;letter-spacing:0.06em;color:#2A5A2A;margin-top:3px;text-transform:none}
 #ctrl{position:fixed;bottom:20px;right:20px;font-size:7px;letter-spacing:0.2em;color:#1E3A1E;line-height:2.4;text-align:right;display:none;pointer-events:none}
 #mmap{position:fixed;bottom:20px;left:20px;display:none}
-#mmap canvas{border:0.5px solid #1E3A1E;background:rgba(3,6,3,0.85)}
+#joystick-wrap{position:fixed;bottom:28px;left:28px;display:none;align-items:center;justify-content:center;z-index:80;pointer-events:none}
+#joystick-base{width:110px;height:110px;border-radius:50%;background:rgba(0,0,0,0.35);border:1.5px solid rgba(200,144,26,0.5);display:flex;align-items:center;justify-content:center;pointer-events:all;touch-action:none}
+#joystick-knob{width:44px;height:44px;border-radius:50%;background:rgba(200,144,26,0.75);border:1.5px solid #FFD700;pointer-events:none}
+#look-hint{position:fixed;bottom:28px;right:28px;font-size:8px;letter-spacing:0.2em;color:rgba(200,144,26,0.55);display:none;text-align:right;pointer-events:none;line-height:2}
+
 #back{position:fixed;top:20px;left:20px;font-size:9px;letter-spacing:0.22em;color:rgba(200,144,26,0.75);border:0.5px solid rgba(200,144,26,0.25);padding:7px 16px;cursor:pointer;background:rgba(3,6,3,0.75);text-decoration:none;display:none;transition:all 0.2s}
 #back:hover{border-color:#C8901A;background:rgba(200,144,26,0.1)}
 </style>
@@ -64,6 +68,8 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 <div id="ainfo"><div class="ai-n" id="ain"></div><div class="ai-t" id="ait"></div><div class="ai-y" id="aiy"></div><div class="ai-m" id="aim"></div></div>
 <div id="ctrl">W A S D &middot; MOVE<br>MOUSE DRAG &middot; LOOK<br>ESC &middot; RELEASE</div>
 <div id="mmap"><canvas id="mm" width="175" height="175"></canvas></div>
+<div id="joystick-wrap"><div id="joystick-base"><div id="joystick-knob"></div></div></div>
+<div id="look-hint">DRAG RIGHT SIDE<br>TO LOOK AROUND</div>
 <a href="index.html" id="back">&#8592; Exit Museum</a>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -650,15 +656,26 @@ const keys={};
 document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')e.preventDefault();});
 document.addEventListener('keyup',  e=>keys[e.code]=false);
 const HUD=['cross','rlabel','ctrl','mmap','back'];
+
 function enterMuseum(){
   if(entered)return;entered=true;
   document.getElementById('intro').style.display='none';
   HUD.forEach(id=>document.getElementById(id).style.display='block');
+  // Show mobile controls only on touch device
+  if('ontouchstart' in window){
+    document.getElementById('joystick-wrap').style.display='flex';
+    document.getElementById('look-hint').style.display='block';
+    document.getElementById('ctrl').style.display='none';
+    document.getElementById('mmap').style.display='none';
+  }
   try{rc.requestPointerLock();}catch(e){}
 }
 document.getElementById('intro').addEventListener('click',enterMuseum);
+document.getElementById('intro').addEventListener('touchend',e=>{e.preventDefault();enterMuseum();},{passive:false});
 rc.addEventListener('click',()=>{if(!entered)enterMuseum();else try{rc.requestPointerLock();}catch(e){}});
 document.addEventListener('pointerlockchange',()=>{locked=document.pointerLockElement===rc;});
+
+// ── MOUSE LOOK ────────────────────────────────────────────────────────────────
 document.addEventListener('mousemove',e=>{
   if(!entered)return;
   if(locked){yaw-=e.movementX*0.0022;pitch-=e.movementY*0.0022;}
@@ -668,6 +685,68 @@ document.addEventListener('mousemove',e=>{
 });
 rc.addEventListener('mousedown',e=>{dragging=true;lastMX=e.clientX;lastMY=e.clientY;});
 document.addEventListener('mouseup',()=>dragging=false);
+
+// ── TOUCH CONTROLS ────────────────────────────────────────────────────────────
+// Left half of screen = virtual joystick (move)
+// Right half of screen = look drag
+const touches={};       // trackingId -> {startX,startY,curX,curY,side}
+let joyX=0,joyZ=0;     // normalised joystick output (-1..1)
+
+function touchSide(x){ return x < window.innerWidth*0.5 ? 'left' : 'right'; }
+
+rc.addEventListener('touchstart',e=>{
+  if(!entered)return;
+  e.preventDefault();
+  [...e.changedTouches].forEach(t=>{
+    const side=touchSide(t.clientX);
+    touches[t.identifier]={startX:t.clientX,startY:t.clientY,curX:t.clientX,curY:t.clientY,side};
+    if(side==='left') updateJoy();
+    if(side==='right'){lastMX=t.clientX;lastMY=t.clientY;}
+  });
+},{passive:false});
+
+rc.addEventListener('touchmove',e=>{
+  if(!entered)return;
+  e.preventDefault();
+  [...e.changedTouches].forEach(t=>{
+    const tr=touches[t.identifier];if(!tr)return;
+    if(tr.side==='left'){
+      tr.curX=t.clientX;tr.curY=t.clientY;updateJoy();
+    } else {
+      // Look drag
+      yaw -=(t.clientX-lastMX)*0.005;
+      pitch-=(t.clientY-lastMY)*0.005;
+      pitch=Math.max(-1.4,Math.min(1.4,pitch));
+      camera.rotation.y=yaw;camera.rotation.x=pitch;
+      lastMX=t.clientX;lastMY=t.clientY;
+    }
+  });
+},{passive:false});
+
+rc.addEventListener('touchend',e=>{
+  if(!entered)return;
+  e.preventDefault();
+  [...e.changedTouches].forEach(t=>{
+    const tr=touches[t.identifier];
+    if(tr&&tr.side==='left'){joyX=0;joyZ=0;}
+    delete touches[t.identifier];
+  });
+},{passive:false});
+
+function updateJoy(){
+  const lt=Object.values(touches).find(t=>t.side==='left');
+  const knob=document.getElementById('joystick-knob');
+  if(!lt){joyX=0;joyZ=0;knob.style.transform='translate(0,0)';return;}
+  const DEAD=8,RADIUS=60;
+  let dx=lt.curX-lt.startX, dy=lt.curY-lt.startY;
+  const dist=Math.sqrt(dx*dx+dy*dy);
+  if(dist<DEAD){joyX=0;joyZ=0;knob.style.transform='translate(0,0)';return;}
+  const clamped=Math.min(dist,RADIUS);
+  const nx=dx/dist*clamped, ny=dy/dist*clamped;
+  joyX=(dx/dist)*(clamped/RADIUS);
+  joyZ=(dy/dist)*(clamped/RADIUS);
+  knob.style.transform=`translate(${nx}px,${ny}px)`;
+}
 
 // ── MOVEMENT ──────────────────────────────────────────────────────────────────
 const mDir=new THREE.Vector3(),tmpE=new THREE.Euler(0,0,0,'YXZ');
@@ -686,7 +765,6 @@ function tryMove(dx,dz){
 // ── MINIMAP ───────────────────────────────────────────────────────────────────
 const mmC=document.getElementById('mm'),mmCtx=mmC.getContext('2d');
 const MW=mmC.width,MH=mmC.height;
-// World x: -250..250=500, z: -250..340=590
 function w2m(x,z){return[(x+250)*MW/500,(z+250)*MH/590];}
 const RCOLS={w1:'#3A0A08',w2:'#3A0A08',w3:'#4A0C0A',w4:'#4A0C0A',w5:'#3A0A08',w6:'#3A0A08',rt:'#5A1410',en:'#4A1010'};
 function drawMap(){
@@ -742,10 +820,13 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
   requestAnimationFrame(animate);
   if(entered){
     mDir.set(0,0,0);
+    // Keyboard
     if(keys['KeyW']||keys['ArrowUp'])    mDir.z-=1;
     if(keys['KeyS']||keys['ArrowDown'])  mDir.z+=1;
     if(keys['KeyA']||keys['ArrowLeft'])  mDir.x-=1;
     if(keys['KeyD']||keys['ArrowRight']) mDir.x+=1;
+    // Touch joystick
+    if(Math.abs(joyX)>0.05||Math.abs(joyZ)>0.05){mDir.x+=joyX;mDir.z+=joyZ;}
     if(mDir.length()>0){mDir.normalize().multiplyScalar(SPEED);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
     camera.position.y=1.7;detectRoom();detectArt();drawMap();
   }

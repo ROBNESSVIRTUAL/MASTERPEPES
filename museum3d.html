@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MASTERPEPES MUSEUM</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&family=Tenor+Sans&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#87CEEB;overflow:hidden;font-family:'Tenor Sans',serif;text-transform:uppercase;letter-spacing:0.08em;color:#E8F0D8}
+#c{display:block;width:100vw;height:100vh}
+#loading{position:fixed;inset:0;background:#060D06;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 1.2s}
+#loading.fade{opacity:0;pointer-events:none}
+.ld-logo{font-family:'Cinzel Decorative',serif;font-size:22px;letter-spacing:0.3em;color:#C8901A;margin-bottom:6px}
+.ld-sub{font-size:9px;letter-spacing:0.5em;color:#3A6A3A;margin-bottom:32px}
+.ld-bar{width:260px;height:1px;background:#182E18;margin-bottom:10px}
+.ld-fill{height:1px;background:#C8901A;width:0%;transition:width 0.4s}
+.ld-txt{font-size:8px;letter-spacing:0.25em;color:#2A5A2A}
+#intro{position:fixed;inset:0;background:rgba(4,8,4,0.93);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:90;cursor:pointer}
+#intro.show{display:flex}
+.intro-ring{width:84px;height:84px;border:0.5px solid #C8901A;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:22px;animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.55;transform:scale(0.96)}}
+.intro-icon{font-size:26px;color:#C8901A}
+.intro-cta{font-size:11px;letter-spacing:0.5em;color:#C8901A;margin-bottom:10px}
+.intro-hint{font-size:8px;letter-spacing:0.22em;color:#2A5A2A;text-align:center;line-height:2.2}
+#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;pointer-events:none;display:none}
+#cross::before,#cross::after{content:'';position:absolute;background:rgba(200,144,26,0.8)}
+#cross::before{width:1px;height:100%;left:50%;transform:translateX(-50%)}
+#cross::after{width:100%;height:1px;top:50%;transform:translateY(-50%)}
+#rlabel{position:fixed;top:20px;left:50%;transform:translateX(-50%);text-align:center;display:none;pointer-events:none}
+.rl-n{font-size:11px;letter-spacing:0.45em;color:#C8901A}
+.rl-s{font-size:8px;letter-spacing:0.3em;color:#FFB0A0;margin-top:3px}
+#ainfo{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:rgba(3,6,3,0.97);border:0.5px solid #C8901A;padding:14px 30px;text-align:center;display:none;pointer-events:none;min-width:280px;max-width:500px}
+.ai-n{font-size:8px;letter-spacing:0.3em;color:#C8901A;margin-bottom:5px}
+.ai-t{font-size:13px;letter-spacing:0.04em;color:#E8F0D8;margin-bottom:5px;line-height:1.35;text-transform:none}
+.ai-y{font-size:8px;letter-spacing:0.2em;color:#4A8A4A}
+.ai-m{font-size:8px;letter-spacing:0.06em;color:#2A5A2A;margin-top:3px;text-transform:none}
+#ctrl{position:fixed;bottom:20px;right:20px;font-size:7px;letter-spacing:0.2em;color:#1E3A1E;line-height:2.4;text-align:right;display:none;pointer-events:none}
+#mmap{position:fixed;bottom:20px;left:20px;display:none}
+#mmap canvas{border:0.5px solid #1E3A1E;background:rgba(3,6,3,0.85)}
+#back{position:fixed;top:20px;left:20px;font-size:9px;letter-spacing:0.22em;color:rgba(200,144,26,0.75);border:0.5px solid rgba(200,144,26,0.25);padding:7px 16px;cursor:pointer;background:rgba(3,6,3,0.75);text-decoration:none;display:none;transition:all 0.2s}
+#back:hover{border-color:#C8901A;background:rgba(200,144,26,0.1)}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="loading">
+  <div class="ld-logo">MASTERPEPES</div>
+  <div class="ld-sub">Museum &middot; 150 Works &middot; 6 Wings</div>
+  <div class="ld-bar"><div class="ld-fill" id="ldfill"></div></div>
+  <div class="ld-txt" id="ldtxt">Building galleries&hellip;</div>
+</div>
+<div id="intro">
+  <div class="intro-ring"><div class="intro-icon">&#9654;</div></div>
+  <div class="intro-cta">Click to Enter the Museum</div>
+  <div class="intro-hint">
+    WASD &middot; Walk &nbsp;&nbsp; Mouse Drag &middot; Look &nbsp;&nbsp; ESC &middot; Release<br>
+    <span style="color:#C8901A">&#9888; Serve via web server for artwork images</span><br>
+    <span style="font-size:7px;color:#1A4A1A">python -m http.server 8000 &nbsp;&rarr;&nbsp; localhost:8000</span>
+  </div>
+</div>
+<div id="cross"></div>
+<div id="rlabel"><div class="rl-n" id="rln"></div><div class="rl-s" id="rls"></div></div>
+<div id="ainfo"><div class="ai-n" id="ain"></div><div class="ai-t" id="ait"></div><div class="ai-y" id="aiy"></div><div class="ai-m" id="aim"></div></div>
+<div id="ctrl">W A S D &middot; MOVE<br>MOUSE DRAG &middot; LOOK<br>ESC &middot; RELEASE</div>
+<div id="mmap"><canvas id="mm" width="170" height="170"></canvas></div>
+<a href="index.html" id="back">&#8592; Exit Museum</a>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const PAGES=[
+  {num:1,asset:'MSTRPEPES.PEPEOFWILLENDORF',t:'Pepe of Willendorf',y:'24000 BC',mat:'Limestone',url:'https://gateway.ar.io/sgpb1VRo6BYovy7XbM7MnBL_hYKNlkKsaCUVEbokRX0/PEPEOFWILLENDORF.png'},
+  {num:2,asset:'MSTRPEPES.KARAHANPEPE',t:'Karahan Pepe',y:'10000 BC',mat:'Sandstone Monolith',url:'https://gateway.ar.io/v6WzAeJnxNW3k2E9Ye3rshqFglfwkWHxS1BrIQfQAHs/KARAHANPEPE.png'},
+  {num:3,asset:'MSTRPEPES.FROGHANDSTENCILS',t:'Frog Hand Stencils',y:'9400 BC',mat:'Pigment on Cave Wall',url:'https://gateway.ar.io/HRBKK5-sK7kFALP-6JZgltIx0fswaQ5EJqrQRj5h--M/FROGHANDSTENCILS.png'},
+  {num:4,asset:'MSTRPEPES.HONGSHANPEPEPENDANT',t:'Hongshan Pepe Pendant',y:'3000 BC',mat:'Carved Jade',url:'https://gateway.ar.io/5xMMwKFzCWs4i6PHmPNY5O0SyGjSecAoh_xoO6cDaSM/HONGSHANPEPEPENDANT.png'},
+  {num:5,asset:'MSTRPEPES.LYREWITHPEPESHEAD',t:'Lyre with Pepe\'s Head',y:'2550 BC',mat:'Wood with Shell Inlay',url:'https://gateway.ar.io/CEnRwWhoqFUiwmeMa_dEOd_6RRZNx7SBHiaVsxJDwtA/LYREWITHPEPESHEAD.png'},
+  {num:6,asset:'MSTRPEPES.PEPEOFAKKAD',t:'Pepe of Akkad',y:'2400 BC',mat:'Carved Diorite',url:'https://gateway.ar.io/aiM6zNpl7QKx3WHsJCLg44khkyjxlJ0OLuJ29P8gGh0/PEPEOFAKKAD.png'},
+  {num:7,asset:'MSTRPEPES.VICTORYSTELEOFNARAMPEPE',t:'Victory Stele of Naram-Pepe',y:'2350 BC',mat:'Basalt Relief',url:'https://gateway.ar.io/YrjqamKXWH4EH9T4N4yMxBkEaCq0iwEhTcREirp8A2A/VICTORYSTELEOFNARAMPEPE.png'},
+  {num:8,asset:'MSTRPEPES.WARRIORPEPEFIGURE',t:'Warrior Pepe Figure',y:'1200 BC',mat:'Carved Serpentine',url:'https://gateway.ar.io/lKx1ttXZeAc9rs9LyF2KXtV6XOu4Nk78p_2mIoiKEIE/WARRIORPEPEFIGURE.png'},
+  {num:9,asset:'MSTRPEPES.DANKQINGDYNASTYJADE',t:'Dankqing Dynasty Jade',y:'1700 BC',mat:'Polished Jade',url:'https://gateway.ar.io/rlDFMmv-wNmjIhJKT2UQ-fbDwzp7IJv5jsnNefeokbw/DANKQINGDYNASTYJADE.png'},
+  {num:10,asset:'MSTRPEPES.MINOANPEPESNAKEGODDESS',t:'Minoan Pepe Snake Goddess',y:'1650 BC',mat:'Painted Faience',url:'https://gateway.ar.io/WqQJTHQ92krhWzt32YappN2d6xzxTIEzo2u2S_57Gm8/MINOANPEPESNAKEGODDESS.png'},
+  {num:11,asset:'MSTRPEPES.THEGOLDENVESSELOFTHEFROGKINHERDSMEN',t:'The Golden Vessel of the Frog-Kin Herdsmen',y:'1500 BC',mat:'Gold Repousse',url:'https://gateway.ar.io/utjbe5tF4hjmaeKpvMLeAR4mEycoFAAxmdw0qtbioBw/THEGOLDENVESSELOFTHEFROGKINHERDSMEN.png'},
+  {num:12,asset:'MSTRPEPES.PEPEHARVESTERVASE',t:'Pepe Harvester Vase',y:'1550 BC',mat:'Terracotta',url:'https://gateway.ar.io/JfiZE_sg2lDC6ajQH_JO1HxfTjxEbObTcpmJkbN6fE0/PEPEHARVESTERVASE.png'},
+  {num:13,asset:'MSTRPEPES.PEPEGATEOFHATTUSSA',t:'Pepe Gate of Hattussa',y:'1400 BC',mat:'Basalt Relief',url:'https://gateway.ar.io/mOUhd55WVygBj857zOLSxHWkCbRRsbPkkalkb4uP3YY/PEPEGATEOFHATTUSSA.png'},
+  {num:14,asset:'MSTRPEPES.PEPEKNHATANINSCRIPTION',t:'Pepeknhatan Inscription',y:'1353 BC',mat:'Limestone Stele',url:'https://gateway.ar.io/XUUx-l0rmzr8I3oiifVJ7i7naUxFNVpsgiT9fhkfpr4/PEPEKNHATANINSCRIPTION.png'},
+  {num:15,asset:'MSTRPEPES.BUSTOFNEFERPEPE',t:'Bust of Neferpepe',y:'1345 BC',mat:'Painted Limestone',url:'https://gateway.ar.io/nTROhobKINxaWi_9K4HIynoJ7udW-p8ImwLgfUBOEYs/BUSTOFNEFERPEPE.png'},
+  {num:16,asset:'MSTRPEPES.KEKENKHAMUN',t:'Kekenkhamun',y:'1300 BC',mat:'Gilded Wood Mask',url:'https://gateway.ar.io/QlJM3v8T0jIU78pRL1OMKR6g2To_PJkgQVq9TXLKuMU/KEKENKHAMUN.png'},
+  {num:17,asset:'MSTRPEPES.PEPEGATEOFMYCENAE',t:'Pepe Gate of Mycenae',y:'1300 BC',mat:'Grey Limestone',url:'https://gateway.ar.io/rCfF7TFqh9WcTH9dfL_V8ID25WQhTDZCDycEoMI7HOA/PEPEGATEOFMYCENAE.png'},
+  {num:18,asset:'MSTRPEPES.FELINEPEPERITUALVESSEL',t:'Feline-Pepe Ritual Vessel',y:'1150 BC',mat:'Cast Bronze',url:'https://gateway.ar.io/UNCEBHYgx_WZHiHe_qcaUye2CFldvsF3H_1gFwPt0Hc/FELINEPEPERITUALVESSEL.png'},
+  {num:19,asset:'MSTRPEPES.THEOLMECPEPEHEAD',t:'The Olmec Pepe Head',y:'900 BC',mat:'Carved Basalt',url:'https://gateway.ar.io/5OU1qxDEO0Wy3SxLx7kZae2gnbzXNOFHFRX7_WgPxgY/THEOLMECPEPEHEAD.png'},
+  {num:20,asset:'MSTRPEPES.PEPIONESSDEVOURINGALION',t:'Pepioness Devouring a Lion',y:'900 BC',mat:'Limestone Relief',url:'https://gateway.ar.io/eRa1ZWplYizsfZVpHTtw6ziPqsXkbWnBuXcNOAWJmps/PEPIONESSDEVOURINGALION.png'},
+  {num:21,asset:'MSTRPEPES.PEPASSU',t:'Pepassu',y:'883 BC',mat:'Basalt Sculpture',url:'https://gateway.ar.io/E5PFoEykkeiIOA65s1vWhGXgD4pyi5wByOtwjAinLXY/PEPASSU.png'},
+  {num:22,asset:'MSTRPEPES.PEPEKOUROS',t:'Pepe Kouros',y:'640 BC',mat:'Marble Statue',url:'https://gateway.ar.io/RDFzmR99UMADs2gTDxF6mBZB_b-kf0M12vGKbJlzAJs/PEPEKOUROS.png'},
+  {num:23,asset:'MSTRPEPES.SEATEDPEPEBUDDHAS',t:'Seated Pepe Buddhas',y:'618 BC',mat:'Carved Limestone',url:'https://gateway.ar.io/-FnID02jE2pXapwZhKZe7t5iMosMkLCWRSDeY4A6_QA/SEATEDPEPEBUDDHAS.png'},
+  {num:24,asset:'MSTRPEPES.PEPIANSPHINXOFDELPHI',t:'Pepian Sphinx of Delphi',y:'580 BC',mat:'Marble Sculpture',url:'https://gateway.ar.io/IMfdi2favFBy0kU15tO_3Oxmr83PQSYv_27vXD7_jT0/PEPIANSPHINXOFDELPHI.png'},
+  {num:25,asset:'MSTRPEPES.PEPETARGATECREATURE',t:'Pepetar Gate Creature',y:'575 BC',mat:'Glazed Brick Relief',url:'https://gateway.ar.io/dJbAHK3QJYlJLU9OtnGB3_AEjnTbyfnWvsNLgQ-Pr7I/PEPETARGATECREATURE.png'},
+  {num:26,asset:'MSTRPEPES.KOREOFTHEPEPEMAYESGROUP',t:'Kore of the Pepemayes Group',y:'570 BC',mat:'Marble Statue',url:'https://gateway.ar.io/WTkgLUMW-RQrAi8fGbIohog9kojLtF3I5V0Ozt91rWY/KOREOFTHEPEPEMAYESGROUP.png'},
+  {num:27,asset:'MSTRPEPES.PEPESCHOPHOROS',t:'Pepe Schophoros',y:'560 BC',mat:'Marble Sculpture',url:'https://gateway.ar.io/v_HkHC0EjxQswoJmOtQv-EYhNu9yNIa21tK4a1k2ucs/PEPESCHOPHOROS.png'},
+  {num:28,asset:'MSTRPEPES.KEKOPHAGUSOFTHESPOUSES',t:'Kekophagus of the Spouses',y:'530 BC',mat:'Terracotta Sarcophagus',url:'https://gateway.ar.io/qhnSwQiSlTukcZvAVHD04bGZHKZjv2dtKsmymmp-1h8/KEKOPHAGUSOFTHESPOUSES.png'},
+  {num:29,asset:'MSTRPEPES.RELIEFSCULPTURESOFPEPEPOLIS',t:'Relief Sculptures of Pepepolis',y:'518 BC',mat:'Sandstone',url:'https://gateway.ar.io/H2FrCCEVOhbSdWFb9G2Y54EHMskkAs00Tms0AXc91Vc/RELIEFSCULPTURESOFPEPEPOLIS.png'},
+  {num:30,asset:'MSTRPEPES.THEPEPEKRATER',t:'The Pepe Krater',y:'515 BC',mat:'Black-Figure Terracotta',url:'https://gateway.ar.io/5zbMyQUjv9EJLouqpweti0CFcXivlAyWtrFDaY9orcA/THEPEPEKRATER.png'},
+  {num:31,asset:'MSTRPEPES.SEATEDPEPEOFTHEKEKNOKCULTURE',t:'Seated Pepe of the Keknok Culture',y:'500 BC',mat:'Terracotta',url:'https://gateway.ar.io/7z4abDu5ztJag447_mZXUdnVyNbXMQi67v6CkS9EX4s/SEATEDPEPEOFTHEKEKNOKCULTURE.png'},
+  {num:32,asset:'MSTRPEPES.PEPODIUSANDKEKISTOGEITON',t:'Pepodius and Kekistogeiton',y:'500 BC',mat:'Basalt',url:'https://gateway.ar.io/nNhzVS_YCTHNdq_I57EdV6nojwpOAchV9FV5kDE8RQg/PEPODIUSANDKEKISTOGEITON.png'},
+  {num:33,asset:'MSTRPEPES.PEPAANDTHESWAN',t:'Pepa and the Swan',y:'500 BC',mat:'Marble',url:'https://gateway.ar.io/uMButXdGRwHxrkXUB71RVRJ8Wfyeyy2J67NYgVBtHME/PEPAANDTHESWAN.png'},
+  {num:34,asset:'MSTRPEPES.CHARIOTEEROFKEKELPHI',t:'Charioteer of Kekelphi',y:'500 BC',mat:'Cast Bronze',url:'https://gateway.ar.io/L6WDmv3C8kNVxbpf-nSK89966-O0BXDIHz6T85IohxQ/CHARIOTEEROFKEKELPHI.png'},
+  {num:35,asset:'MSTRPEPES.KEKBOY',t:'Kek Boy',y:'480 BC',mat:'Limestone',url:'https://gateway.ar.io/tGR5HjuOmoT7GS8RpPNAJmkVJNEIk-vVqDvnOBwWieU/KEKBOY.png'},
+  {num:36,asset:'MSTRPEPES.KEKEUSOFOLYMPEPIA',t:'Kekeus of Olympepia',y:'466 BC',mat:'Marble',url:'https://gateway.ar.io/vyz9GisSDo5s1rG_YJh64eBB1yhDwKuPv7K38VTqWGk/KEKEUSOFOLYMPEPIA.png'},
+  {num:37,asset:'MSTRPEPES.ZEUSPEPEOFKEKEMIS',t:'Zeuspepe of Kekemis',y:'460 BC',mat:'Bronze',url:'https://gateway.ar.io/biP5y2KW0thwgtJ1_WvUluAvXLmfWUpKdygVHaTV6hE/ZEUSPEPEOFKEKEMIS.png'},
+  {num:38,asset:'MSTRPEPES.PEPOVISITHRONE',t:'Pepovisi Throne',y:'460 BC',mat:'Carved Marble',url:'https://gateway.ar.io/lLgl0onqOSMt7H6UgwbC_jF45VcEQDM6SAIetdHX5CU/PEPOVISITHRONE.png'},
+  {num:39,asset:'MSTRPEPES.PEPIACEBRONZE',t:'Pepiace Bronze',y:'459 BC',mat:'Cast Bronze',url:'https://gateway.ar.io/6C7tH8hm2uS-IahPf5GGNHQm8DO4yxwiB9rokFyely4/PEPIACEBRONZE.png'},
+  {num:40,asset:'MSTRPEPES.PEPETHONMARBLES',t:'Pepethon Marbles',y:'447 BC',mat:'Marble Reliefs',url:'https://gateway.ar.io/P4QDG15GCQKXQHWPBEU20M4cD6ntrz88-LRgboHQXiA/PEPETHONMARBLES.png'},
+  {num:41,asset:'MSTRPEPES.PORTRAITOFPEPECLES',t:'Portrait of Pepecles',y:'425 BC',mat:'Marble Bust',url:'https://gateway.ar.io/wLZVIIgMZLZJsQWpanZWUsJbykTu5TCvyefMVgjim6o/PORTRAITOFPEPECLES.png'},
+  {num:42,asset:'MSTRPEPES.RAREPEPEDIRECTORIALTEMPLATETABLET',t:'Rarepepe Directorial Template Tablet',y:'420 BC',mat:'Stone Tablet',url:'https://gateway.ar.io/Dymrifw2Wv1HCgeA4nKkouJGIkgBjZjnJxrSy9LbKpM/RAREPEPEDIRECTORIALTEMPLATETABLET.jpg'},
+  {num:43,asset:'MSTRPEPES.NIKEOFPEPENIOS',t:'Nike of Pepenios',y:'420 BC',mat:'Marble',url:'https://gateway.ar.io/wQjzAv-hcAPd9T9UvErL_4k8vU-fsuRcr1duttrDJlg/NIKEOFPEPENIOS.png'},
+  {num:44,asset:'MSTRPEPES.KEKMERA',t:'Kekmera',y:'400 BC',mat:'Carved Stone',url:'https://gateway.ar.io/MNBQtvkUGccnFG4f7WDEarAhd4-a5_YWrUxjeOl4J5Q/KEKMERA.png'},
+  {num:45,asset:'MSTRPEPES.FARNESEKEKULES',t:'Farnese Kekules',y:'370 BC',mat:'Marble',url:'https://gateway.ar.io/pffvmrz31zi_A5ZdQ3k8J_0MHAg7BA33jS_DkSzPL7s/FARNESEKEKULES.png'},
+  {num:46,asset:'MSTRPEPES.KEKEZONFRIEZE',t:'Kekezon Frieze',y:'357 BC',mat:'Marble Relief',url:'https://gateway.ar.io/Zgj3T_9PnUp7Bo5qShM3hMXks_PV8Z9TD-qgaZDKmKY/KEKEZONFRIEZE.png'},
+  {num:47,asset:'MSTRPEPES.PEPERMESANDAWOMAN',t:'Pepermes and a Woman',y:'350 BC',mat:'Marble Group',url:'https://gateway.ar.io/hR-mBtHvtBFuKzMXJxg_gV01z0kiU-g4TmGH03RY0bQ/PEPERMESANDAWOMAN.png'},
+  {num:48,asset:'MSTRPEPES.APHROPEPAOFKEKDOS',t:'Aphropepa of Kekdos',y:'350 BC',mat:'Marble',url:'https://gateway.ar.io/j4vq7pIcgOvBuLK-YusvdVubbrj3v-CKxZ9s9s7_laM/APHROPEPAOFKEKDOS.png'},
+  {num:49,asset:'MSTRPEPES.PEPOLLOBELVEDERE',t:'Pepollo Belvedere',y:'330 BC',mat:'Marble',url:'https://gateway.ar.io/nIxQA-4BGInlHqc3Qxtv_3yVnn0YxVFHHJ5UdaA7At8/PEPOLLOBELVEDERE.png'},
+  {num:50,asset:'MSTRPEPES.PEPESTAGHUNTERS',t:'Pepe Stag Hunters',y:'300 BC',mat:'Mosaic',url:'https://gateway.ar.io/NqCfCLq3T35wg10hY4DE9EGKvTELrQ8lkIqPjuPdcfg/PEPESTAGHUNTERS.png'},
+  {num:51,asset:'MSTRPEPES.PEPATOLINEVENUS',t:'Pepatoline Venus',y:'300 BC',mat:'Marble',url:'https://gateway.ar.io/HYPE84plM4hwuIT01N4P1JX0V1Tf591JPAN_vvs1JFw/PEPATOLINEVENUS.png'},
+  {num:52,asset:'MSTRPEPES.PEPECOTTAARMY',t:'Pepecotta Army',y:'246 BC',mat:'Terracotta',url:'https://gateway.ar.io/rXUqZ_2EfeSjBpBqAM43oKKHGr2Uq9Gj3RzndZ3db-A/PEPECOTTAARMY.png'},
+  {num:53,asset:'MSTRPEPES.DYINGGAULPEPE',t:'Dying Gaulpepe',y:'230 BC',mat:'Marble',url:'https://gateway.ar.io/WXXT8OWK_aMc8c9mAX3WocjpC-9oOwD3iBINMIS0tXc/DYINGGAULPEPE.png'},
+  {num:54,asset:'MSTRPEPES.THEEYEOFPEPE',t:'The Eye of Pepe',y:'220 BC',mat:'Carved Stone',url:'https://gateway.ar.io/NscS3nnO3ygQce-KtMqiKGzCENiRO1whWQtydB9I85s/THEEYEOFPEPE.png'},
+  {num:55,asset:'MSTRPEPES.PEPAJANTACAVEMURAL',t:'Pepajanta Cave Mural',y:'200 BC',mat:'Pigment on Stone',url:'https://gateway.ar.io/WjZKu0OhML_qdyNxM2J8u-nW_NkmB9ObJHVcyffW-Wo/PEPAJANTACAVEMURAL.png'},
+  {num:56,asset:'MSTRPEPES.NAZCAPEPELINES',t:'Nazcapepe Lines',y:'200 BC',mat:'Earthwork',url:'https://gateway.ar.io/ZvK1bKduDz6Lx6iEKqyu2Vx6g5LHmOgyXKNwLRPPyUc/NAZCAPEPELINES.png'},
+  {num:57,asset:'MSTRPEPES.PEPECOONANDHISSONS',t:'Pepecoon and His Sons',y:'42 BC',mat:'Marble',url:'https://gateway.ar.io/nKRAUIjhVLsNEVwMUc7JE8kx1eGFEhSEb_6uILnCcq4/PEPECOONANDHISSONS.png'},
+  {num:58,asset:'MSTRPEPES.PEPEUSTUSOFKEKAPORTA',t:'Pepeustus of Keka Porta',y:'20 BC',mat:'Marble',url:'https://gateway.ar.io/YB_menK5886aoAb1edUYDpJymA9uJdYdFTNaFUKS8mQ/PEPEUSTUSOFKEKAPORTA.png'},
+  {num:59,asset:'MSTRPEPES.COLLOSALHEADOFPEPE',t:'Colossal Head of Pepe',y:'312 AD',mat:'Marble',url:'https://gateway.ar.io/20pXTb0if_i4nBMsrcin4s14f8SuPTLd7RFfIvovpkE/COLLOSALHEADOFPEPE.png'},
+  {num:60,asset:'MSTRPEPES.PEPEBUDDHAGROTTO',t:'Pepe Buddha Grotto',y:'500 AD',mat:'Carved Stone',url:'https://gateway.ar.io/bAKTALKXv6hrjleRjYEzJKkfiK3bPMxbrl8tcj0wu_k/PEPEBUDDHAGROTTO.png'},
+  {num:61,asset:'MSTRPEPES.EMPERORPEPEANDHISATTENDANTS',t:'Emperor Pepe and His Attendants',y:'526 AD',mat:'Mosaic',url:'https://gateway.ar.io/Eu6tZnkz17Trj_bBcdCdMyQtA4PitGDyzQbAARHpi8w/EMPERORPEPEANDHISATTENDANTS.png'},
+  {num:62,asset:'MSTRPEPES.GOSPELILLUMINATIONSOFDANKNESS',t:'Gospel Illuminations of Dankness',y:'700 AD',mat:'Ink and Gold on Vellum',url:'https://gateway.ar.io/YShOW9Ml0fUjUUSZdJh7ZtfZiSnG4zOuOPoFoHBjDsE/GOSPELILLUMINATIONSOFDANKNESS.png'},
+  {num:63,asset:'MSTRPEPES.PEPEBUDURTEMPLERELIEF',t:'Pepebudur Temple Relief',y:'800 AD',mat:'Stone Relief',url:'https://gateway.ar.io/gDKOBAo9U8hHgkIyx40s-TFFH-dIRQfs0oW7VJRZIqg/PEPEBUDURTEMPLERELIEF.png'},
+  {num:64,asset:'MSTRPEPES.BRONZESHIVAKEKARAJA',t:'Bronze Shiva Kekaraja',y:'900 AD',mat:'Cast Bronze',url:'https://gateway.ar.io/8JTQr5QOw8PqownDGlTI7uGR-w89jmz3BsS1cRWiDS4/BRONZESHIVAKEKARAJA.png'},
+  {num:65,asset:'MSTRPEPES.PEPECOTTAHEADS',t:'Pepecotta Heads',y:'1000 AD',mat:'Pepecotta',url:'https://gateway.ar.io/hNNnypl3c_PK-VJQoQWmKR2IG5RJw5l6tEmfZxtpMGo/PEPECOTTAHEADS.png'},
+  {num:66,asset:'MSTRPEPES.PEPEUXTAPESTRY',t:'Pepeux Tapestry',y:'1015 AD',mat:'Embroidered Textile',url:'https://gateway.ar.io/PYMLYNzCEjmmolqoqK-UJaqGxjxhgeu6x7DHFFIfhmg/PEPEUXTAPESTRY.png'},
+  {num:67,asset:'MSTRPEPES.PEPERWICKKING',t:'Peperwick King',y:'1175 AD',mat:'Carved Ivory',url:'https://gateway.ar.io/tDbjlnK2K22GNxeHf2l7H_60N8xgSaCP-cw0aUUbN8U/PEPERWICKKING.png'},
+  {num:68,asset:'MSTRPEPES.PEPETRESCATHEDRALSTAINEDGLASS',t:'Pepetres Cathedral Stained Glass',y:'1220 AD',mat:'Stained Glass',url:'https://gateway.ar.io/yVMlNAtvkltJcakmEq3Edj-5eZpPYagvKeTns4-Mxsw/PEPETRESCATHEDRALSTAINEDGLASS.png'},
+  {num:69,asset:'MSTRPEPES.GUARDIANSOFKEKNARKSUNTEMPLE',t:'Guardian of Keknark Sun Temple',y:'1250 AD',mat:'Carved Stone',url:'https://gateway.ar.io/hv45aZUQGrKlT3SMIeEiI5azEGqcJBo85rHzmCN2SyU/GUARDIANSOFKEKNARKSUNTEMPLE.png'},
+  {num:70,asset:'MSTRPEPES.LAMENTATIONOFPEPE',t:'Lamentation of Pepe',y:'1305 AD',mat:'Fresco',url:'https://gateway.ar.io/BuaWfpinG6U5VIRJ__CqAWOhxxZfjWNvirhOSOUA_6s/LAMENTATIONOFPEPE.jpg'},
+  {num:71,asset:'MSTRPEPES.ANNUNCIATIONPEPES',t:'Annunciation Pepes',y:'1325 AD',mat:'Gilded Panel',url:'https://gateway.ar.io/xJsWLK_04VGeWwchvsgrE5LEGxTh66nWZw_sLPCRRfw/ANNUNCIATIONPEPES.png'},
+  {num:72,asset:'MSTRPEPES.KHMERBRONZEPEPETIKESHVARA',t:'Khmer Bronze Pepetikeshvara',y:'1350 AD',mat:'Cast Bronze',url:'https://gateway.ar.io/KaBGPIZWmPwH02_QkrKnnX37Oqh2w9o-b31QZ0fVXaQ/KHMERBRONZEPEPETIKESHVARA.png'},
+  {num:73,asset:'MSTRPEPES.PEPEDIPTYCH',t:'Pepe Diptych',y:'1390 AD',mat:'Tempera and Gold Panel',url:'https://gateway.ar.io/-zLSjAoHMbJCOdZV-7MQX9TBRTpL1pu1Byf6vMi1PXE/PEPEDIPTYCH.png'},
+  {num:74,asset:'MSTRPEPES.LESTRESPEPES',t:'Les Tres Pepes',y:'1400 AD',mat:'Illuminated Manuscript',url:'https://gateway.ar.io/VWO7eTF81dqHD6_l3GnGIAPjC1GO_cINEjg5Q3N2GoQ/LESTRESPEPES.png'},
+  {num:75,asset:'MSTRPEPES.STGEORGEPEPE',t:'St. George Pepe',y:'1411 AD',mat:'Marble',url:'https://gateway.ar.io/SBNCO9K4wyGPVhCJjO_cc8ETSDde2J6BB1CkDE-atFY/STGEORGEPEPE.png'},
+  {num:76,asset:'MSTRPEPES.THEADORATIONOFTHEPEPE',t:'The Adoration of the Pepe',y:'1425 AD',mat:'Panel Painting',url:'https://gateway.ar.io/orkuMpefojustQhDWWVMlyLPuprQ9TBQjfjfZWCuvMM/THEADORATIONOFTHEPEPE.png'},
+  {num:77,asset:'MSTRPEPES.PEPETELLOSDAVIDPEPE',t:'Pepetello\'s Davidpepe',y:'1430 AD',mat:'Marble',url:'https://gateway.ar.io/oqLofGhX03l8i60j6-SxAv13KFewQTe0zMuQU0pC1qs/PEPETELLOSDAVIDPEPE.png'},
+  {num:78,asset:'MSTRPEPES.PORTRAITOFAHAIRPEPE',t:'Portrait of a Hairpepe',y:'1433 AD',mat:'Oil on Panel',url:'https://gateway.ar.io/XfOVv9OtjLoz-Z0CynI_7yFbyVJ6co0tGY2dNJWGcsI/PORTRAITOFAHAIRPEPE.png'},
+  {num:79,asset:'MSTRPEPES.PEPEFINIPORTRAIT',t:'Pepefini Portrait',y:'1434 AD',mat:'Oil on Panel',url:'https://gateway.ar.io/9gCT5JmMOBtGzM6Hbzi_cbDLhsvwJkZn2nJi8P_yztg/PEPEFINIPORTRAIT.png'},
+  {num:80,asset:'MSTRPEPES.DESCENTOFPEPE',t:'Descent of Pepe',y:'1440 AD',mat:'Panel Painting',url:'https://gateway.ar.io/NpJD2eA9h5q59TdJQcnHFQdu2Ri9oJAFnBCI-jCLP90/DESCENTOFPEPE.png'},
+  {num:81,asset:'MSTRPEPES.EQUESTRIANSTATUEOFPEPELATA',t:'Equestrian Statue of Pepelata',y:'1440 AD',mat:'Cast Bronze',url:'https://gateway.ar.io/wjar_KgdqAf9N_pVxATkOyoMEFRE9PcN_cDEHPtBI8Y/EQUESTRIANSTATUEOFPEPELATA.png'},
+  {num:82,asset:'MSTRPEPES.AZTECKEKATLIQUESTATUE',t:'Aztec Kekatlique Statue',y:'1450 AD',mat:'Carved Stone',url:'https://gateway.ar.io/ViFOwSUTV80y-A8UvDianNDCwX2yGitafLEBEcpB_R8/AZTECKEKATLIQUESTATUE.png'},
+  {num:83,asset:'MSTRPEPES.AZTECPEPE',t:'Aztec Pepe',y:'1450 AD',mat:'Stone',url:'https://gateway.ar.io/CTgCr9LfFJYUlaYIy3pk4OmoA8ZJ9MofvmKAbpKX6oI/AZTECPEPE.png'},
+  {num:84,asset:'MSTRPEPES.PEPEPORTINARIALTARPIECE',t:'Pepeportinari Altarpiece',y:'1460 AD',mat:'Tempera on Panel',url:'https://gateway.ar.io/USrW62HYjcTwrHXaJ02TtLcMK18CfoSvareftNd4V6I/PEPEPORTINARIALTARPIECE.png'},
+  {num:85,asset:'MSTRPEPES.PEPEONIEQUESTRIANSTATUE',t:'Pepeoni Equestrian Statue',y:'1475 AD',mat:'Cast Bronze',url:'https://gateway.ar.io/KEaTnmx31B_-zGnHB9QxnTcyLAqhVTKNT9B4IbmNpV0/PEPEONIEQUESTRIANSTATUE.png'},
+  {num:86,asset:'MSTRPEPES.PEPEVERA',t:'Pepevera',y:'1480 AD',mat:'Tempera on Panel',url:'https://gateway.ar.io/KDn6kDKABA3VWKOR_toBJam3ZZQ4Q-u3WpvZnx3NVro/PEPEVERA.png'},
+  {num:87,asset:'MSTRPEPES.DANKJUICECERAMICPEPE',t:'Dank Juice Ceramic Pepe',y:'1490 AD',mat:'Painted Ceramic',url:'https://gateway.ar.io/178T2cFvVIosWDpjC6UpjTsHMyOggN3zCIi8QzpDW0Y/DANKJUICECERAMICPEPE.png'},
+  {num:88,asset:'MSTRPEPES.INCAKEKFIGURES',t:'Incakek Figures',y:'1490 AD',mat:'Stone',url:'https://gateway.ar.io/CaUGRWOUt5eBwfID-Q87d7OibQsP1K2BZKLujcSzmZw/INCAKEKFIGURES.png'},
+  {num:89,asset:'MSTRPEPES.THELASTDANKSUPPER',t:'The Last Dank Supper',y:'1498 AD',mat:'Oil on Panel',url:'https://gateway.ar.io/iX3aedR1RA7_poEeiwRs75KN9mdBJ2kA7TnL6CDpGQU/THELASTDANKSUPPER.png'},
+  {num:90,asset:'MSTRPEPES.PEPEDURERSELFPORTRAIT',t:'Pepe Durer Self Portrait',y:'1500 AD',mat:'Oil on Panel',url:'https://gateway.ar.io/7MjD6IsIp8rQn9dUVL-Pay45SFpdkVK0kQcV1STwgV4/PEPEDURERSELFPORTRAIT.png'},
+  {num:91,asset:'MSTRPEPES.PEPEDAVID',t:'Pepedavid',y:'1501 AD',mat:'Carved Marble',url:'https://gateway.ar.io/puwy8AsDw1RAf-9fFjOp4SgFfbqXZYr3eoMTkDyoHYQ/PEPEDAVID.png'},
+  {num:92,asset:'MSTRPEPES.THEMONALISAPEPE',t:'The Mona Lisa Pepe',y:'1503 AD',mat:'Oil on Panel',url:'https://gateway.ar.io/seZ4IOtPjdvHX9srjRrCZslnNz_zbNwIOJfSA88cGw4/THEMONALISAPEPE.png'},
+  {num:93,asset:'MSTRPEPES.PEPESLASTJUDGEMENT',t:'Pepe\'s Last Judgement',y:'1508 AD',mat:'Fresco',url:'https://gateway.ar.io/Hkk3CJTInO0IFcDrl6jlHq7AvSbEsKGszDzVG67T0Lw/PEPESLASTJUDGEMENT.png'},
+  {num:94,asset:'MSTRPEPES.MOSESPEPE',t:'Mosespepe',y:'1513 AD',mat:'Carved Marble',url:'https://gateway.ar.io/0baEzpX_z-U7ot1Q0EoeQ8IPYlS0bNghnTrv3Tq0HHs/MOSESPEPE.png'},
+  {num:95,asset:'MSTRPEPES.PEPPHUSANDPEPADNE',t:'Pepphus and Pepadne',y:'1520 AD',mat:'Oil on Panel',url:'https://gateway.ar.io/nvqELhy8CfDsHnjF0UuMzPTmBNchEPAs7dcrYkjxU08/PEPPHUSANDPEPADNE.png'},
+  {num:96,asset:'MSTRPEPES.THEPEPEEMBASSADORS',t:'The Pepe Embassadors',y:'1530 AD',mat:'Oil on Panel',url:'https://gateway.ar.io/-vYxUJSUXFohYo3Y8kh4JxCkOpnSyznPJXaYZzbWMoM/THEPEPEEMBASSADORS.png'},
+  {num:97,asset:'MSTRPEPES.PEPERSEUSWITHTHEHEADOFANORMIE',t:'Peperseus with the Head of a Normie',y:'1554 AD',mat:'Cast Bronze',url:'https://gateway.ar.io/InngnG9kKsqaEs33P7VDVGK2wE5RiFoyDsB2ifOvnP4/PEPERSEUSWITHTHEHEADOFANORMIE.png'},
+  {num:98,asset:'MSTRPEPES.PEPESINTHESNOW',t:'Pepes in the Snow',y:'1564 AD',mat:'Oil on Panel',url:'https://gateway.ar.io/aWdrc2v8J9ksgYa3GoFuEIog_hN6jv3MVDsfdCfCBIA/PEPESINTHESNOW.png'},
+  {num:99,asset:'MSTRPEPES.CALLINGOFMATTHEWPEPE',t:'Calling of Matthewpepe',y:'1599 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/11-Hb_WRmzhFuIlUTf3ErZ8bWAJ5Edyvwn2XZwaNRxI/CALLINGOFMATTHEWPEPE.png'},
+  {num:100,asset:'MSTRPEPES.SUPPERATPEPEMMAUS',t:'Supper at Pepemmaus',y:'1601 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/ZqnZ5IN_P8f-ae2EMzIJrQ7jsGdXJZ8SoIq-gQE334k/SUPPERATPEPEMMAUS.png'},
+  {num:101,asset:'MSTRPEPES.MANNEKEKPEPIS',t:'Mannekek Pepis',y:'1619 AD',mat:'Cast Bronze',url:'https://gateway.ar.io/2R2DL7DVGttfHF5kBNio-2zSvD-c7pV8h8fy1a1VNIU/MANNEKEKPEPIS.png'},
+  {num:102,asset:'MSTRPEPES.PEPOLLOANDPEPAPHNE',t:'Pepollo and Pepaphne',y:'1622 AD',mat:'Carved Marble',url:'https://gateway.ar.io/NXxxnPpw7v5ULmR0skecCMx1rTEBOUOMXV-ReTacPm8/PEPOLLOANDPEPAPHNE.png'},
+  {num:103,asset:'MSTRPEPES.SELFPORTRAITOFGIANLORENZOPEPERNINI',t:'Self Portrait of Gianlorenzo Pepernini',y:'1623 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/0-3SnjPCfnWgSqxvS7gIjoyDUVb7aM3XCJCByup0420/SELFPORTRAITOFGIANLORENZOPEPERNINI.png'},
+  {num:104,asset:'MSTRPEPES.STORMONTHESEAOFPEPELEE',t:'Storm on the Sea of Pepelee',y:'1633 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/CCOODOujReAAPaEzLYRE1zJoO0g2ecrjVULsADcpkso/STORMONTHESEAOFPEPELEE.png'},
+  {num:105,asset:'MSTRPEPES.NIGHTWATCHPEPES',t:'Night Watch Pepes',y:'1642 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/4GRJoM8WTS321Q6s5bvy1mPWOmFdiMnIfAYZXYZkXv4/NIGHTWATCHPEPES.png'},
+  {num:106,asset:'MSTRPEPES.PEPESWINGER',t:'Pepe Swinger',y:'1748 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/YiBsK0qrcTK10sF4G5It4mHoFkWrA6svQ3dCen3bY3g/PEPESWINGER.png'},
+  {num:107,asset:'MSTRPEPES.PEPUINKEKAKU',t:'Pepuin Kekaku',y:'1750 AD',mat:'Ink and Wash',url:'https://gateway.ar.io/JeEP_L31eBZvcwaNEXAo2hpi-RycfrtNgNNY2SZH-1k/PEPUINKEKAKU.png'},
+  {num:108,asset:'MSTRPEPES.DEATHOFGENERALWOLFEPEPE',t:'Death of General Wolfepepe',y:'1770 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/FAVsszcpWHt8Di9YnhjdqJO3b-mmF9kNq161zYbkkkI/DEATHOFGENERALWOLFEPEPE.png'},
+  {num:109,asset:'MSTRPEPES.OATHOFTHEPEPES',t:'Oath of the Pepes',y:'1784 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/Ll8aT8gM-seQYFtlFCwL0J4gNS-JWGM6ZpnUcFcgYPU/OATHOFTHEPEPES.png'},
+  {num:110,asset:'MSTRPEPES.THEDEATHOFASHITPOSTER',t:'The Death of a Shitposter',y:'1793 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/0ACdD9-S0qCUVof2L1QUMgj8M_DydFgnMuVvLOVr_rs/THEDEATHOFASHITPOSTER.png'},
+  {num:111,asset:'MSTRPEPES.THEFIGHTINGPEPERAIRE',t:'The Fighting Peperaire',y:'1798 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/FT4qTIH5ibMm9Ws8oIMFW-gzZ8EhZRw15QtxyAwdX_g/THEFIGHTINGPEPERAIRE.png'},
+  {num:112,asset:'MSTRPEPES.PEPAULINEASVENUS',t:'Pepauline as Venus',y:'1805 AD',mat:'Carved Marble',url:'https://gateway.ar.io/YL7HVjo4WpVwG9xM68n-XEX7Sl2-SRhZEyULS-XUYz8/PEPAULINEASVENUS.png'},
+  {num:113,asset:'MSTRPEPES.APEPEWAIN',t:'A Pepe Wain',y:'1814 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/8M4O6pUdDVkOj59tDZQJ3ds3ri_JwffW5oao1lfFpB8/APEPEWAIN.png'},
+  {num:114,asset:'MSTRPEPES.PEPEABOVETHESEAOFFOG',t:'Pepe Above the Sea of Fog',y:'1818 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/JDIRb5No8_9vDf_5WE7Zs-kTJeHfxFekL68Ptsxhek4/PEPEABOVETHESEAOFFOG.png'},
+  {num:115,asset:'MSTRPEPES.RAFTOFTHEMEMES',t:'Raft of the Memes',y:'1819 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/kxgL6em3t6V3I2p7iwbJQVxSjSdZ2b_LH_Odfibh2X8/RAFTOFTHEMEMES.png'},
+  {num:116,asset:'MSTRPEPES.LIBERTYLEADINGTHEPEPES',t:'Liberty Leading the Pepes',y:'1830 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/-6p3wFe2H8_fnH2CUdA1Jgc8dpS1DOEUdN6tHQftcy0/LIBERTYLEADINGTHEPEPES.png'},
+  {num:117,asset:'MSTRPEPES.PEPEGOLINOANDHISSONS',t:'Pepegolino and His Sons',y:'1830 AD',mat:'Carved Marble',url:'https://gateway.ar.io/3ztmrGYHztzsuhBmcEoqM1Yu3G51yEixLbW65XxZczY/PEPEGOLINOANDHISSONS.png'},
+  {num:118,asset:'MSTRPEPES.ABURIALWITHPEPES',t:'A Burial with Pepes',y:'1850 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/wyD2Y4eiig0_RlSNGd_IZn5znD8R5XzoPQKXZDs-58g/ABURIALWITHPEPES.png'},
+  {num:119,asset:'MSTRPEPES.DEJEUNERAVECRAREPEPES',t:'Dejeuner avec Rarepepes',y:'1862 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/cyuQ5EOgMQ_WDFYfACO10_-fyKbgpd_uvmMIPNJxqG0/DEJEUNERAVECRAREPEPES.png'},
+  {num:120,asset:'MSTRPEPES.LESGENSGRENOUILLESDUMOULINDELAGALETTE',t:'Les Gens Grenouilles du Moulin de la Galette',y:'1876 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/4Ay-Dhvi9vT2uJC1DU2IA2-7ymphnB5RXstQ2uSJ1OM/LESGENSGRENOUILLESDUMOULINDELAGALETTE.png'},
+  {num:121,asset:'MSTRPEPES.THINKERPEPE',t:'Thinkerpepe',y:'1880 AD',mat:'Cast Bronze',url:'https://gateway.ar.io/L9yrXuoWsEEjSPnGjvWXSn2tSmvam1LlA8LLPm0Ok3w/THINKERPEPE.png'},
+  {num:122,asset:'MSTRPEPES.ASUNDAYAFTERNOONONPEPEISLAND',t:'A Sunday Afternoon on Pepe Island',y:'1884 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/DuF37WBeQUsTku6bOPb1heMwr_gjTMn59jq5RTRNQrM/ASUNDAYAFTERNOONONPEPEISLAND.png'},
+  {num:123,asset:'MSTRPEPES.PEPEWITHBANDAGEDEAR',t:'Pepe with Bandaged Ear',y:'1889 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/T0qhCH2f8om4SvUt-qCxYIVMMZmruofSBgDRpaQrVT8/PEPEWITHBANDAGEDEAR.png'},
+  {num:124,asset:'MSTRPEPES.THEPEPESCREAM',t:'The Pepe Scream',y:'1893 AD',mat:'Oil, Tempera, Pastel',url:'https://gateway.ar.io/dCO8n2C1wOE8nflA70NgzXE70j2u5td_Hu7qeZsqSQQ/THEPEPESCREAM.png'},
+  {num:125,asset:'MSTRPEPES.PEPESKISS',t:'Pepe\'s Kiss',y:'1907 AD',mat:'Oil and Gold Leaf',url:'https://gateway.ar.io/jVioFuC5caGGxtQEHeyQyocU4PTb9KvKGkXrQI-QNTw/PEPESKISS.png'},
+  {num:126,asset:'MSTRPEPES.PEPEDANCE',t:'Pepedance',y:'1910 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/i6q66yKVp8DxrLVKmOpe8VrKRBGwKebOdyJDjUcNZ10/PEPEDANCE.png'},
+  {num:127,asset:'MSTRPEPES.PEPEFOUNTAIN',t:'Pepe Fountain',y:'1917 AD',mat:'Porcelain Readymade',url:'https://gateway.ar.io/_-3FcCkuY_w2MBxrOO46lnY3NhyyOMzfO1X51nho-bM/PEPEFOUNTAIN.png'},
+  {num:128,asset:'MSTRPEPES.PEPESSWIMMINGBYWATERLILLIES',t:'Pepes Swimming by Water Lillies',y:'1919 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/dXMNL3fF0SQHNG7hOezF1uZN0-mCcMbH7iVuJ2Taw50/PEPESSWIMMINGBYWATERLILLIES.png'},
+  {num:129,asset:'MSTRPEPES.PEPEGOTHIC',t:'Pepe Gothic',y:'1930 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/8YBLgMZHjSH7CtlGMsltsIELGM-UwUI8PT1u2O2lg94/PEPEGOTHIC.png'},
+  {num:130,asset:'MSTRPEPES.PEPEAUBERETETALAROBEQUADRILLE',t:'Pepe au Beret et a la Robe Quadrillee',y:'1937 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/y-W2HjGgPu79l4nCjXO9SRtyvv-q9jAwUij5a5oZzjQ/PEPEAUBERETETALAROBEQUADRILLE.png'},
+  {num:131,asset:'MSTRPEPES.PEPEBOOGIEWOOGIE',t:'Pepe Boogie Woogie',y:'1942 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/gqT9PGqF_6yrXsh4RMBLwF9xblmz3RoGiKhXLsbOOKc/PEPEBOOGIEWOOGIE.png'},
+  {num:132,asset:'MSTRPEPES.PEPESMORNINGSUN',t:'Pepe\'s Morning Sun',y:'1952 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/MHTdNnStD0fIHCJTXKkf2GUQntCfM2_KGsdu44lj_xQ/PEPESMORNINGSUN.png'},
+  {num:133,asset:'MSTRPEPES.PEPECRUCIFIXION',t:'Pepe Crucifixion',y:'1954 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/f-zf2I2jz4g_RPEluWAdcya0Tsaza2VvTcAUyt7OXLE/PEPECRUCIFIXION.png'},
+  {num:134,asset:'MSTRPEPES.LUCIANPEPESELFPORTRAIT',t:'Lucianpepe Self Portrait',y:'1965 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/Af6rqKhJt1cLdA-KdSOC6kQYT8Hp3Ic8nLP24u33u1A/LUCIANPEPESELFPORTRAIT.png'},
+  {num:135,asset:'MSTRPEPES.PEPEMARILYN',t:'Pepe Marilyn',y:'1967 AD',mat:'Silkscreen on Canvas',url:'https://gateway.ar.io/ubNDMmBEFStn8GAjE30wXwUCt5gPo8_mvQ0QDvPsxqw/PEPEMARILYN.png'},
+  {num:136,asset:'MSTRPEPES.PORTRAITOFPEPEDYERANDPEPEFREUD',t:'Portrait of Pepedyer and Pepefreud',y:'1967 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/2Qj84Y3i3Bimaypn2S6we_FSs2jPErfYRz_AHcAtxl8/PORTRAITOFPEPEDYERANDPEPEFREUD.png'},
+  {num:137,asset:'MSTRPEPES.POOLWITHTWOPEPES',t:'Pool with Two Pepes',y:'1972 AD',mat:'Acrylic on Canvas',url:'https://gateway.ar.io/RW3-uXTp8SwQuBsm6WXCqGv7ubco0SOyaFBOIx6nlSg/POOLWITHTWOPEPES.png'},
+  {num:138,asset:'MSTRPEPES.TELEVISIONPEPE',t:'Television Pepe',y:'1974 AD',mat:'Mixed Media',url:'https://gateway.ar.io/H0kQ-ed2Syi8UAy5GjcidQcQ18npu6qaQ_tmKNwIwTs/TELEVISIONPEPE.png'},
+  {num:139,asset:'MSTRPEPES.DREAMPEPE',t:'Dreampepe',y:'1979 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/HjIl40NExjQAnPlbsVtBP2G0XUUpU5GWt7A0JbE-AkU/DREAMPEPE.png'},
+  {num:140,asset:'MSTRPEPES.THEPHYSICALIMPOSSIBILITYOFPEPEWITHINTHEMIND',t:'The Physical Impossibility of Pepe Within the Mind',y:'1991 AD',mat:'Mixed Media Installation',url:'https://gateway.ar.io/bOm5cRKx1cxj8nNgbqk9FbchfMPVlKCVSA-BbPgnTZI/THEPHYSICALIMPOSSIBILITYOFPEPEWITHINTHEMIND.png'},
+  {num:141,asset:'MSTRPEPES.HANDYNASTYURNWITHPEPELOGO',t:'Han Dynasty Urn with Pepe Logo',y:'1993 AD',mat:'Painted Ceramic',url:'https://gateway.ar.io/NCd9IODTYY7zyWWgPuYvc1Uy5uIwR_-UiXuTApY9r5I/HANDYNASTYURNWITHPEPELOGO.png'},
+  {num:142,asset:'MSTRPEPES.BALLOONPEPE',t:'Balloon Pepe',y:'1994 AD',mat:'Polished Stainless Steel',url:'https://gateway.ar.io/lyddCVORX0_ys_kiSyUHZuW_Tfbp6CKV8OkebfCDL-U/BALLOONPEPE.png'},
+  {num:143,asset:'MSTRPEPES.THECRACKEDPEPE',t:'The Cracked Pepe',y:'2001 AD',mat:'Oil on Canvas',url:'https://gateway.ar.io/CDuvxrbk9WLlAuNwYtAZM73vDXs1ZxME5cZwSIyRX7E/THECRACKEDPEPE.png'},
+  {num:144,asset:'MSTRPEPES.PEPEWITHGREENBALLOON',t:'Pepe with Green Balloon',y:'2002 AD',mat:'Spray Paint',url:'https://gateway.ar.io/k3HF3z54lyqggrxrjk47u-m79aUn_vO_cCiAKhnMD1A/PEPEWITHGREENBALLOON.png'},
+  {num:145,asset:'MSTRPEPES.PEPETATO',t:'Pepetato #345',y:'2010 AD',mat:'Photography',url:'https://gateway.ar.io/saRAmCFo3Zk8L6DtJC3HKZYvYbzy2A22uxiTK9X7ht0/PEPETATO.png'},
+  {num:146,asset:'MSTRPEPES.PEPECOMPANION',t:'Pepe Companion',y:'2011 AD',mat:'Painted Figure',url:'https://gateway.ar.io/hKJXrCFBTotu_ciTYVIBue8H8c7H1N1KjmA7NU3GIp4/PEPECOMPANION.png'},
+  {num:147,asset:'MSTRPEPES.PEPEPUNK2317',t:'Pepepunk #2317',y:'2016 AD',mat:'Digital NFT',url:'https://gateway.ar.io/sB0PgGiau2kLToZwHwyGSpkf4K-gIl2FB_CpSjqQdd8/PEPEPUNK2317.png'},
+  {num:148,asset:'MSTRPEPES.SIXMAGICKPEPES',t:'Six Magick Pepes',y:'2016 AD',mat:'Mixed Media',url:'https://gateway.ar.io/GAbO6TPRvFT7JURIEV7ltMARilRs-jJn5fU4-lFWtAg/SIXMAGICKPEPES.png'},
+  {num:149,asset:'MSTRPEPES.RIGHTCLICKANDSAVEASPEPE',t:'Right-Click and Save as Pepe',y:'2018 AD',mat:'Digital NFT',url:'https://gateway.ar.io/IzLAFmLKMClbztx3GQMZSUpCPTu_Px1oV3j9ms7efuQ/RIGHTCLICKANDSAVEASPEPE.png'},
+  {num:150,asset:'MSTRPEPES.64GALLONPEPE',t:'64 Gallon Pepe',y:'2020 AD',mat:'Digital NFT',url:'https://gateway.ar.io/x-r1V7YWWume0c4lbTowovvApQqPt40NT3Inmw74ozk/64GALLONPEPE.png'}
+];
+
+// ── RENDERER ──────────────────────────────────────────────────────────────────
+const rc=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas:rc,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+
+const scene=new THREE.Scene();
+// Open sky background
+scene.background=new THREE.Color(0x87CEEB);
+scene.fog=new THREE.FogExp2(0x9ACCE0,0.004); // gentle haze at distance
+
+const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,0.1,400);
+camera.rotation.order='YXZ';
+camera.position.set(0,1.7,90); // start in Grand Hall
+window.addEventListener('resize',()=>{
+  renderer.setSize(innerWidth,innerHeight);
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+// ── LIGHTING ──────────────────────────────────────────────────────────────────
+// Open sky — bright sun + ambient sky light
+scene.add(new THREE.AmbientLight(0xB0D8FF,0.9));  // sky ambient (bluish)
+const sun=new THREE.DirectionalLight(0xFFF8DC,2.2);
+sun.position.set(60,120,40); scene.add(sun);
+// Warm fill light from below (bounce off red floor)
+scene.add(new THREE.HemisphereLight(0x87CEEB,0xE0342F,0.5));
+// Wing point lights
+[[-60,-70],[60,-70],[0,-70],[-60,0],[60,0],[0,0],[-60,75],[60,75],[0,75],[0,120]].forEach(([x,z])=>{
+  const l=new THREE.PointLight(0xFFEEDD,0.6,120);l.position.set(x,10,z);scene.add(l);
+});
+
+// ── CANVAS TEXTURES ───────────────────────────────────────────────────────────
+function makeRedFloor(){
+  // Polished red tile — #E0342F base with subtle sheen variation
+  const C=document.createElement('canvas');C.width=C.height=512;
+  const ctx=C.getContext('2d');
+  // Base red
+  ctx.fillStyle='#E0342F';ctx.fillRect(0,0,512,512);
+  // Subtle tile grid
+  ctx.strokeStyle='rgba(180,20,15,0.3)';ctx.lineWidth=1.5;
+  for(let i=0;i<=512;i+=64){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,512);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(512,i);ctx.stroke();}
+  // Gloss highlight per tile
+  for(let tx=0;tx<8;tx++)for(let ty=0;ty<8;ty++){
+    const grd=ctx.createRadialGradient(tx*64+20,ty*64+16,0,tx*64+32,ty*64+32,36);
+    grd.addColorStop(0,'rgba(255,120,100,0.18)');grd.addColorStop(1,'rgba(255,120,100,0)');
+    ctx.fillStyle=grd;ctx.fillRect(tx*64,ty*64,64,64);
+  }
+  const t=new THREE.CanvasTexture(C);
+  t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(20,26);return t;
+}
+
+function makePlaceholder(work){
+  const C=document.createElement('canvas');C.width=256;C.height=256;
+  const ctx=C.getContext('2d');
+  // Red background matching walls
+  ctx.fillStyle='#C02820';ctx.fillRect(0,0,256,256);
+  // Gold frame lines
+  ctx.strokeStyle='#DAA520';ctx.lineWidth=3;ctx.strokeRect(4,4,248,248);
+  ctx.strokeStyle='rgba(218,165,32,0.4)';ctx.lineWidth=1;ctx.strokeRect(12,12,232,232);
+  ctx.fillStyle='#FFD700';ctx.font='bold 13px Arial';ctx.textAlign='center';
+  ctx.fillText('No. '+work.num,128,36);
+  ctx.fillStyle='#FFE4C4';ctx.font='10px Arial';
+  const words=work.t.split(' ');let line='',y=64;
+  words.forEach(w=>{const test=line+w+' ';if(ctx.measureText(test).width>234&&line){ctx.fillText(line.trim(),128,y);line=w+' ';y+=16;}else line=test;});
+  ctx.fillText(line.trim(),128,y);
+  ctx.fillStyle='rgba(255,215,0,0.7)';ctx.font='9px Arial';
+  ctx.fillText(work.y,128,205);
+  ctx.fillStyle='rgba(255,228,196,0.5)';ctx.font='8px Arial';
+  ctx.fillText('Walk closer to load image',128,222);
+  return new THREE.CanvasTexture(C);
+}
+
+// ── MATERIALS ─────────────────────────────────────────────────────────────────
+const RED     = 0xE0342F;  // book red
+const floorMat= new THREE.MeshLambertMaterial({map:makeRedFloor()});
+const wallMat = new THREE.MeshLambertMaterial({color:RED,side:THREE.FrontSide});
+const wallBackMat=new THREE.MeshLambertMaterial({color:RED,side:THREE.BackSide});
+const wallDblMat =new THREE.MeshLambertMaterial({color:RED,side:THREE.DoubleSide});
+const moldMat = new THREE.MeshLambertMaterial({color:0xC02018}); // darker red trim
+const frameHi = new THREE.MeshLambertMaterial({color:0xFFD700}); // bright gold
+const frameLo = new THREE.MeshLambertMaterial({color:0xDAA520}); // dark gold
+
+// ── GEOMETRY ─────────────────────────────────────────────────────────────────
+// Layout:
+//   x: -100 .. +100  (200 wide)   x-dividers at x=±20
+//   z: -100 .. +130              z-dividers at z=-40 (I/II south), z=+40 (III/IV south / V/VI north), z=+110 (V/VI south)
+//   Entrance centre: x -20..20, z 40..130
+//   Wings:
+//     I   x -100..-20  z -100..-40  (80×60)
+//     II  x   20..100  z -100..-40
+//     III x -100..-20  z  -40.. 40  (80×80)
+//     IV  x   20..100  z  -40.. 40
+//     V   x -100..-20  z   40..110  (80×70)
+//     VI  x   20..100  z   40..110
+
+const H=18, WT=0.5;  // H=18 units ≈ Louvre scale
+const colliders=[];
+
+function addBox(w,h,d,mat,x,y,z,col=true){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+  m.position.set(x,y,z);scene.add(m);if(col)colliders.push(m);return m;
+}
+function segs(a,b,gaps){
+  const gs=[...gaps].sort((p,q)=>p[0]-q[0]);const out=[];let cur=a;
+  gs.forEach(([g1,g2])=>{if(g1>cur)out.push([cur,g1]);cur=g2;});
+  if(cur<b)out.push([cur,b]);return out;
+}
+// Wall constant Z, runs along X
+function wallX(xa,xb,z,gaps=[]){
+  segs(xa,xb,gaps).forEach(([a,b])=>{
+    const l=b-a,cx=(a+b)/2;
+    addBox(l,H,WT,wallDblMat,cx,H/2,z);
+    // Base and crown trim (darker red)
+    addBox(l,0.6,WT+0.04,moldMat,cx,0.3,z,false);
+    addBox(l,0.6,WT+0.04,moldMat,cx,H-0.3,z,false);
+  });
+}
+// Wall constant X, runs along Z
+function wallZ(x,za,zb,gaps=[]){
+  segs(za,zb,gaps).forEach(([a,b])=>{
+    const l=b-a,cz=(a+b)/2;
+    addBox(WT,H,l,wallDblMat,x,H/2,cz);
+    addBox(WT+0.04,0.6,l,moldMat,x,0.3,cz,false);
+    addBox(WT+0.04,0.6,l,moldMat,x,H-0.3,cz,false);
+  });
+}
+
+// Giant red floor — one slab
+addBox(202,0.2,234,floorMat,0,-0.1,15,false);
+
+// Outer perimeter
+wallX(-100,100,-100);
+wallX(-100,100, 130);
+wallZ(-100,-100,130);
+wallZ( 100,-100,130);
+
+// x-dividers at x=±20
+// doors: z=-15..15 (wings↔rotunda), z=55..75 (wings↔entrance)
+wallZ(-20,-100,-40);               // WingI east — solid
+wallZ(-20,-40,  40,[[-15,15]]);    // WingIII↔Rotunda door@z=0
+wallZ(-20,  40, 110,[[ 55,75]]);   // WingV↔Entrance door@z=65
+wallZ(-20, 110, 130);
+wallZ( 20,-100,-40);
+wallZ( 20,-40,  40,[[-15,15]]);
+wallZ( 20,  40, 110,[[ 55,75]]);
+wallZ( 20, 110, 130);
+
+// z-dividers
+// z=-40: WingI/II south — doors at x=±60 (width 15)
+wallX(-100,-20,-40,[[-68,-52]]);
+wallX( -20,  20,-40);              // centre — solid
+wallX(  20, 100,-40,[[ 52, 68]]);
+// z=+40: WingIII/IV south / V/VI north — doors at x=±60
+wallX(-100,-20, 40,[[-68,-52]]);
+wallX( -20,  20, 40,[[ -8,  8]]);  // Rotunda↔Entrance
+wallX(  20, 100, 40,[[ 52, 68]]);
+// z=+110: WingV/VI south wall (entrance continues to 130)
+wallX(-100,-20,110);
+wallX(  20, 100,110);
+
+// Rotunda — grand columns, no ceiling
+const colPos=[[-12,-25],[ 12,-25],[-12, 0],[ 12, 0],[-12,25],[ 12,25]];
+colPos.forEach(([x,z])=>{
+  // Tall Doric-style column
+  addBox(1.8,H,1.8,moldMat,x,H/2,z,true);
+  // Capital (wider top)
+  addBox(2.8,1.2,2.8,moldMat,x,H-0.6,z,false);
+  // Base
+  addBox(2.8,0.8,2.8,moldMat,x,0.4,z,false);
+});
+// Grand entrance archway columns
+[[-16,42],[16,42],[-16,108],[16,108]].forEach(([x,z])=>{
+  addBox(2.4,H,2.4,moldMat,x,H/2,z,true);
+  addBox(3.6,1.2,3.6,moldMat,x,H-0.6,z,false);
+  addBox(3.6,0.8,3.6,moldMat,x,0.4,z,false);
+});
+
+// ── LAZY IMAGE LOADER ─────────────────────────────────────────────────────────
+const artSpots=[];
+const LOAD_DIST=35;
+const LOAD_QUEUE=[];
+let activeLoads=0;
+const MAX_CONCURRENT=4;
+
+function processQueue(){
+  while(activeLoads<MAX_CONCURRENT&&LOAD_QUEUE.length>0){
+    const{artMat,url}=LOAD_QUEUE.shift();
+    activeLoads++;
+    const img=new Image();
+    img.crossOrigin='anonymous';
+    img.onload=()=>{
+      try{
+        const tex=new THREE.Texture(img);
+        tex.minFilter=THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;
+        tex.needsUpdate=true;artMat.map=tex;artMat.needsUpdate=true;
+      }catch(e){}
+      activeLoads--;processQueue();
+    };
+    img.onerror=()=>{activeLoads--;processQueue();};
+    img.src=url;
+  }
+}
+
+// ── ARTWORK PLACEMENT ─────────────────────────────────────────────────────────
+// STEP=7: ~2 full room-widths between each piece — very museum-like spacing
+const AW=2.4,AH=2.0,STEP=7.0,AY=3.0,MARGIN=5.0,DPAD=4.0;
+
+function placeLine(works,wi,wallType,coord,isMin,rangeA,rangeB,gaps){
+  if(wi[0]>=works.length)return;
+  const off=(WT/2+0.1)*(isMin?1:-1);
+  let p=rangeA+MARGIN;
+  while(p<=rangeB-MARGIN){
+    if(wi[0]>=works.length)break;
+    const blocked=gaps.some(([g1,g2])=>p>g1-DPAD&&p<g2+DPAD);
+    if(!blocked){
+      const work=works[wi[0]++];
+      let x,y=AY,z,rotY;
+      if(wallType==='Z'){x=p;z=coord+off;rotY=isMin?0:Math.PI;}
+      else{x=coord+off;z=p;rotY=isMin?-Math.PI/2:Math.PI/2;}
+      placeFrame(work,x,y,z,rotY);
+    }
+    p+=STEP;
+  }
+}
+
+function placeFrame(work,x,y,z,rotY){
+  const FW=AW+0.4,FH=AH+0.4;
+  // Gold frame — thick, prominent
+  const frm=new THREE.Mesh(new THREE.BoxGeometry(FW,FH,0.18),frameHi);
+  frm.position.set(x,y,z);frm.rotation.y=rotY;scene.add(frm);
+  // Artwork canvas
+  const ph=makePlaceholder(work);
+  const artMat=new THREE.MeshBasicMaterial({map:ph,side:THREE.FrontSide});
+  const art=new THREE.Mesh(new THREE.PlaneGeometry(AW,AH),artMat);
+  art.position.set(x,y,z);
+  art.position.x+=Math.sin(rotY)*0.1;
+  art.position.z+=Math.cos(rotY)*0.1;
+  art.rotation.y=rotY;scene.add(art);
+  // Gold placard below — museum style
+  const pl=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.3,0.08),frameLo);
+  pl.position.set(x,y-AH/2-0.28,z);
+  pl.position.x+=Math.sin(rotY)*0.08;pl.position.z+=Math.cos(rotY)*0.08;
+  pl.rotation.y=rotY;scene.add(pl);
+  const spot=new THREE.Vector3(x,y,z);
+  spot.x+=Math.sin(rotY)*1.0;spot.z+=Math.cos(rotY)*1.0;
+  artSpots.push({pos:spot,work,artMat,loaded:false});
+}
+
+// Wing placements
+const ROOMS=[
+{r:[0,24],walls:[
+  ['Z',-100, true,  -100,-20,[]],
+  ['Z', -40,false, -100,-20,[[-68,-52]]],
+  ['X',-100, true,  -100,-40,[]],
+  ['X', -20,false, -100,-40,[]],
+]},
+{r:[25,49],walls:[
+  ['Z',-100, true,    20, 100,[]],
+  ['Z', -40,false,   20, 100,[[52,68]]],
+  ['X',  20, true,  -100,-40,[]],
+  ['X', 100,false, -100,-40,[]],
+]},
+{r:[50,74],walls:[
+  ['Z', -40, true,  -100,-20,[[-68,-52]]],
+  ['Z',  40,false, -100,-20,[[-68,-52]]],
+  ['X',-100, true,   -40, 40,[]],
+  ['X', -20,false,   -40, 40,[[-15,15]]],
+]},
+{r:[75,99],walls:[
+  ['Z', -40, true,    20, 100,[[52,68]]],
+  ['Z',  40,false,   20, 100,[[52,68]]],
+  ['X',  20, true,   -40, 40,[[-15,15]]],
+  ['X', 100,false,   -40, 40,[]],
+]},
+{r:[100,124],walls:[
+  ['Z',  40, true,  -100,-20,[[-68,-52]]],
+  ['Z', 110,false, -100,-20,[]],
+  ['X',-100, true,    40,110,[]],
+  ['X', -20,false,    40,110,[[55,75]]],
+]},
+{r:[125,149],walls:[
+  ['Z',  40, true,    20, 100,[[52,68]]],
+  ['Z', 110,false,   20, 100,[]],
+  ['X',  20, true,    40,110,[[55,75]]],
+  ['X', 100,false,   40,110,[]],
+]},
+];
+
+ROOMS.forEach(({r:[a,b],walls})=>{
+  const slice=PAGES.slice(a,b+1);const wi=[0];
+  walls.forEach(([type,coord,isMin,r0,r1,gaps])=>placeLine(slice,wi,type,coord,isMin,r0,r1,gaps));
+});
+
+// ── ROOM DEFS ─────────────────────────────────────────────────────────────────
+const RDEFS=[
+  {id:'w1',n:'Wing I',   s:'The Ancient World',        x1:-100,x2:-20,z1:-100,z2: -40},
+  {id:'w2',n:'Wing II',  s:'Early Civilisations',      x1:  20,x2:100,z1:-100,z2: -40},
+  {id:'w3',n:'Wing III', s:'Medieval & Gothic',        x1:-100,x2:-20,z1: -40,z2:  40},
+  {id:'w4',n:'Wing IV',  s:'Renaissance & Beyond',     x1:  20,x2:100,z1: -40,z2:  40},
+  {id:'w5',n:'Wing V',   s:'Baroque & Enlightenment',  x1:-100,x2:-20,z1:  40,z2: 110},
+  {id:'w6',n:'Wing VI',  s:'Modern & Contemporary',    x1:  20,x2:100,z1:  40,z2: 110},
+  {id:'rt',n:'Central Rotunda',s:'Overview',           x1: -20,x2: 20,z1: -40,z2:  40},
+  {id:'en',n:'Grand Hall',s:'Entrance',                x1: -20,x2: 20,z1:  40,z2: 130},
+];
+
+// ── CONTROLS ──────────────────────────────────────────────────────────────────
+let entered=false,locked=false,yaw=Math.PI,pitch=0;
+let dragging=false,lastMX=0,lastMY=0;
+const keys={};
+document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')e.preventDefault();});
+document.addEventListener('keyup',  e=>keys[e.code]=false);
+const HUD=['cross','rlabel','ctrl','mmap','back'];
+function enterMuseum(){
+  if(entered)return;entered=true;
+  document.getElementById('intro').style.display='none';
+  HUD.forEach(id=>document.getElementById(id).style.display='block');
+  try{rc.requestPointerLock();}catch(e){}
+}
+document.getElementById('intro').addEventListener('click',enterMuseum);
+rc.addEventListener('click',()=>{if(!entered)enterMuseum();else try{rc.requestPointerLock();}catch(e){}});
+document.addEventListener('pointerlockchange',()=>{locked=document.pointerLockElement===rc;});
+document.addEventListener('mousemove',e=>{
+  if(!entered)return;
+  if(locked){yaw-=e.movementX*0.0022;pitch-=e.movementY*0.0022;}
+  else if(dragging){yaw-=(e.clientX-lastMX)*0.004;pitch-=(e.clientY-lastMY)*0.004;lastMX=e.clientX;lastMY=e.clientY;}
+  pitch=Math.max(-1.4,Math.min(1.4,pitch));
+  camera.rotation.y=yaw;camera.rotation.x=pitch;
+});
+rc.addEventListener('mousedown',e=>{dragging=true;lastMX=e.clientX;lastMY=e.clientY;});
+document.addEventListener('mouseup',()=>dragging=false);
+
+// ── MOVEMENT ──────────────────────────────────────────────────────────────────
+const mDir=new THREE.Vector3(),tmpE=new THREE.Euler(0,0,0,'YXZ');
+const SPEED=0.18,PR=0.6;
+const rcaster=new THREE.Raycaster();
+function tryMove(dx,dz){
+  const nx=Math.max(-99.5,Math.min(99.5,camera.position.x+dx));
+  const nz=Math.max(-99.5,Math.min(129.5,camera.position.z+dz));
+  const d=new THREE.Vector3(nx-camera.position.x,0,nz-camera.position.z).normalize();
+  rcaster.set(new THREE.Vector3(camera.position.x,1.5,camera.position.z),d);
+  const hits=rcaster.intersectObjects(colliders);
+  if(hits.length&&hits[0].distance<PR+0.08)return;
+  camera.position.x=nx;camera.position.z=nz;
+}
+
+// ── MINIMAP ───────────────────────────────────────────────────────────────────
+const mmC=document.getElementById('mm'),mmCtx=mmC.getContext('2d');
+const MW=mmC.width,MH=mmC.height;
+function w2m(x,z){return[(x+100)*MW/200,(z+100)*MH/230];}
+const RCOLS={w1:'#3A0A08',w2:'#3A0A08',w3:'#4A0C0A',w4:'#4A0C0A',w5:'#3A0A08',w6:'#3A0A08',rt:'#5A1410',en:'#4A1010'};
+function drawMap(){
+  mmCtx.fillStyle='rgba(30,5,5,0.95)';mmCtx.fillRect(0,0,MW,MH);
+  RDEFS.forEach(r=>{
+    const[mx1,my1]=w2m(r.x1,r.z1),[mx2,my2]=w2m(r.x2,r.z2);
+    mmCtx.fillStyle=RCOLS[r.id]||'#3A0A08';mmCtx.fillRect(mx1,my1,mx2-mx1,my2-my1);
+    mmCtx.strokeStyle='#8A2020';mmCtx.lineWidth=0.6;mmCtx.strokeRect(mx1,my1,mx2-mx1,my2-my1);
+    if(r.id.startsWith('w')){
+      mmCtx.fillStyle='#C8901A';mmCtx.font='7px Arial';mmCtx.textAlign='center';
+      const[cx,cy]=w2m((r.x1+r.x2)/2,(r.z1+r.z2)/2);
+      mmCtx.fillText(r.n.substring(0,6),cx,cy);
+    }
+  });
+  const[px,py]=w2m(camera.position.x,camera.position.z);
+  mmCtx.strokeStyle='#FFD700';mmCtx.lineWidth=1.5;
+  mmCtx.beginPath();mmCtx.moveTo(px,py);mmCtx.lineTo(px+Math.sin(-yaw)*11,py+Math.cos(-yaw)*11);mmCtx.stroke();
+  mmCtx.fillStyle='#FFD700';mmCtx.beginPath();mmCtx.arc(px,py,3.5,0,Math.PI*2);mmCtx.fill();
+}
+
+// ── DETECTION ─────────────────────────────────────────────────────────────────
+let curRoom=null,lastArt=null;
+const ainfoEl=document.getElementById('ainfo');
+function detectRoom(){
+  const cx=camera.position.x,cz=camera.position.z;
+  for(const r of RDEFS){
+    if(cx>r.x1&&cx<r.x2&&cz>r.z1&&cz<r.z2){
+      if(r.id!==curRoom){curRoom=r.id;document.getElementById('rln').textContent=r.n;document.getElementById('rls').textContent=r.s;}
+      return;
+    }
+  }
+}
+function detectArt(){
+  const cp=camera.position;let best=null,bd=5.5;
+  artSpots.forEach(a=>{
+    const d=cp.distanceTo(a.pos);
+    if(!a.loaded&&d<LOAD_DIST){a.loaded=true;LOAD_QUEUE.push({artMat:a.artMat,url:a.work.url});processQueue();}
+    if(d<bd){bd=d;best=a;}
+  });
+  if(best){
+    if(best!==lastArt){lastArt=best;const w=best.work;
+      document.getElementById('ain').textContent='No. '+w.num;
+      document.getElementById('ait').textContent=w.t;
+      document.getElementById('aiy').textContent=w.y;
+      document.getElementById('aim').textContent=w.mat;
+      ainfoEl.style.display='block';}
+  }else{lastArt=null;ainfoEl.style.display='none';}
+}
+
+// ── LOADING ───────────────────────────────────────────────────────────────────
+const ldfill=document.getElementById('ldfill'),ldtxt=document.getElementById('ldtxt');
+ldfill.style.width='85%';ldtxt.textContent='Constructing the museum...';
+setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
+  setTimeout(()=>{document.getElementById('loading').classList.add('fade');
+    setTimeout(()=>{document.getElementById('loading').style.display='none';},1200);
+    document.getElementById('intro').classList.add('show');},500);},700);
+
+// ── ANIMATE ───────────────────────────────────────────────────────────────────
+(function animate(){
+  requestAnimationFrame(animate);
+  if(entered){
+    mDir.set(0,0,0);
+    if(keys['KeyW']||keys['ArrowUp'])    mDir.z-=1;
+    if(keys['KeyS']||keys['ArrowDown'])  mDir.z+=1;
+    if(keys['KeyA']||keys['ArrowLeft'])  mDir.x-=1;
+    if(keys['KeyD']||keys['ArrowRight']) mDir.x+=1;
+    if(mDir.length()>0){
+      mDir.normalize().multiplyScalar(SPEED);
+      tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);
+      tryMove(mDir.x,0);tryMove(0,mDir.z);
+    }
+    camera.position.y=1.7;
+    detectRoom();detectArt();drawMap();
+  }
+  renderer.render(scene,camera);
+})();
+</script>
+</body>
+</html>

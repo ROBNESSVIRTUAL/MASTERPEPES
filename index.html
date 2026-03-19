@@ -52,7 +52,7 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 .back-btn:hover{border-color:var(--gold);color:var(--gold)}
 .map-wrap{flex:1;width:100%;position:relative;overflow:hidden}
 #museumSvg{width:100%;height:100%}
-.tooltip{position:absolute;background:rgba(4,8,4,0.96);border:0.5px solid var(--gold);padding:8px 12px;pointer-events:none;display:none;z-index:50;max-width:190px}
+.tooltip{position:absolute;background:rgba(4,8,4,0.96);border:0.5px solid var(--gold);padding:8px 12px;pointer-events:none;display:none;z-index:50;width:180px}
 .tt-num{font-size:8px;letter-spacing:0.2em;color:var(--gold);margin-bottom:2px}
 .tt-title{font-size:10px;letter-spacing:0.05em;color:var(--white);margin-bottom:2px;line-height:1.3}
 .tt-year{font-size:8px;letter-spacing:0.08em;color:var(--dim);text-transform:none}
@@ -235,6 +235,8 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
           <div class="tt-num" id="ttNum"></div>
           <div class="tt-title" id="ttTitle"></div>
           <div class="tt-year" id="ttYear"></div>
+          <canvas id="ttCanvas" style="display:none;width:100%;margin-top:8px;border:0.5px solid var(--rl)"></canvas>
+          <div id="ttLoading" style="display:none;font-size:8px;letter-spacing:0.15em;color:var(--mut);margin-top:8px;text-align:center">Loading page...</div>
         </div>
       </div>
       <div class="asset-panel" id="assetPanel">
@@ -301,6 +303,7 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const SHOW_COUNTDOWN = true;
@@ -352,13 +355,20 @@ GLTFScript.onload = () => {
     gltf => {
       bookModel = gltf.scene;
       // Fix vertically flipped textures in Three.js r128
+      const fixedTextures = new Set();
       bookModel.traverse(child => {
-        if(child.isMesh && child.material) {
+        if(child.isMesh) {
           const mats = Array.isArray(child.material) ? child.material : [child.material];
           mats.forEach(mat => {
-            ['map','normalMap','roughnessMap','metalnessMap','emissiveMap','aoMap'].forEach(key => {
-              if(mat[key]) mat[key].flipY = false;
+            ['map','normalMap','roughnessMap','metalnessMap','emissiveMap','aoMap','lightMap','bumpMap','alphaMap','envMap'].forEach(key => {
+              const tex = mat[key];
+              if(tex && !fixedTextures.has(tex.uuid)) {
+                tex.flipY = false;
+                tex.needsUpdate = true;
+                fixedTextures.add(tex.uuid);
+              }
             });
+            mat.needsUpdate = true;
           });
         }
       });
@@ -500,30 +510,83 @@ function buildDots() {
     g.appendChild(num);
 
     g.addEventListener('mouseenter', e => showTip(e, d.i));
+    g.addEventListener('mousemove',  e => positionTooltip(e));
     g.addEventListener('mouseleave', hideTip);
     g.addEventListener('click', e => { e.stopPropagation(); selectWork(d.i); });
     layer.appendChild(g);
   });
 }
 
+// ── PDF.JS SETUP ────────────────────────────────────────
+let pdfDoc = null;
+let pdfLoading = false;
+let renderTask = null;
+
+function initPdf() {
+  if(pdfDoc || pdfLoading) return;
+  pdfLoading = true;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  pdfjsLib.getDocument('MASTERPEPESBOOK.pdf').promise.then(doc => {
+    pdfDoc = doc;
+    pdfLoading = false;
+  }).catch(() => { pdfLoading = false; });
+}
+
+async function renderPageToTooltip(pageNum) {
+  const canvas = document.getElementById('ttCanvas');
+  const loading = document.getElementById('ttLoading');
+  canvas.style.display = 'none';
+  loading.style.display = 'block';
+  if(!pdfDoc) { loading.textContent = 'PDF not loaded'; return; }
+  try {
+    if(renderTask) { try { renderTask.cancel(); } catch(e) {} }
+    const page = await pdfDoc.getPage(pageNum);
+    const viewport = page.getViewport({scale: 0.35});
+    canvas.width  = viewport.width;
+    canvas.height = viewport.height;
+    const ctx = canvas.getContext('2d');
+    renderTask = page.render({canvasContext: ctx, viewport});
+    await renderTask.promise;
+    loading.style.display = 'none';
+    canvas.style.display  = 'block';
+  } catch(e) {
+    if(e.name !== 'RenderingCancelledException') {
+      loading.textContent = 'Preview unavailable';
+    }
+  }
+}
+
 // Tooltip
-const tooltip = document.getElementById('tooltip');
+const tooltip  = document.getElementById('tooltip');
 const mapWrap  = document.querySelector('.map-wrap');
 
 function showTip(e, idx) {
+  initPdf();
   const p = PAGES[idx];
   document.getElementById('ttNum').textContent   = 'No. '+p.num;
   document.getElementById('ttTitle').textContent = p.t;
   document.getElementById('ttYear').textContent  = p.y;
+  document.getElementById('ttCanvas').style.display  = 'none';
+  document.getElementById('ttLoading').style.display = 'none';
   tooltip.style.display = 'block';
-  const r = mapWrap.getBoundingClientRect();
-  let tx = e.clientX - r.left + 14;
-  let ty = e.clientY - r.top  - 44;
-  if(tx + 200 > r.width)  tx -= 210;
-  if(ty < 0) ty = 4;
-  tooltip.style.left = tx+'px'; tooltip.style.top = ty+'px';
+  positionTooltip(e);
+  // Render PDF page
+  const pdfPage = p.num + 3;
+  renderPageToTooltip(pdfPage).then(() => positionTooltip(e));
+  // Highlight dot
   const dot = document.getElementById(`dot-${idx}`);
   if(dot && idx !== selectedIdx) { dot.setAttribute('fill','#1A4A1A'); dot.setAttribute('r','6'); }
+}
+
+function positionTooltip(e) {
+  const r  = mapWrap.getBoundingClientRect();
+  let tx = e.clientX - r.left + 16;
+  let ty = e.clientY - r.top  - 20;
+  if(tx + 190 > r.width)  tx = e.clientX - r.left - 196;
+  if(ty + 280 > r.height) ty = e.clientY - r.top  - 280;
+  if(ty < 0) ty = 4;
+  tooltip.style.left = tx+'px';
+  tooltip.style.top  = ty+'px';
 }
 function hideTip(e) {
   tooltip.style.display = 'none';

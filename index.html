@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MASTERPEPES</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&family=Tenor+Sans&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --deep:#060D06;--dark:#0A160A;--mid:#112011;--panel:#0D1A0D;
+  --gold:#C8901A;--gold2:#E8B030;--mut:#3A6A3A;--rl:#182E18;
+  --text:#C8DCA8;--dim:#4A7A4A;--white:#E8F0D8;
+}
+body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow:hidden;display:flex;flex-direction:column;color:var(--text);text-transform:uppercase;letter-spacing:0.08em}
+
+.topbar{height:52px;flex-shrink:0;border-bottom:0.5px solid #A02020;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:#E0342F}
+.topbar-logo{height:28px;object-fit:contain;filter:brightness(10)}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.topbar-meta{font-size:10px;letter-spacing:0.2em;color:rgba(255,255,255,0.6)}
+.topbar-x{font-size:10px;letter-spacing:0.15em;color:#fff;text-decoration:none;border:0.5px solid rgba(255,255,255,0.5);padding:5px 14px;transition:all 0.2s}
+.topbar-x:hover{background:rgba(255,255,255,0.15)}
+.mm-btn{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.15em;cursor:pointer;border:0.5px solid rgba(255,255,255,0.4);padding:5px 14px;transition:all 0.2s;text-transform:uppercase;background:none;color:rgba(255,255,255,0.7)}
+.mm-btn:hover{border-color:#fff;color:#fff}
+.mm-btn.connected{border-color:#fff;color:#fff;background:rgba(255,255,255,0.1)}
+
+.main{flex:1;display:flex;overflow:hidden}
+
+/* LEFT */
+.left{flex:0 0 58%;position:relative;border-right:0.5px solid var(--rl);overflow:hidden}
+
+/* BOOK VIEW */
+#bookView{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:10;background:var(--deep);transition:opacity 0.4s}
+#bookView.hidden{opacity:0;pointer-events:none}
+#bookCanvas{width:280px;height:280px;cursor:grab;display:block}
+#bookCanvas:active{cursor:grabbing}
+.book-hint{font-size:9px;letter-spacing:0.25em;color:var(--mut);animation:blink 2s infinite;text-align:center}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+.book-desc{max-width:340px;text-align:center;border-top:0.5px solid var(--rl);padding-top:12px;width:100%}
+.book-desc-title{font-size:10px;letter-spacing:0.3em;color:var(--white);margin-bottom:6px}
+.book-desc-text{font-size:10px;letter-spacing:0.06em;color:var(--dim);line-height:1.8;margin-bottom:8px}
+.book-desc-link{font-size:9px;letter-spacing:0.2em;color:var(--gold);text-decoration:none;border-bottom:0.5px solid rgba(200,144,26,0.4);padding-bottom:2px;transition:all 0.2s}
+.book-desc-link:hover{color:var(--gold2)}
+#bookLoading{font-size:9px;letter-spacing:0.2em;color:var(--mut);text-align:center}
+
+/* MUSEUM VIEW */
+#museumView{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;z-index:9;opacity:0;pointer-events:none;transition:opacity 0.4s;padding:10px 12px}
+#museumView.visible{opacity:1;pointer-events:all}
+.museum-topbar{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:8px;flex-shrink:0}
+.museum-title{font-size:9px;letter-spacing:0.3em;color:var(--gold)}
+.back-btn{font-size:9px;letter-spacing:0.2em;color:var(--mut);cursor:pointer;border:0.5px solid var(--rl);padding:4px 12px;transition:all 0.2s;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase}
+.back-btn:hover{border-color:var(--gold);color:var(--gold)}
+.map-wrap{flex:1;width:100%;position:relative;overflow:hidden}
+#museumSvg{width:100%;height:100%}
+.tooltip{position:absolute;background:rgba(4,8,4,0.96);border:0.5px solid var(--gold);padding:8px 12px;pointer-events:none;display:none;z-index:50;max-width:190px}
+.tt-num{font-size:8px;letter-spacing:0.2em;color:var(--gold);margin-bottom:2px}
+.tt-title{font-size:10px;letter-spacing:0.05em;color:var(--white);margin-bottom:2px;line-height:1.3}
+.tt-year{font-size:8px;letter-spacing:0.08em;color:var(--dim);text-transform:none}
+.asset-panel{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(4,8,4,0.97);border:0.5px solid var(--gold);padding:12px 16px;display:none;z-index:40;width:95%;flex-direction:row;gap:14px;align-items:center}
+.asset-panel.show{display:flex}
+.ap-num{font-size:10px;letter-spacing:0.2em;color:var(--gold);flex-shrink:0;min-width:24px}
+.ap-info{flex:1}
+.ap-title{font-size:12px;letter-spacing:0.06em;color:var(--white);margin-bottom:2px;line-height:1.3}
+.ap-year{font-size:9px;letter-spacing:0.08em;color:var(--dim)}
+.ap-asset{font-size:7px;letter-spacing:0.12em;color:var(--mut);margin-top:3px;text-transform:none}
+.ap-link{font-size:8px;letter-spacing:0.12em;color:var(--gold);text-decoration:none;border:0.5px solid var(--rl);padding:4px 10px;flex-shrink:0;transition:all 0.2s}
+.ap-link:hover{border-color:var(--gold2);color:var(--gold2)}
+.ap-close{font-size:8px;letter-spacing:0.15em;color:var(--mut);cursor:pointer;border:0.5px solid var(--rl);padding:4px 10px;flex-shrink:0;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;transition:all 0.2s}
+.ap-close:hover{border-color:var(--gold);color:var(--gold)}
+
+/* RIGHT */
+.right{flex:0 0 42%;background:var(--panel);display:flex;flex-direction:column;padding:24px 24px 16px;overflow-y:auto}
+.r-eye{font-size:9px;letter-spacing:0.3em;color:var(--gold);margin-bottom:12px}
+.r-title{font-family:'Cinzel Decorative',serif;font-size:clamp(18px,2vw,30px);color:var(--gold2);line-height:1.05;margin-bottom:8px}
+.r-sub{font-size:10px;letter-spacing:0.1em;color:var(--dim);margin-bottom:16px;padding-bottom:16px;border-bottom:0.5px solid var(--rl);line-height:2}
+.r-details{background:var(--mid);border:0.5px solid var(--rl);margin-bottom:16px}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:0.5px solid var(--rl)}
+.drow:last-child{border-bottom:none}
+.dl{font-size:9px;letter-spacing:0.15em;color:var(--dim)}
+.dv{font-size:10px;letter-spacing:0.1em;color:var(--white)}
+.sh{font-size:9px;letter-spacing:0.3em;color:var(--gold);margin-bottom:8px}
+.note{font-size:10px;letter-spacing:0.06em;color:var(--dim);margin-bottom:8px;line-height:1.8;text-transform:none}
+.inp{width:100%;padding:10px 13px;border:0.5px solid var(--rl);background:var(--dark);font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.08em;color:var(--text);outline:none;margin-bottom:6px;transition:border-color 0.2s;text-transform:none}
+.inp:focus{border-color:var(--gold)}
+.inp::placeholder{color:#1E3A1E;font-size:10px}
+.warn{font-size:9px;letter-spacing:0.06em;color:#5A6A1A;margin-bottom:12px;line-height:1.8;text-transform:none}
+.divl{height:0.5px;background:var(--rl);margin:12px 0}
+.wallet-status{background:var(--mid);border:0.5px solid var(--rl);padding:8px 14px;margin-bottom:10px;display:none;align-items:center;justify-content:space-between}
+.wallet-status.show{display:flex}
+.ws-addr{font-size:9px;letter-spacing:0.1em;color:var(--gold2);text-transform:none}
+.ws-network{font-size:8px;letter-spacing:0.12em;color:var(--dim)}
+.ws-disconnect{font-size:8px;cursor:pointer;border:none;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;color:var(--mut);transition:color 0.2s;letter-spacing:0.15em}
+.ws-disconnect:hover{color:var(--gold)}
+.pbox{background:var(--deep);border:0.5px solid var(--rl);padding:12px 18px;margin-bottom:10px;opacity:0.3;transition:opacity 0.3s}
+.pbox.on{opacity:1}
+.plbl{font-size:8px;letter-spacing:0.3em;color:var(--gold);margin-bottom:4px}
+.pnum{font-family:'Cinzel Decorative',serif;font-size:28px;color:var(--gold2);line-height:1;text-transform:none}
+.pusd{font-size:10px;letter-spacing:0.06em;color:var(--mut);margin-top:2px;text-transform:none}
+.btn-mm{width:100%;padding:12px;background:none;border:0.5px solid var(--gold);color:var(--gold);cursor:pointer;font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.3em;transition:all 0.3s;text-transform:uppercase}
+.btn-mm:hover{background:var(--gold);color:var(--deep)}
+.btn-bid{width:100%;padding:12px;background:var(--gold);color:var(--deep);border:none;cursor:pointer;font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.3em;opacity:0.3;pointer-events:none;transition:all 0.3s;text-transform:uppercase}
+.btn-bid.on{opacity:1;pointer-events:all}
+.btn-bid.on:hover{background:var(--gold2)}
+.bsub{font-size:8px;letter-spacing:0.18em;color:var(--mut);text-align:center;margin-top:6px}
+.slots{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--rl)}
+.dot-live{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:blink 2s infinite;flex-shrink:0}
+.stxt{font-size:9px;letter-spacing:0.12em;color:var(--mut)}
+.scnt{color:var(--gold2)}
+
+/* COUNTDOWN */
+.countdown-wrap{max-width:340px;width:100%;display:none;margin-top:4px}
+.countdown-wrap.visible{display:block}
+.countdown-label{font-size:9px;letter-spacing:0.3em;color:var(--mut);text-align:center;margin-bottom:8px}
+.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cd-cell{background:var(--panel);border:0.5px solid var(--rl);padding:8px 4px;text-align:center}
+.cd-num{font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--gold2);line-height:1;text-transform:none}
+.cd-lbl{font-size:7px;letter-spacing:0.25em;color:var(--dim);margin-top:3px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="MASTERPEPES_LOGO_GOLD_HI_RES.png" class="topbar-logo" alt="MASTERPEPES" onerror="this.outerHTML='<span style=&quot;font-family:Cinzel Decorative,serif;font-size:13px;color:#fff;letter-spacing:0.1em&quot;>MASTERPEPES</span>'">
+  <div class="topbar-right">
+    <span class="topbar-meta">Bitcoin &middot; Counterparty &middot; 150 Works</span>
+    <button class="mm-btn" id="mmTopBtn" onclick="connectWallet()">Connect Wallet</button>
+    <a href="https://x.com/robnessofficial" target="_blank" class="topbar-x">@Robnessofficial</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="left">
+
+    <!-- BOOK VIEW -->
+    <div id="bookView">
+      <div id="bookLoading">Loading Book...</div>
+      <canvas id="bookCanvas"></canvas>
+      <div class="book-hint" id="bookHint" style="display:none">Drag to rotate &nbsp;&middot;&nbsp; Click to enter museum</div>
+      <div class="book-desc">
+        <div class="book-desc-title">About the Book</div>
+        <div class="book-desc-text">Self-published by Robness &mdash; available in print via Ingramspark. 150 pages, cave wall to blockchain.</div>
+        <a href="#" class="book-desc-link">Order the Physical Book &rarr;</a>
+      </div>
+      <div class="countdown-wrap" id="cdWrap">
+        <div class="countdown-label">Drop Opens In</div>
+        <div class="countdown-grid">
+          <div class="cd-cell"><div class="cd-num" id="cdD">00</div><div class="cd-lbl">Days</div></div>
+          <div class="cd-cell"><div class="cd-num" id="cdH">00</div><div class="cd-lbl">Hours</div></div>
+          <div class="cd-cell"><div class="cd-num" id="cdM">00</div><div class="cd-lbl">Mins</div></div>
+          <div class="cd-cell"><div class="cd-num" id="cdS">00</div><div class="cd-lbl">Secs</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MUSEUM VIEW -->
+    <div id="museumView">
+      <div class="museum-topbar">
+        <span class="museum-title">Masterpepes Museum &mdash; 150 Works</span>
+        <button class="back-btn" onclick="showBook()">&larr; Back to Book</button>
+      </div>
+      <div class="map-wrap">
+        <svg id="museumSvg" viewBox="0 0 820 760" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+          <rect x="35" y="35" width="750" height="700" fill="none" stroke="#0F2A0F" stroke-width="2"/>
+<rect x="240" y="200" width="45" height="120" fill="#060E06" stroke="#142214" stroke-width="0.5"/>
+<rect x="535" y="200" width="50" height="120" fill="#060E06" stroke="#142214" stroke-width="0.5"/>
+<rect x="240" y="340" width="45" height="80" fill="#060E06" stroke="#142214" stroke-width="0.5"/>
+<rect x="535" y="340" width="45" height="80" fill="#060E06" stroke="#142214" stroke-width="0.5"/>
+<rect x="200" y="500" width="85" height="120" fill="#060E06" stroke="#142214" stroke-width="0.5"/>
+<rect x="535" y="500" width="80" height="120" fill="#060E06" stroke="#142214" stroke-width="0.5"/>
+<rect x="355" y="600" width="110" height="30" fill="#060E06" stroke="#142214" stroke-width="0.5"/>
+<rect x="260" y="40" width="60" height="200" fill="#060E06" stroke="#142214" stroke-width="0.5"/>
+<rect x="500" y="40" width="60" height="200" fill="#060E06" stroke="#142214" stroke-width="0.5"/>
+<rect x="320" y="610" width="180" height="120" fill="#07100A" stroke="#1E3A1E" stroke-width="1"/>
+<text x="410" y="626" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7.5" text-anchor="middle" letter-spacing="2">GRAND HALL</text>
+<text x="410" y="637" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="6" text-anchor="middle" letter-spacing="1.5">ENTRANCE</text>
+<rect x="285" y="320" width="250" height="220" fill="#081208" stroke="#1E4A1E" stroke-width="1"/>
+<text x="410" y="336" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7.5" text-anchor="middle" letter-spacing="2">CENTRAL ROTUNDA</text>
+<text x="410" y="347" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="6" text-anchor="middle" letter-spacing="1.5">OVERVIEW</text>
+<rect x="40" y="40" width="220" height="160" fill="#0A180A" stroke="#182E18" stroke-width="1"/>
+<text x="150" y="56" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7.5" text-anchor="middle" letter-spacing="2">WING I</text>
+<text x="150" y="67" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="6" text-anchor="middle" letter-spacing="1.5">THE ANCIENT WORLD</text>
+<rect x="560" y="40" width="220" height="160" fill="#0A1A0A" stroke="#182E18" stroke-width="1"/>
+<text x="670" y="56" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7.5" text-anchor="middle" letter-spacing="2">WING II</text>
+<text x="670" y="67" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="6" text-anchor="middle" letter-spacing="1.5">EARLY CIVILISATIONS</text>
+<rect x="40" y="250" width="200" height="220" fill="#0B1A0B" stroke="#1A301A" stroke-width="1"/>
+<text x="140" y="266" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7.5" text-anchor="middle" letter-spacing="2">WING III</text>
+<text x="140" y="277" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="6" text-anchor="middle" letter-spacing="1.5">MEDIEVAL & GOTHIC</text>
+<rect x="580" y="250" width="200" height="220" fill="#0A1A0A" stroke="#1A2E1A" stroke-width="1"/>
+<text x="680" y="266" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7.5" text-anchor="middle" letter-spacing="2">WING IV</text>
+<text x="680" y="277" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="6" text-anchor="middle" letter-spacing="1.5">RENAISSANCE & BEYOND</text>
+<rect x="40" y="520" width="240" height="180" fill="#0A180A" stroke="#182818" stroke-width="1"/>
+<text x="160" y="536" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7.5" text-anchor="middle" letter-spacing="2">WING V</text>
+<text x="160" y="547" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="6" text-anchor="middle" letter-spacing="1.5">BAROQUE & ENLIGHTENMENT</text>
+<rect x="540" y="520" width="240" height="180" fill="#0A1C0A" stroke="#1A321A" stroke-width="1"/>
+<text x="660" y="536" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7.5" text-anchor="middle" letter-spacing="2">WING VI</text>
+<text x="660" y="547" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="6" text-anchor="middle" letter-spacing="1.5">MODERN & CONTEMPORARY</text>
+<line x1="52" y1="52" x2="248" y2="52" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="52" y1="188" x2="248" y2="188" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="52" y1="52" x2="52" y2="188" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="248" y1="52" x2="248" y2="188" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="572" y1="52" x2="768" y2="52" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="572" y1="188" x2="768" y2="188" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="572" y1="52" x2="572" y2="188" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="768" y1="52" x2="768" y2="188" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="52" y1="262" x2="228" y2="262" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="52" y1="458" x2="228" y2="458" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="52" y1="262" x2="52" y2="458" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="228" y1="262" x2="228" y2="458" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="592" y1="262" x2="768" y2="262" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="592" y1="458" x2="768" y2="458" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="592" y1="262" x2="592" y2="458" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="768" y1="262" x2="768" y2="458" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="52" y1="532" x2="268" y2="532" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="52" y1="688" x2="268" y2="688" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="52" y1="532" x2="52" y2="688" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="268" y1="532" x2="268" y2="688" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="552" y1="532" x2="768" y2="532" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="552" y1="688" x2="768" y2="688" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="552" y1="532" x2="552" y2="688" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<line x1="768" y1="532" x2="768" y2="688" stroke="#1A3A1A" stroke-width="0.5" stroke-dasharray="2,3"/>
+<text x="410" y="748" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="7" text-anchor="middle" letter-spacing="3">ENTRANCE</text>
+<line x1="410" y1="730" x2="410" y2="740" stroke="#1A3A1A" stroke-width="1"/>
+<polygon points="406,740 414,740 410,748" fill="#1A3A1A"/>
+<circle cx="760" cy="700" r="18" fill="none" stroke="#1A3A1A" stroke-width="0.5"/>
+<text x="760" y="678" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7" text-anchor="middle">N</text>
+<line x1="760" y1="682" x2="760" y2="692" stroke="#C8901A" stroke-width="1"/>
+<line x1="760" y1="708" x2="760" y2="718" stroke="#1A3A1A" stroke-width="0.7"/>
+<line x1="742" y1="700" x2="752" y2="700" stroke="#1A3A1A" stroke-width="0.7"/>
+<line x1="768" y1="700" x2="778" y2="700" stroke="#1A3A1A" stroke-width="0.7"/>
+<circle cx="760" cy="700" r="2" fill="#C8901A"/>
+          <!-- DOTS INJECTED BY JS -->
+          <g id="dotsLayer"></g>
+        </svg>
+        <div class="tooltip" id="tooltip">
+          <div class="tt-num" id="ttNum"></div>
+          <div class="tt-title" id="ttTitle"></div>
+          <div class="tt-year" id="ttYear"></div>
+        </div>
+      </div>
+      <div class="asset-panel" id="assetPanel">
+        <div class="ap-num" id="apNum"></div>
+        <div class="ap-info">
+          <div class="ap-title" id="apTitle"></div>
+          <div class="ap-year" id="apYear"></div>
+          <div class="ap-asset" id="apAsset"></div>
+        </div>
+        <a class="ap-link" id="apPdfLink" href="#" target="_blank">Open in Book &rarr;</a>
+        <a class="ap-link" id="apLink" href="#" target="_blank">View on Chain &rarr;</a>
+        <button class="ap-close" onclick="closePanel()">Close &times;</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right">
+    <p class="r-eye">A New Pepe Collection on Bitcoin by Robness</p>
+    <h1 class="r-title">MASTERPEPES</h1>
+    <p class="r-sub">150 Masterworks of Art History &mdash; Reimagined as Pepe<br>Permanently Inscribed on the Bitcoin Blockchain</p>
+    <div class="r-details">
+      <div class="drow"><span class="dl">Total Artworks</span><span class="dv">150 Works</span></div>
+      <div class="drow"><span class="dl">Editions Per Work</span><span class="dv">300</span></div>
+      <div class="drow"><span class="dl">Each Buyer Receives</span><span class="dv">All 150 Works</span></div>
+      <div class="drow"><span class="dl">Total Spots Available</span><span class="dv">300 Only</span></div>
+      <div class="drow"><span class="dl">Price Per Spot</span><span class="dv">1 ETH or Equivalent BTC</span></div>
+      <div class="drow"><span class="dl">Blockchain</span><span class="dv">Bitcoin / Counterparty</span></div>
+    </div>
+    <p class="sh">Step 1 &mdash; Connect Your ETH Wallet</p>
+    <div class="wallet-status" id="walletStatus">
+      <div><div class="ws-addr" id="wsAddr"></div><div class="ws-network" id="wsNetwork"></div></div>
+      <button class="ws-disconnect" onclick="disconnectWallet()">Disconnect</button>
+    </div>
+    <button class="btn-mm" id="mmBtn" onclick="connectWallet()">Connect MetaMask</button>
+    <div class="divl"></div>
+    <p class="sh">Step 2 &mdash; Your BTC / XCP Address</p>
+    <p class="note">Your 150 tokens will be sent here after purchase. Cannot be changed after payment.</p>
+    <input class="inp" id="addr" type="text" placeholder="Enter your BTC / XCP wallet address (starts with 1...)" oninput="checkReady()">
+    <p class="warn">Tokens sent to incorrect addresses cannot be recovered.</p>
+    <div class="divl"></div>
+    <p class="sh">Step 3 &mdash; Secure Your Collector Spot</p>
+    <div class="pbox" id="pbox">
+      <p class="plbl">Price Per Spot</p>
+      <div class="pnum">1 ETH</div>
+      <div class="pusd" id="usd">Connect wallet and enter BTC address to continue</div>
+    </div>
+    <button class="btn-bid" id="btn" onclick="bid()">Secure My Spot &mdash; 1 ETH</button>
+    <p class="bsub">Ethereum Mainnet &middot; MetaMask &middot; Non-Custodial</p>
+    <div class="slots">
+      <div class="dot-live"></div>
+      <span class="stxt"><span class="scnt">287</span> of 300 spots remaining</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const SHOW_COUNTDOWN = true;
+const DROP_DATE = '2026-05-01T18:00:00';
+const PAGES = [{"num": 1, "t": "PEPE OF WILLENDORF", "y": "24000 BC", "mat": "LIMESTONE, HAND-CARVED FIGURE", "asset": "MSTRPEPES.PEPEOFWILLENDORF"}, {"num": 2, "t": "KARAHAN PEPE", "y": "10000 BC", "mat": "SANDSTONE MONOLITH", "asset": "MSTRPEPES.KARAHANPEPE"}, {"num": 3, "t": "FROG HAND STENCILS", "y": "9400 BC", "mat": "PIGMENT ON CAVE WALL", "asset": "MSTRPEPES.FROGHANDSTENCILS"}, {"num": 4, "t": "HONGSHAN PEPE PENDANT", "y": "3000 BC", "mat": "CARVED JADE", "asset": "MSTRPEPES.HONGSHANPEPEPENDANT"}, {"num": 5, "t": "LYRE WITH PEPE\u2019S HEAD", "y": "2550 BC", "mat": "WOOD WITH SHELL INLAY", "asset": "MSTRPEPES.LYREWITHPEPESHEAD"}, {"num": 6, "t": "PEPE OF AKKAD (PEPEKKADIAN)", "y": "2400 BC", "mat": "CARVED DIORITE", "asset": "MSTRPEPES.PEPEOFAKKAD"}, {"num": 7, "t": "VICTORY STELE OF NARAM-PEPE", "y": "2350 BC", "mat": "BASALT RELIEF", "asset": "MSTRPEPES.VICTORYSTELEOFNARAMPEPE"}, {"num": 8, "t": "WARRIOR PEPE FIGURE", "y": "1200 BC", "mat": "CARVED SERPENTINE WITH PIGMENT", "asset": "MSTRPEPES.WARRIORPEPEFIGURE"}, {"num": 9, "t": "DANKQING DYNASTY JADE", "y": "1700 BC", "mat": "POLISHED JADE", "asset": "MSTRPEPES.DANKQINGDYNASTYJADE"}, {"num": 10, "t": "MINOAN PEPE SNAKE GODDESS", "y": "1650 BC", "mat": "PAINTED FAIENCE", "asset": "MSTRPEPES.MINOANPEPESNAKEGODDESS"}, {"num": 11, "t": "THE GOLDEN VESSEL OF THE FROG-KIN HERDSMEN", "y": "1500 BC", "mat": "GOLD REPOUSS\u00c9 WITH FINE CHASING", "asset": "MSTRPEPES.THEGOLDENVESSELOFTHEFROGKINHERDSMEN"}, {"num": 12, "t": "PEPE HARVESTER VASE", "y": "1550 BC", "mat": "TERRACOTTA VESSEL", "asset": "MSTRPEPES.PEPEHARVESTERVASE"}, {"num": 13, "t": "PEPE GATE OF HATTUSSA", "y": "1400 BC", "mat": "BASALT RELIEF", "asset": "MSTRPEPES.PEPEGATEOFHATTUSSA"}, {"num": 14, "t": "PEPEKNHATAN INSCRIPTION", "y": "1353 BC", "mat": "LIMESTONE STELE", "asset": "MSTRPEPES.PEPEKNHATANINSCRIPTION"}, {"num": 15, "t": "BUST OF NEFERPEPE", "y": "1345 BC", "mat": "PAINTED LIMESTONE", "asset": "MSTRPEPES.BUSTOFNEFERPEPE"}, {"num": 16, "t": "KEKENKHAMUN", "y": "1300 BC", "mat": "GILDED WOOD MASK", "asset": "MSTRPEPES.KEKENKHAMUN"}, {"num": 17, "t": "PEPE GATE OF MYCENAE", "y": "1300 BC", "mat": "GREY LIMESTONE RELIEF", "asset": "MSTRPEPES.PEPEGATEOFMYCENAE"}, {"num": 18, "t": "FELINE-PEPE RITUAL VESSEL", "y": "1150 BC", "mat": "CAST BRONZE WITH INCISED PATTERNS", "asset": "MSTRPEPES.FELINEPEPERITUALVESSEL"}, {"num": 19, "t": "THE OLMEC PEPE HEAD", "y": "900 BC", "mat": "CARVED BASALT BOULDER", "asset": "MSTRPEPES.THEOLMECPEPEHEAD"}, {"num": 20, "t": "PEPIONESS DEVOURING A LION", "y": "900 BC", "mat": "LIMESTONE RELIEF", "asset": "MSTRPEPES.PEPIONESSDEVOURINGALION"}, {"num": 21, "t": "PEPASSU", "y": "883 BC", "mat": "BASALT SCULPTURE", "asset": "MSTRPEPES.PEPASSU"}, {"num": 22, "t": "PEPE KOUROS", "y": "640 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.PEPEKOUROS"}, {"num": 23, "t": "SEATED PEPE BUDDHAS", "y": "618 BC", "mat": "CARVED LIMESTONE", "asset": "MSTRPEPES.SEATEDPEPEBUDDHAS"}, {"num": 24, "t": "PEPIAN SPHINX OF DELPHI", "y": "580 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.PEPIANSPHINXOFDELPHI"}, {"num": 25, "t": "PEPETAR GATE CREATURE", "y": "575 BC", "mat": "GLAZED BRICK RELIEF", "asset": "MSTRPEPES.PEPETARGATECREATURE"}, {"num": 26, "t": "KORE OF THE PEPEMAYES GROUP", "y": "570 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.KOREOFTHEPEPEMAYESGROUP"}, {"num": 27, "t": "PEPE SCHOPHOROS", "y": "560 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.PEPESCHOPHOROS"}, {"num": 28, "t": "KEKOPHAGUS OF THE SPOUSES", "y": "530 BC", "mat": "TERRACOTTA SARCOPHAGUS", "asset": "MSTRPEPES.KEKOPHAGUSOFTHESPOUSES"}, {"num": 29, "t": "RELIEF SCULPTURES OF PEPEPOLIS", "y": "518 BC", "mat": "SANDSTONE RELIEFS", "asset": "MSTRPEPES.RELIEFSCULPTURESOFPEPEPOLIS"}, {"num": 30, "t": "THE PEPE KRATER", "y": "515 BC", "mat": "BLACK-FIGURE TERRACOTTA", "asset": "MSTRPEPES.THEPEPEKRATER"}, {"num": 31, "t": "SEATED PEPE OF THE KEKNOK CULTURE", "y": "500 BC", "mat": "TERRACOTTA FIGURE", "asset": "MSTRPEPES.SEATEDPEPEOFTHEKEKNOKCULTURE"}, {"num": 32, "t": "PEPODIUS & KEKISTOGEITON", "y": "500 BC", "mat": "BASALT SCULPTURE", "asset": "MSTRPEPES.PEPODIUSANDKEKISTOGEITON"}, {"num": 33, "t": "PEPA AND THE SWAN", "y": "500 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.PEPAANDTHESWAN"}, {"num": 34, "t": "CHARIOTEER OF KEKELPHI", "y": "500 BC", "mat": "CAST BRONZE", "asset": "MSTRPEPES.CHARIOTEEROFKEKELPHI"}, {"num": 35, "t": "KEK BOY", "y": "480 BC", "mat": "LIMESTONE STATUE", "asset": "MSTRPEPES.KEKBOY"}, {"num": 36, "t": "KEKEUS OF OLYMPEPIA", "y": "466 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.KEKEUSOFOLYMPEPIA"}, {"num": 37, "t": "ZEUSPEPE OF KEKEMIS", "y": "460 BC", "mat": "BRONZE SCULPTURE", "asset": "MSTRPEPES.ZEUSPEPEOFKEKEMIS"}, {"num": 38, "t": "PEPOVISI THRONE", "y": "460 BC", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.PEPOVISITHRONE"}, {"num": 39, "t": "PEPIACE BRONZE", "y": "459 BC", "mat": "CAST BRONZE", "asset": "MSTRPEPES.PEPIACEBRONZE"}, {"num": 40, "t": "PEPETHON MARBLES", "y": "447 BC", "mat": "MARBLE RELIEFS", "asset": "MSTRPEPES.PEPETHONMARBLES"}, {"num": 41, "t": "PORTRAIT OF PEPECLES", "y": "425 BC", "mat": "MARBLE BUST", "asset": "MSTRPEPES.PORTRAITOFPEPECLES"}, {"num": 42, "t": "RAREPEPE DIRECTORIAL TEMPLATE TABLET", "y": "420 BC", "mat": "STONE TABLET", "asset": "MSTRPEPES.RAREPEPEDIRECTORIALTEMPLATETABLET"}, {"num": 43, "t": "NIKE OF PEPENIOS", "y": "420 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.NIKEOFPEPENIOS"}, {"num": 44, "t": "KEKMERA", "y": "400 BC", "mat": "CARVED STONE", "asset": "MSTRPEPES.KEKMERA"}, {"num": 45, "t": "FARNESE KEKULES", "y": "370 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.FARNESEKEKULES"}, {"num": 46, "t": "KEKEZON FRIEZE", "y": "357 BC", "mat": "MARBLE RELIEF", "asset": "MSTRPEPES.KEKEZONFRIEZE"}, {"num": 47, "t": "PEPERMES AND A WOMAN", "y": "350 BC", "mat": "MARBLE GROUP", "asset": "MSTRPEPES.PEPERMESANDAWOMAN"}, {"num": 48, "t": "APHROPEPA OF KEKDOS", "y": "350 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.APHROPEPAOFKEKDOS"}, {"num": 49, "t": "PEPOLLO BELVEDERE", "y": "330 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.PEPOLLOBELVEDERE"}, {"num": 50, "t": "PEPE STAG HUNTERS", "y": "300 BC", "mat": "MOSAIC", "asset": "MSTRPEPES.PEPESTAGHUNTERS"}, {"num": 51, "t": "PEPATOLINE VENUS", "y": "300 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.PEPATOLINEVENUS"}, {"num": 52, "t": "PEPECOTTA ARMY", "y": "246 BC", "mat": "TERRACOTTA FIGURES", "asset": "MSTRPEPES.PEPECOTTAARMY"}, {"num": 53, "t": "DYING GAULPEPE", "y": "230 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.DYINGGAULPEPE"}, {"num": 54, "t": "THE EYE OF PEPE", "y": "220 BC", "mat": "CARVED STONE", "asset": "MSTRPEPES.THEEYEOFPEPE"}, {"num": 55, "t": "PEPAJANTA CAVE MURAL", "y": "200 BC", "mat": "PIGMENT ON STONE", "asset": "MSTRPEPES.PEPAJANTACAVEMURAL"}, {"num": 56, "t": "NAZCAPEPE LINES", "y": "200 BC", "mat": "EARTHWORK GEOGLYPH", "asset": "MSTRPEPES.NAZCAPEPELINES"}, {"num": 57, "t": "PEPECOON AND HIS SONS", "y": "42 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.PEPECOONANDHISSONS"}, {"num": 58, "t": "PEPEUSTUS OF KEKA PORTA", "y": "20 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.PEPEUSTUSOFKEKAPORTA"}, {"num": 59, "t": "COLOSSAL HEAD OF PEPE", "y": "312 AD", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.COLLOSALHEADOFPEPE"}, {"num": 60, "t": "PEPE BUDDHA GROTTO", "y": "500 AD", "mat": "CARVED STONE", "asset": "MSTRPEPES.PEPEBUDDHAGROTTO"}, {"num": 61, "t": "EMPEROR PEPE AND HIS ATTENDANTS", "y": "526 AD", "mat": "MOSAIC", "asset": "MSTRPEPES.EMPERORPEPEANDHISATTENDANTS"}, {"num": 62, "t": "GOSPEL ILLUMINATIONS OF DANKNESS", "y": "700 AD", "mat": "INK AND GOLD ON VELLUM", "asset": "MSTRPEPES.GOSPELILLUMINATIONSOFDANKNESS"}, {"num": 63, "t": "PEPEBUDUR TEMPLE RELIEF", "y": "800 AD", "mat": "STONE RELIEF", "asset": "MSTRPEPES.PEPEBUDURTEMPLERELIEF"}, {"num": 64, "t": "BRONZE SHIVA KEKARAJA", "y": "900 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.BRONZESHIVAKEKARAJA"}, {"num": 65, "t": "PEPECOTTA HEADS", "y": "1000 AD", "mat": "PEPECOTTA BUST", "asset": "MSTRPEPES.PEPECOTTAHEADS"}, {"num": 66, "t": "PEPEUX TAPESTRY", "y": "1015 AD", "mat": "EMBROIDERED TEXTILE", "asset": "MSTRPEPES.PEPEUXTAPESTRY"}, {"num": 67, "t": "PEPERWICK KING", "y": "1175 AD", "mat": "CARVED IVORY", "asset": "MSTRPEPES.PEPERWICKKING"}, {"num": 68, "t": "PEPETRES CATHEDRAL STAINED GLASS", "y": "1220 AD", "mat": "STAINED GLASS", "asset": "MSTRPEPES.PEPETRESCATHEDRALSTAINEDGLASS"}, {"num": 69, "t": "GUARDIAN OF KEKNARK SUN TEMPLE", "y": "1250 AD", "mat": "CARVED STONE", "asset": "MSTRPEPES.GUARDIANSOFKEKNARKSUNTEMPLE"}, {"num": 70, "t": "LAMENTATION OF PEPE", "y": "1305 AD", "mat": "FRESCO", "asset": "MSTRPEPES.LAMENTATIONOFPEPE"}, {"num": 71, "t": "ANNUNCIATION PEPES", "y": "1325 AD", "mat": "GILDED PANEL", "asset": "MSTRPEPES.ANNUNCIATIONPEPES"}, {"num": 72, "t": "KHMER BRONZE PEPETIKESHVARA", "y": "1350 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.KHMERBRONZEPEPETIKESHVARA"}, {"num": 73, "t": "PEPE DIPTYCH", "y": "1390 AD", "mat": "TEMPERA AND GOLD PANEL", "asset": "MSTRPEPES.PEPEDIPTYCH"}, {"num": 74, "t": "LES TR\u00c8S PEPES", "y": "1400 AD", "mat": "ILLUMINATED MANUSCRIPT", "asset": "MSTRPEPES.LESTRESPEPES"}, {"num": 75, "t": "ST. GEORGE PEPE", "y": "1411 AD", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.STGEORGEPEPE"}, {"num": 76, "t": "THE ADORATION OF THE PEPE", "y": "1425 AD", "mat": "PANEL PAINTING", "asset": "MSTRPEPES.THEADORATIONOFTHEPEPE"}, {"num": 77, "t": "PEPETELLO\u2019S DAVIDPEPE", "y": "1430 AD", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.PEPETELLOSDAVIDPEPE"}, {"num": 78, "t": "PORTRAIT OF A HAIRPEPE", "y": "1433 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.PORTRAITOFAHAIRPEPE"}, {"num": 79, "t": "PEPEFINI PORTRAIT", "y": "1434 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.PEPEFINIPORTRAIT"}, {"num": 80, "t": "DESCENT OF PEPE", "y": "1440 AD", "mat": "PANEL PAINTING", "asset": "MSTRPEPES.DESCENTOFPEPE"}, {"num": 81, "t": "EQUESTRIAN STATUE OF PEPELATA", "y": "1440 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.EQUESTRIANSTATUEOFPEPELATA"}, {"num": 82, "t": "AZTEC KEKATLIQUE STATUE", "y": "1450 AD", "mat": "CARVED STONE", "asset": "MSTRPEPES.AZTECKEKATLIQUESTATUE"}, {"num": 83, "t": "AZTEC PEPE", "y": "1450 AD", "mat": "STONE SCULPTURE", "asset": "MSTRPEPES.AZTECPEPE"}, {"num": 84, "t": "PEPEPORTINARI ALTARPIECE", "y": "1460 AD", "mat": "TEMPERA ON PANEL", "asset": "MSTRPEPES.PEPEPORTINARIALTARPIECE"}, {"num": 85, "t": "PEPEONI EQUESTRIAN STATUE", "y": "1475 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.PEPEONIEQUESTRIANSTATUE"}, {"num": 86, "t": "PEPEVERA", "y": "1480 AD", "mat": "TEMPERA ON PANEL", "asset": "MSTRPEPES.PEPEVERA"}, {"num": 87, "t": "DANK JUICE CERAMIC PEPE", "y": "1490 AD", "mat": "PAINTED CERAMIC", "asset": "MSTRPEPES.DANKJUICECERAMICPEPE"}, {"num": 88, "t": "INCAKEK FIGURES", "y": "1490 AD", "mat": "STONE FIGURES", "asset": "MSTRPEPES.INCAKEKFIGURES"}, {"num": 89, "t": "THE LAST DANK SUPPER", "y": "1498 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.THELASTDANKSUPPER"}, {"num": 90, "t": "PEPE D\u00dcRER SELF PORTRAIT", "y": "1500 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.PEPEDURERSELFPORTRAIT"}, {"num": 91, "t": "PEPEDAVID", "y": "1501 AD", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.PEPEDAVID"}, {"num": 92, "t": "THE MONA LISA PEPE", "y": "1503 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.THEMONALISAPEPE"}, {"num": 93, "t": "PEPE\u2019S LAST JUDGEMENT", "y": "1508 AD", "mat": "FRESCO", "asset": "MSTRPEPES.PEPESLASTJUDGEMENT"}, {"num": 94, "t": "MOSESPEPE", "y": "1513 AD", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.MOSESPEPE"}, {"num": 95, "t": "PEPPHUS AND PEPADNE", "y": "1520 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.PEPPHUSANDPEPADNE"}, {"num": 96, "t": "THE PEPE EMBASSADORS", "y": "1530 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.THEPEPEEMBASSADORS"}, {"num": 97, "t": "PEPERSEUS WITH THE HEAD OF A NORMIE", "y": "1554 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.PEPERSEUSWITHTHEHEADOFANORMIE"}, {"num": 98, "t": "PEPES IN THE SNOW", "y": "1564 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.PEPESINTHESNOW"}, {"num": 99, "t": "CALLING OF MATTHEWPEPE", "y": "1599 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.CALLINGOFMATTHEWPEPE"}, {"num": 100, "t": "SUPPER AT PEPEMMAUS", "y": "1601 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.SUPPERATPEPEMMAUS"}, {"num": 101, "t": "MANNEKEK PEPIS", "y": "1619 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.MANNEKEKPEPIS"}, {"num": 102, "t": "PEPOLLO AND PEPAPHNE", "y": "1622 AD", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.PEPOLLOANDPEPAPHNE"}, {"num": 103, "t": "SELF PORTRAIT OF GIANLORENZO PEPERNINI", "y": "1623 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.SELFPORTRAITOFGIANLORENZOPEPERNINI"}, {"num": 104, "t": "STORM ON THE SEA OF PEPELEE", "y": "1633 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.STORMONTHESEAOFPEPELEE"}, {"num": 105, "t": "NIGHT WATCH PEPES", "y": "1642 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.NIGHTWATCHPEPES"}, {"num": 106, "t": "PEPE SWINGER", "y": "1748 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPESWINGER"}, {"num": 107, "t": "PEPUIN KEKAKU", "y": "1750 AD", "mat": "INK AND WASH ON PAPER", "asset": "MSTRPEPES.PEPUINKEKAKU"}, {"num": 108, "t": "DEATH OF GENERAL WOLFEPEPE", "y": "1770 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.DEATHOFGENERALWOLFEPEPE"}, {"num": 109, "t": "OATH OF THE PEPES", "y": "1784 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.OATHOFTHEPEPES"}, {"num": 110, "t": "THE DEATH OF A SHITPOSTER", "y": "1793 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.THEDEATHOFASHITPOSTER"}, {"num": 111, "t": "THE FIGHTING PEPERAIRE", "y": "1798 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.THEFIGHTINGPEPERAIRE"}, {"num": 112, "t": "PEPAULINE AS VENUS", "y": "1805 AD", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.PEPAULINEASVENUS"}, {"num": 113, "t": "A PEPE WAIN", "y": "1814 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.APEPEWAIN"}, {"num": 114, "t": "PEPE ABOVE THE SEA OF FOG", "y": "1818 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEABOVETHESEAOFFOG"}, {"num": 115, "t": "RAFT OF THE MEMES", "y": "1819 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.RAFTOFTHEMEMES"}, {"num": 116, "t": "LIBERTY LEADING THE PEPES", "y": "1830 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.LIBERTYLEADINGTHEPEPES"}, {"num": 117, "t": "PEPEGOLINO AND HIS SONS", "y": "1830 AD", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.PEPEGOLINOANDHISSONS"}, {"num": 118, "t": "A BURIAL WITH PEPES", "y": "1850 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.ABURIALWITHPEPES"}, {"num": 119, "t": "D\u00c9JEUNER AVEC RAREPEPES", "y": "1862 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.DEJEUNERAVECRAREPEPES"}, {"num": 120, "t": "LES GENS GRENOUILLES DU MOULIN DE LA GALETTE", "y": "1876 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.LESGENSGRENOUILLESDUMOULINDELAGALETTE"}, {"num": 121, "t": "THINKERPEPE", "y": "1880 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.THINKERPEPE"}, {"num": 122, "t": "A SUNDAY AFTERNOON ON PEPE ISLAND", "y": "1884 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.ASUNDAYAFTERNOONONPEPEISLAND"}, {"num": 123, "t": "PEPE WITH BANDAGED EAR", "y": "1889 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEWITHBANDAGEDEAR"}, {"num": 124, "t": "THE PEPE SCREAM", "y": "1893 AD", "mat": "OIL, TEMPERA, PASTEL AND CRAYON ON CARDBOARD", "asset": "MSTRPEPES.THEPEPESCREAM"}, {"num": 125, "t": "PEPE\u2019S KISS", "y": "1907 AD", "mat": "OIL AND GOLD LEAF", "asset": "MSTRPEPES.PEPESKISS"}, {"num": 126, "t": "PEPEDANCE", "y": "1910 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEDANCE"}, {"num": 127, "t": "PEPE FOUNTAIN", "y": "1917 AD", "mat": "PORCELAIN READYMADE", "asset": "MSTRPEPES.PEPEFOUNTAIN"}, {"num": 128, "t": "PEPES SWIMMING BY WATER LILLIES", "y": "1919 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPESSWIMMINGBYWATERLILLIES"}, {"num": 129, "t": "PEPE GOTHIC", "y": "1930 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEGOTHIC"}, {"num": 130, "t": "PEPE AU B\u00c9RET ET \u00c0 LA ROBE QUADRILL\u00c9E", "y": "1937 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEAUBERETETALAROBEQUADRILLE"}, {"num": 131, "t": "PEPE BOOGIE WOOGIE", "y": "1942 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEBOOGIEWOOGIE"}, {"num": 132, "t": "PEPE\u2019S MORNING SUN", "y": "1952 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPESMORNINGSUN"}, {"num": 133, "t": "PEPE CRUCIFIXION", "y": "1954 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPECRUCIFIXION"}, {"num": 134, "t": "LUCIANPEPE SELF PORTRAIT", "y": "1965 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.LUCIANPEPESELFPORTRAIT"}, {"num": 135, "t": "PEPE MARILYN", "y": "1967 AD", "mat": "SILKSCREEN ON CANVAS", "asset": "MSTRPEPES.PEPEMARILYN"}, {"num": 136, "t": "PORTRAIT OF PEPEDYER AND PEPEFREUD", "y": "1967 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PORTRAITOFPEPEDYERANDPEPEFREUD"}, {"num": 137, "t": "POOL WITH TWO PEPES", "y": "1972 AD", "mat": "ACRYLIC ON CANVAS", "asset": "MSTRPEPES.POOLWITHTWOPEPES"}, {"num": 138, "t": "TELEVISION PEPE", "y": "1974 AD", "mat": "MIXED MEDIA AND VIDEO", "asset": "MSTRPEPES.TELEVISIONPEPE"}, {"num": 139, "t": "DREAMPEPE", "y": "1979 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.DREAMPEPE"}, {"num": 140, "t": "THE PHYSICAL IMPOSSIBILITY OF PEPE WITHIN THE MIND", "y": "1991 AD", "mat": "MIXED MEDIA INSTALLATION", "asset": "MSTRPEPES.THEPHYSICALIMPOSSIBILITYOFPEPEWITHINTHEMIND"}, {"num": 141, "t": "HAN DYNASTY URN WITH PEPE LOGO", "y": "1993 AD", "mat": "PAINTED CERAMIC", "asset": "MSTRPEPES.HANDYNASTYURNWITHPEPELOGO"}, {"num": 142, "t": "BALLOON PEPE", "y": "1994 AD", "mat": "POLISHED STAINLESS STEEL", "asset": "MSTRPEPES.BALLOONPEPE"}, {"num": 143, "t": "THE CRACKED PEPE", "y": "2001 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.THECRACKEDPEPE"}, {"num": 144, "t": "PEPE WITH GREEN BALLOON", "y": "2002 AD", "mat": "SPRAY PAINT AND STENCIL", "asset": "MSTRPEPES.PEPEWITHGREENBALLOON"}, {"num": 145, "t": "PEPETATO #345", "y": "2010 AD", "mat": "PHOTOGRAPHY", "asset": "MSTRPEPES.PEPETATO"}, {"num": 146, "t": "PEPE COMPANION", "y": "2011 AD", "mat": "PAINTED SCULPTURAL FIGURE", "asset": "MSTRPEPES.PEPECOMPANION"}, {"num": 147, "t": "PEPEPUNK #2317", "y": "2016 AD", "mat": "DIGITAL NFT", "asset": "MSTRPEPES.PEPEPUNK2317"}, {"num": 148, "t": "SIX MAGICK PEPES", "y": "2016 AD", "mat": "MIXED MEDIA INSTALLATION", "asset": "MSTRPEPES.SIXMAGICKPEPES"}, {"num": 149, "t": "RIGHT-CLICK AND SAVE AS PEPE", "y": "2018 AD", "mat": "DIGITAL NFT", "asset": "MSTRPEPES.RIGHTCLICKANDSAVEASPEPE"}, {"num": 150, "t": "64 GALLON PEPE", "y": "2020 AD", "mat": "DIGITAL NFT", "asset": "MSTRPEPES.64GALLONPEPE"}];
+const DOTS  = [{"i":0,"x":52.0,"y":52.0},{"i":1,"x":84.7,"y":52.0},{"i":2,"x":117.3,"y":52.0},{"i":3,"x":150.0,"y":52.0},{"i":4,"x":182.7,"y":52.0},{"i":5,"x":215.3,"y":52.0},{"i":6,"x":248.0,"y":52.0},{"i":7,"x":248.0,"y":52.0},{"i":8,"x":248.0,"y":86.0},{"i":9,"x":248.0,"y":120.0},{"i":10,"x":248.0,"y":154.0},{"i":11,"x":248.0,"y":188.0},{"i":12,"x":248.0,"y":188.0},{"i":13,"x":215.3,"y":188.0},{"i":14,"x":182.7,"y":188.0},{"i":15,"x":150.0,"y":188.0},{"i":16,"x":117.3,"y":188.0},{"i":17,"x":84.7,"y":188.0},{"i":18,"x":52.0,"y":188.0},{"i":19,"x":52.0,"y":188.0},{"i":20,"x":52.0,"y":160.8},{"i":21,"x":52.0,"y":133.6},{"i":22,"x":52.0,"y":106.4},{"i":23,"x":52.0,"y":79.2},{"i":24,"x":52.0,"y":52.0},{"i":25,"x":572.0,"y":52.0},{"i":26,"x":604.7,"y":52.0},{"i":27,"x":637.3,"y":52.0},{"i":28,"x":670.0,"y":52.0},{"i":29,"x":702.7,"y":52.0},{"i":30,"x":735.3,"y":52.0},{"i":31,"x":768.0,"y":52.0},{"i":32,"x":768.0,"y":52.0},{"i":33,"x":768.0,"y":86.0},{"i":34,"x":768.0,"y":120.0},{"i":35,"x":768.0,"y":154.0},{"i":36,"x":768.0,"y":188.0},{"i":37,"x":768.0,"y":188.0},{"i":38,"x":735.3,"y":188.0},{"i":39,"x":702.7,"y":188.0},{"i":40,"x":670.0,"y":188.0},{"i":41,"x":637.3,"y":188.0},{"i":42,"x":604.7,"y":188.0},{"i":43,"x":572.0,"y":188.0},{"i":44,"x":572.0,"y":188.0},{"i":45,"x":572.0,"y":160.8},{"i":46,"x":572.0,"y":133.6},{"i":47,"x":572.0,"y":106.4},{"i":48,"x":572.0,"y":79.2},{"i":49,"x":572.0,"y":52.0},{"i":50,"x":52.0,"y":262.0},{"i":51,"x":87.2,"y":262.0},{"i":52,"x":122.4,"y":262.0},{"i":53,"x":157.6,"y":262.0},{"i":54,"x":192.8,"y":262.0},{"i":55,"x":228.0,"y":262.0},{"i":56,"x":228.0,"y":262.0},{"i":57,"x":228.0,"y":294.7},{"i":58,"x":228.0,"y":327.3},{"i":59,"x":228.0,"y":360.0},{"i":60,"x":228.0,"y":392.7},{"i":61,"x":228.0,"y":425.3},{"i":62,"x":228.0,"y":458.0},{"i":63,"x":228.0,"y":458.0},{"i":64,"x":192.8,"y":458.0},{"i":65,"x":157.6,"y":458.0},{"i":66,"x":122.4,"y":458.0},{"i":67,"x":87.2,"y":458.0},{"i":68,"x":52.0,"y":458.0},{"i":69,"x":52.0,"y":458.0},{"i":70,"x":52.0,"y":418.8},{"i":71,"x":52.0,"y":379.6},{"i":72,"x":52.0,"y":340.4},{"i":73,"x":52.0,"y":301.2},{"i":74,"x":52.0,"y":262.0},{"i":75,"x":592.0,"y":262.0},{"i":76,"x":627.2,"y":262.0},{"i":77,"x":662.4,"y":262.0},{"i":78,"x":697.6,"y":262.0},{"i":79,"x":732.8,"y":262.0},{"i":80,"x":768.0,"y":262.0},{"i":81,"x":768.0,"y":262.0},{"i":82,"x":768.0,"y":294.7},{"i":83,"x":768.0,"y":327.3},{"i":84,"x":768.0,"y":360.0},{"i":85,"x":768.0,"y":392.7},{"i":86,"x":768.0,"y":425.3},{"i":87,"x":768.0,"y":458.0},{"i":88,"x":768.0,"y":458.0},{"i":89,"x":732.8,"y":458.0},{"i":90,"x":697.6,"y":458.0},{"i":91,"x":662.4,"y":458.0},{"i":92,"x":627.2,"y":458.0},{"i":93,"x":592.0,"y":458.0},{"i":94,"x":592.0,"y":458.0},{"i":95,"x":592.0,"y":418.8},{"i":96,"x":592.0,"y":379.6},{"i":97,"x":592.0,"y":340.4},{"i":98,"x":592.0,"y":301.2},{"i":99,"x":592.0,"y":262.0},{"i":100,"x":52.0,"y":532.0},{"i":101,"x":88.0,"y":532.0},{"i":102,"x":124.0,"y":532.0},{"i":103,"x":160.0,"y":532.0},{"i":104,"x":196.0,"y":532.0},{"i":105,"x":232.0,"y":532.0},{"i":106,"x":268.0,"y":532.0},{"i":107,"x":268.0,"y":532.0},{"i":108,"x":268.0,"y":571.0},{"i":109,"x":268.0,"y":610.0},{"i":110,"x":268.0,"y":649.0},{"i":111,"x":268.0,"y":688.0},{"i":112,"x":268.0,"y":688.0},{"i":113,"x":232.0,"y":688.0},{"i":114,"x":196.0,"y":688.0},{"i":115,"x":160.0,"y":688.0},{"i":116,"x":124.0,"y":688.0},{"i":117,"x":88.0,"y":688.0},{"i":118,"x":52.0,"y":688.0},{"i":119,"x":52.0,"y":688.0},{"i":120,"x":52.0,"y":656.8},{"i":121,"x":52.0,"y":625.6},{"i":122,"x":52.0,"y":594.4},{"i":123,"x":52.0,"y":563.2},{"i":124,"x":52.0,"y":532.0},{"i":125,"x":552.0,"y":532.0},{"i":126,"x":588.0,"y":532.0},{"i":127,"x":624.0,"y":532.0},{"i":128,"x":660.0,"y":532.0},{"i":129,"x":696.0,"y":532.0},{"i":130,"x":732.0,"y":532.0},{"i":131,"x":768.0,"y":532.0},{"i":132,"x":768.0,"y":532.0},{"i":133,"x":768.0,"y":571.0},{"i":134,"x":768.0,"y":610.0},{"i":135,"x":768.0,"y":649.0},{"i":136,"x":768.0,"y":688.0},{"i":137,"x":768.0,"y":688.0},{"i":138,"x":732.0,"y":688.0},{"i":139,"x":696.0,"y":688.0},{"i":140,"x":660.0,"y":688.0},{"i":141,"x":624.0,"y":688.0},{"i":142,"x":588.0,"y":688.0},{"i":143,"x":552.0,"y":688.0},{"i":144,"x":552.0,"y":688.0},{"i":145,"x":552.0,"y":656.8},{"i":146,"x":552.0,"y":625.6},{"i":147,"x":552.0,"y":594.4},{"i":148,"x":552.0,"y":563.2},{"i":149,"x":552.0,"y":532.0}];
+let walletAddress = null;
+let selectedIdx   = null;
+
+// ── VIEW SWITCHING ──────────────────────────────────────
+function showMuseum() {
+  document.getElementById('bookView').classList.add('hidden');
+  document.getElementById('museumView').classList.add('visible');
+  buildDots();
+}
+function showBook() {
+  document.getElementById('museumView').classList.remove('visible');
+  document.getElementById('bookView').classList.remove('hidden');
+}
+
+// ── THREE.JS BOOK ───────────────────────────────────────
+const canvas = document.getElementById('bookCanvas');
+canvas.width = 280; canvas.height = 280;
+const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+renderer.setSize(280, 280);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(0, 0.3, 3.5);
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dl = new THREE.DirectionalLight(0xfff5e0, 1.2);
+dl.position.set(3,5,3); scene.add(dl);
+const fl = new THREE.DirectionalLight(0xc8dca8, 0.4);
+fl.position.set(-3,0,-2); scene.add(fl);
+
+let bookModel = null;
+let autoRotate = true;
+let isDragging = false, mouseDownX = 0, mouseDownY = 0;
+let rotX = 0.15, rotY = 0.3, velX = 0, velY = 0.004;
+let mouseDownTime = 0, dragDist = 0;
+
+const GLTFScript = document.createElement('script');
+GLTFScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+GLTFScript.onload = () => {
+  new THREE.GLTFLoader().load('masterpepes_book.glb',
+    gltf => {
+      bookModel = gltf.scene;
+      const box = new THREE.Box3().setFromObject(bookModel);
+      const center = box.getCenter(new THREE.Vector3());
+      const size   = box.getSize(new THREE.Vector3());
+      const scale  = 2.0 / Math.max(size.x, size.y, size.z);
+      bookModel.scale.setScalar(scale);
+      bookModel.position.sub(center.multiplyScalar(scale));
+      scene.add(bookModel);
+      document.getElementById('bookLoading').style.display = 'none';
+      document.getElementById('bookHint').style.display = 'block';
+    },
+    p => { document.getElementById('bookLoading').textContent = 'Loading ' + Math.round(p.loaded/p.total*100) + '%'; },
+    () => {
+      // fallback box
+      const geo = new THREE.BoxGeometry(1, 1.4, 0.18);
+      const mat = new THREE.MeshStandardMaterial({color:0x1A3A0A, roughness:0.7});
+      bookModel = new THREE.Mesh(geo, mat);
+      scene.add(bookModel);
+      document.getElementById('bookLoading').style.display = 'none';
+      document.getElementById('bookHint').style.display = 'block';
+    }
+  );
+};
+document.head.appendChild(GLTFScript);
+
+// Mouse/touch for book
+canvas.addEventListener('mousedown', e => {
+  isDragging = true; autoRotate = false;
+  mouseDownX = e.clientX; mouseDownY = e.clientY;
+  mouseDownTime = Date.now(); dragDist = 0;
+  velX = 0; velY = 0;
+});
+canvas.addEventListener('mousemove', e => {
+  if(!isDragging) return;
+  const dx = e.clientX - mouseDownX;
+  const dy = e.clientY - mouseDownY;
+  dragDist += Math.abs(dx) + Math.abs(dy);
+  rotY += dx * 0.005; rotX += dy * 0.005;
+  rotX = Math.max(-0.9, Math.min(0.9, rotX));
+  velY = dx * 0.005; velX = dy * 0.005;
+  mouseDownX = e.clientX; mouseDownY = e.clientY;
+});
+canvas.addEventListener('mouseup', () => {
+  isDragging = false;
+  if(dragDist < 5 && Date.now() - mouseDownTime < 400) {
+    showMuseum();
+  } else {
+    setTimeout(() => { autoRotate = true; }, 1800);
+  }
+});
+canvas.addEventListener('mouseleave', () => {
+  if(isDragging) { isDragging = false; setTimeout(() => { autoRotate = true; }, 1800); }
+});
+canvas.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  isDragging = true; autoRotate = false;
+  mouseDownX = t.clientX; mouseDownY = t.clientY;
+  mouseDownTime = Date.now(); dragDist = 0;
+}, {passive:true});
+canvas.addEventListener('touchmove', e => {
+  if(!isDragging) return;
+  const t = e.touches[0];
+  const dx = t.clientX - mouseDownX, dy = t.clientY - mouseDownY;
+  dragDist += Math.abs(dx) + Math.abs(dy);
+  rotY += dx * 0.005; rotX += dy * 0.005;
+  rotX = Math.max(-0.9, Math.min(0.9, rotX));
+  mouseDownX = t.clientX; mouseDownY = t.clientY;
+}, {passive:true});
+canvas.addEventListener('touchend', () => {
+  isDragging = false;
+  if(dragDist < 8 && Date.now() - mouseDownTime < 400) showMuseum();
+  else setTimeout(() => { autoRotate = true; }, 1800);
+});
+
+(function animate() {
+  requestAnimationFrame(animate);
+  if(bookModel) {
+    if(autoRotate && !isDragging) rotY += 0.005;
+    else if(!isDragging) { velY *= 0.94; velX *= 0.94; rotY += velY; rotX += velX; }
+    bookModel.rotation.y = rotY;
+    bookModel.rotation.x = rotX;
+  }
+  renderer.render(scene, camera);
+})();
+
+// ── COUNTDOWN ───────────────────────────────────────────
+if(SHOW_COUNTDOWN) {
+  document.getElementById('cdWrap').classList.add('visible');
+  function tick() {
+    const diff = new Date(DROP_DATE) - new Date();
+    if(diff <= 0) { document.getElementById('cdWrap').innerHTML = '<div style="font-size:10px;letter-spacing:0.3em;color:var(--gold2);text-align:center">Drop Is Live</div>'; return; }
+    const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+    ['cdD','cdH','cdM','cdS'].forEach((id,i) => document.getElementById(id).textContent = String([d,h,m,s][i]).padStart(2,'0'));
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+// ── MUSEUM DOTS ─────────────────────────────────────────
+const NS = 'http://www.w3.org/2000/svg';
+let dotsBuilt = false;
+
+function buildDots() {
+  if(dotsBuilt) return; dotsBuilt = true;
+  const layer = document.getElementById('dotsLayer');
+  DOTS.forEach(d => {
+    const p = PAGES[d.i];
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('transform', `translate(${d.x},${d.y})`);
+    g.setAttribute('cursor', 'pointer');
+    g.setAttribute('data-idx', d.i);
+
+    // tick mark (like a museum plan marker)
+    const tick = document.createElementNS(NS, 'rect');
+    tick.setAttribute('x', '-1'); tick.setAttribute('y', '-7');
+    tick.setAttribute('width', '2'); tick.setAttribute('height', '6');
+    tick.setAttribute('fill', '#2A5A2A');
+    g.appendChild(tick);
+
+    // dot
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('r', '4.5');
+    dot.setAttribute('fill', '#0F2A0F');
+    dot.setAttribute('stroke', '#2A5A2A');
+    dot.setAttribute('stroke-width', '0.8');
+    dot.classList.add('mdot');
+    dot.id = `dot-${d.i}`;
+    g.appendChild(dot);
+
+    // number
+    const num = document.createElementNS(NS, 'text');
+    num.setAttribute('x', '0'); num.setAttribute('y', '3');
+    num.setAttribute('fill', '#4A8A4A');
+    num.setAttribute('font-family', 'Tenor Sans,serif');
+    num.setAttribute('font-size', '3.8');
+    num.setAttribute('text-anchor', 'middle');
+    num.textContent = p.num;
+    g.appendChild(num);
+
+    g.addEventListener('mouseenter', e => showTip(e, d.i));
+    g.addEventListener('mouseleave', hideTip);
+    g.addEventListener('click', e => { e.stopPropagation(); selectWork(d.i); });
+    layer.appendChild(g);
+  });
+}
+
+// Tooltip
+const tooltip = document.getElementById('tooltip');
+const mapWrap  = document.querySelector('.map-wrap');
+
+function showTip(e, idx) {
+  const p = PAGES[idx];
+  document.getElementById('ttNum').textContent   = 'No. '+p.num;
+  document.getElementById('ttTitle').textContent = p.t;
+  document.getElementById('ttYear').textContent  = p.y;
+  tooltip.style.display = 'block';
+  const r = mapWrap.getBoundingClientRect();
+  let tx = e.clientX - r.left + 14;
+  let ty = e.clientY - r.top  - 44;
+  if(tx + 200 > r.width)  tx -= 210;
+  if(ty < 0) ty = 4;
+  tooltip.style.left = tx+'px'; tooltip.style.top = ty+'px';
+  const dot = document.getElementById(`dot-${idx}`);
+  if(dot && idx !== selectedIdx) { dot.setAttribute('fill','#1A4A1A'); dot.setAttribute('r','6'); }
+}
+function hideTip(e) {
+  tooltip.style.display = 'none';
+  const idx = parseInt(e.currentTarget.dataset.idx);
+  if(idx !== selectedIdx) resetDot(idx);
+}
+function resetDot(idx) {
+  const dot = document.getElementById(`dot-${idx}`);
+  if(dot) { dot.setAttribute('fill','#0F2A0F'); dot.setAttribute('r','4.5'); dot.setAttribute('stroke','#2A5A2A'); }
+}
+function selectWork(idx) {
+  if(selectedIdx !== null && selectedIdx !== idx) resetDot(selectedIdx);
+  selectedIdx = idx;
+  const dot = document.getElementById(`dot-${idx}`);
+  if(dot) { dot.setAttribute('fill','#C8901A'); dot.setAttribute('r','7'); dot.setAttribute('stroke','#E8B030'); }
+  const p = PAGES[idx];
+  document.getElementById('apNum').textContent   = 'No. '+p.num;
+  document.getElementById('apTitle').textContent = p.t;
+  document.getElementById('apYear').textContent  = p.y+' · '+p.mat;
+  document.getElementById('apAsset').textContent = p.asset;
+  document.getElementById('apLink').href = 'https://cp20.tokenscan.io/asset/'+p.asset;
+  const pdfPage = p.num + 3;
+  document.getElementById('apPdfLink').href = 'MASTERPEPESBOOK.pdf#page='+pdfPage;
+  document.getElementById('assetPanel').classList.add('show');
+}
+function closePanel() {
+  if(selectedIdx !== null) resetDot(selectedIdx);
+  selectedIdx = null;
+  document.getElementById('assetPanel').classList.remove('show');
+}
+document.getElementById('museumSvg').addEventListener('click', closePanel);
+
+// ── METAMASK ────────────────────────────────────────────
+async function connectWallet() {
+  if(typeof window.ethereum==='undefined'){alert('MetaMask not detected.\nInstall from metamask.io and refresh.');return;}
+  try{
+    const accounts = await window.ethereum.request({method:'eth_requestAccounts'});
+    walletAddress  = accounts[0];
+    const chainId  = await window.ethereum.request({method:'eth_chainId'});
+    const net      = chainId==='0x1' ? 'Ethereum Mainnet' : 'Wrong Network — Switch to Mainnet';
+    const short    = walletAddress.slice(0,6)+'...'+walletAddress.slice(-4);
+    document.getElementById('wsAddr').textContent    = short.toUpperCase();
+    document.getElementById('wsNetwork').textContent = net.toUpperCase();
+    document.getElementById('walletStatus').classList.add('show');
+    document.getElementById('mmBtn').style.display   = 'none';
+    document.getElementById('mmTopBtn').textContent  = short.toUpperCase();
+    document.getElementById('mmTopBtn').classList.add('connected');
+    loadEth(); checkReady();
+    window.ethereum.on('accountsChanged', a => { if(!a.length) disconnectWallet(); else { walletAddress=a[0]; connectWallet(); } });
+  }catch(e){if(e.code===4001)alert('Cancelled.');else alert('Error: '+e.message);}
+}
+function disconnectWallet(){
+  walletAddress = null;
+  document.getElementById('walletStatus').classList.remove('show');
+  document.getElementById('mmBtn').style.display   = 'block';
+  document.getElementById('mmTopBtn').textContent  = 'Connect Wallet';
+  document.getElementById('mmTopBtn').classList.remove('connected');
+  checkReady();
+}
+function checkReady(){
+  const ok = document.getElementById('addr').value.trim().length>25 && walletAddress!==null;
+  document.getElementById('btn').classList.toggle('on',ok);
+  document.getElementById('pbox').classList.toggle('on',ok);
+  if(ok) loadEth();
+}
+async function loadEth(){
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    const d=await r.json();
+    document.getElementById('usd').textContent='~$'+d.ethereum.usd.toLocaleString()+' USD at current rate';
+  }catch(e){document.getElementById('usd').textContent='Current ETH market rate';}
+}
+function bid(){
+  const btc=document.getElementById('addr').value.trim();
+  alert('Smart contract coming soon!\n\nETH Wallet: '+walletAddress+'\nBTC/XCP Address: '+btc+'\n\nFollow @robnessofficial on X for launch date.');
+}
+</script>
+</body>
+</html>

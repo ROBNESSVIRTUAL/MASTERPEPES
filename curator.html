@@ -3,69 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MASTERPEPES MUSEUM</title>
+<title>MASTERPEPES — Museum Curator</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&family=Tenor+Sans&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-transform:uppercase;letter-spacing:0.08em;color:#E8F0D8}
-#c{display:block;width:100vw;height:100vh}
-#loading{position:fixed;inset:0;background:#060D06;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 1.2s}
-#loading.fade{opacity:0;pointer-events:none}
-.ld-logo{font-family:'Cinzel Decorative',serif;font-size:22px;letter-spacing:0.3em;color:#C8901A;margin-bottom:6px}
-.ld-sub{font-size:9px;letter-spacing:0.5em;color:#3A6A3A;margin-bottom:32px}
-.ld-bar{width:260px;height:1px;background:#182E18;margin-bottom:10px}
-.ld-fill{height:1px;background:#C8901A;width:0%;transition:width 0.4s}
-.ld-txt{font-size:8px;letter-spacing:0.25em;color:#2A5A2A}
-#intro{position:fixed;inset:0;background:rgba(4,8,4,0.93);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:90;cursor:pointer}
-#intro.show{display:flex}
-.intro-ring{width:84px;height:84px;border:0.5px solid #C8901A;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:22px;animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.55;transform:scale(0.96)}}
-.intro-icon{font-size:26px;color:#C8901A}
-.intro-cta{font-size:11px;letter-spacing:0.5em;color:#C8901A;margin-bottom:10px}
-.intro-hint{font-size:8px;letter-spacing:0.22em;color:#2A5A2A;text-align:center;line-height:2.2}
-#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;pointer-events:none;display:none}
-#cross::before,#cross::after{content:'';position:absolute;background:rgba(200,144,26,0.8)}
-#cross::before{width:1px;height:100%;left:50%;transform:translateX(-50%)}
-#cross::after{width:100%;height:1px;top:50%;transform:translateY(-50%)}
-#rlabel{position:fixed;top:20px;left:50%;transform:translateX(-50%);text-align:center;display:none;pointer-events:none}
-.rl-n{font-size:11px;letter-spacing:0.45em;color:#C8901A}
-.rl-s{font-size:8px;letter-spacing:0.3em;color:#FFB0A0;margin-top:3px}
-#ainfo{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:rgba(3,6,3,0.97);border:0.5px solid #C8901A;padding:14px 30px;text-align:center;display:none;pointer-events:none;min-width:300px;max-width:540px}
-.ai-n{font-size:8px;letter-spacing:0.3em;color:#C8901A;margin-bottom:5px}
-.ai-t{font-size:14px;letter-spacing:0.04em;color:#E8F0D8;margin-bottom:5px;line-height:1.35;text-transform:none}
-.ai-y{font-size:9px;letter-spacing:0.2em;color:#4A8A4A}
-.ai-m{font-size:8px;letter-spacing:0.06em;color:#2A5A2A;margin-top:3px;text-transform:none}
-#ctrl{position:fixed;bottom:20px;right:20px;font-size:7px;letter-spacing:0.2em;color:#1E3A1E;line-height:2.4;text-align:right;display:none;pointer-events:none}
-#mmap{position:fixed;bottom:20px;left:20px;display:none}
-#mmap canvas{border:0.5px solid #1E3A1E;background:rgba(3,6,3,0.85)}
-#back{position:fixed;top:20px;left:20px;font-size:9px;letter-spacing:0.22em;color:rgba(200,144,26,0.75);border:0.5px solid rgba(200,144,26,0.25);padding:7px 16px;cursor:pointer;background:rgba(3,6,3,0.75);text-decoration:none;display:none;transition:all 0.2s}
-#back:hover{border-color:#C8901A;background:rgba(200,144,26,0.1)}
+:root{--red:#E0342F;--gold:#C8901A;--gold2:#E8B030;--deep:#060D06;--panel:#0D1A0D;--text:#E8F0D8;--dim:#4A7A4A;--border:#1A3A1A}
+body{background:var(--deep);font-family:'Tenor Sans',serif;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* TOP BAR */
+.topbar{height:50px;background:var(--red);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;border-bottom:2px solid #A02020}
+.topbar-title{font-family:'Cinzel Decorative',serif;font-size:13px;color:#FFD700;letter-spacing:0.2em}
+.topbar-actions{display:flex;gap:10px}
+.btn{font-family:'Tenor Sans',serif;font-size:9px;letter-spacing:0.2em;padding:6px 16px;cursor:pointer;border:0.5px solid;transition:all 0.2s;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-gold{background:#FFD700;color:var(--deep);border-color:#FFD700}.btn-gold:hover{background:#FFE74C}
+.btn-outline{background:none;color:rgba(255,255,255,0.8);border-color:rgba(255,255,255,0.4)}.btn-outline:hover{border-color:#fff;color:#fff}
+.btn-red{background:var(--red);color:#fff;border-color:rgba(255,255,255,0.5)}.btn-red:hover{background:#C02020}
+
+/* LAYOUT */
+.main{flex:1;display:flex;overflow:hidden}
+
+/* SIDEBAR — artwork pool */
+.sidebar{width:280px;flex-shrink:0;background:#050C05;border-right:0.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-head{padding:12px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sidebar-title{font-size:9px;letter-spacing:0.3em;color:var(--gold)}
+.search{width:100%;padding:6px 10px;background:#0A140A;border:0.5px solid var(--border);color:var(--text);font-family:'Tenor Sans',serif;font-size:9px;letter-spacing:0.08em;outline:none;margin-top:8px;text-transform:none}
+.search::placeholder{color:#2A4A2A}
+.pool{flex:1;overflow-y:auto;padding:8px}
+.pool::-webkit-scrollbar{width:4px}.pool::-webkit-scrollbar-track{background:#050C05}.pool::-webkit-scrollbar-thumb{background:#1A3A1A}
+
+/* ARTWORK CHIP in pool */
+.chip{display:flex;align-items:center;gap:8px;padding:6px 8px;border:0.5px solid var(--border);margin-bottom:4px;cursor:grab;background:#0A140A;transition:all 0.15s;user-select:none;border-radius:2px}
+.chip:active{cursor:grabbing;opacity:0.7}
+.chip.dragging{opacity:0.4;border-color:var(--gold)}
+.chip.placed{opacity:0.35;border-color:#0F1F0F;background:#070F07}
+.chip-thumb{width:44px;height:36px;object-fit:cover;background:#142814;flex-shrink:0;border:0.5px solid #1A3A1A}
+.chip-thumb.portrait-thumb{width:28px;height:44px}
+.chip-info{flex:1;min-width:0}
+.chip-num{font-size:8px;color:var(--gold);letter-spacing:0.2em}
+.chip-title{font-size:8px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;text-transform:none;letter-spacing:0.04em}
+.chip-year{font-size:7px;color:var(--dim);margin-top:1px}
+
+/* CANVAS AREA */
+.canvas-area{flex:1;overflow:auto;padding:20px;background:#060D06}
+
+/* WING SECTION */
+.wing{margin-bottom:28px;border:0.5px solid var(--border);background:#080E08}
+.wing-head{background:#0D1A0D;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--border)}
+.wing-name{font-size:10px;letter-spacing:0.3em;color:var(--gold)}
+.wing-sub{font-size:8px;letter-spacing:0.15em;color:var(--dim);margin-top:2px}
+.wing-count{font-size:8px;letter-spacing:0.15em;color:var(--dim)}
+
+.wall{padding:10px 14px;border-bottom:0.5px solid #0A160A}
+.wall:last-child{border-bottom:none}
+.wall-label{font-size:8px;letter-spacing:0.25em;color:var(--dim);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.wall-label span{color:var(--gold2);font-size:7px}
+
+/* DROP ZONE (the wall's slot row) */
+.wall-slots{display:flex;flex-wrap:wrap;gap:8px;min-height:68px;padding:6px;background:#060D06;border:0.5px dashed #0F1F0F;transition:border-color 0.2s}
+.wall-slots.drag-over{border-color:var(--gold);background:#0A1A08}
+.wall-slots.drag-over::after{content:'Drop here';font-size:8px;color:var(--gold);letter-spacing:0.2em;display:flex;align-items:center;justify-content:center;width:100%;opacity:0.6}
+
+/* Placed artwork slot */
+.slot{position:relative;cursor:grab;border:0.5px solid #1A3A1A;background:#0A140A;transition:all 0.15s;user-select:none}
+.slot:hover{border-color:var(--gold)}
+.slot.landscape{width:80px;height:64px}
+.slot.portrait{width:48px;height:80px}
+.slot img{width:100%;height:100%;object-fit:cover;display:block}
+.slot .slot-num{position:absolute;bottom:2px;left:2px;font-size:6px;color:#FFD700;letter-spacing:0.1em;background:rgba(0,0,0,0.7);padding:1px 3px;line-height:1}
+.slot .slot-remove{position:absolute;top:1px;right:1px;width:14px;height:14px;background:rgba(200,0,0,0.8);color:#fff;font-size:9px;display:none;align-items:center;justify-content:center;cursor:pointer;line-height:1}
+.slot:hover .slot-remove{display:flex}
+.slot .slot-orient{position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:rgba(200,144,26,0.85);color:var(--deep);font-size:7px;display:none;align-items:center;justify-content:center;cursor:pointer;font-weight:bold}
+.slot:hover .slot-orient{display:flex}
+
+/* UNPLACED banner */
+.unplaced-banner{background:#1A0505;border:0.5px solid #5A1010;padding:8px 14px;margin:0 14px 10px;font-size:8px;letter-spacing:0.15em;color:#FF7060;display:none}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(200,144,26,0.95);color:var(--deep);font-size:9px;letter-spacing:0.2em;padding:8px 20px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:999}
+#toast.show{opacity:1}
 </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div id="loading">
-  <div class="ld-logo">MASTERPEPES</div>
-  <div class="ld-sub">Museum &middot; 150 Works &middot; 6 Wings</div>
-  <div class="ld-bar"><div class="ld-fill" id="ldfill"></div></div>
-  <div class="ld-txt" id="ldtxt">Building galleries&hellip;</div>
-</div>
-<div id="intro">
-  <div class="intro-ring"><div class="intro-icon">&#9654;</div></div>
-  <div class="intro-cta">Click to Enter the Museum</div>
-  <div class="intro-hint">
-    WASD &middot; Walk &nbsp;&nbsp; Mouse Drag &middot; Look &nbsp;&nbsp; ESC &middot; Release<br>
-    <span style="color:#C8901A">&#9888; Serve via web server for artwork images</span><br>
-    <span style="font-size:7px;color:#1A4A1A">python -m http.server 8000 &nbsp;&rarr;&nbsp; localhost:8000</span>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Masterpepes — Museum Curator</div>
+    <div style="font-size:7px;letter-spacing:0.2em;color:rgba(255,255,255,0.5);margin-top:2px">Drag artworks onto walls &middot; Click &#8597; to toggle portrait/landscape &middot; Click &times; to remove</div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-outline" onclick="resetLayout()">&#8635; Reset to Default</button>
+    <button class="btn btn-outline" onclick="clearAll()">&#9746; Clear All</button>
+    <button class="btn btn-gold" onclick="exportLayout()">&#8595; Export Layout JSON</button>
+    <a href="index.html" class="btn btn-outline">&#8592; Back</a>
   </div>
 </div>
-<div id="cross"></div>
-<div id="rlabel"><div class="rl-n" id="rln"></div><div class="rl-s" id="rls"></div></div>
-<div id="ainfo"><div class="ai-n" id="ain"></div><div class="ai-t" id="ait"></div><div class="ai-y" id="aiy"></div><div class="ai-m" id="aim"></div></div>
-<div id="ctrl">W A S D &middot; MOVE<br>MOUSE DRAG &middot; LOOK<br>ESC &middot; RELEASE</div>
-<div id="mmap"><canvas id="mm" width="175" height="175"></canvas></div>
-<a href="index.html" id="back">&#8592; Exit Museum</a>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<div class="main">
+  <!-- SIDEBAR: unplaced artwork pool -->
+  <div class="sidebar">
+    <div class="sidebar-head">
+      <div>
+        <div class="sidebar-title">Artwork Pool</div>
+        <div style="font-size:7px;color:var(--dim);margin-top:3px">Drag onto a wall to place</div>
+        <input class="search" id="searchBox" placeholder="Search title or number..." oninput="filterPool()">
+      </div>
+    </div>
+    <div class="pool" id="pool"></div>
+  </div>
+
+  <!-- CANVAS: wings + walls -->
+  <div class="canvas-area" id="canvasArea"></div>
+</div>
+
+<div id="toast"></div>
+
 <script>
 const PAGES=[
   {num:1,asset:'MSTRPEPES.PEPEOFWILLENDORF',t:'Pepe of Willendorf',y:'24000 BC',mat:'Limestone',url:'https://gateway.ar.io/sgpb1VRo6BYovy7XbM7MnBL_hYKNlkKsaCUVEbokRX0/PEPEOFWILLENDORF.png'},
@@ -220,511 +271,243 @@ const PAGES=[
   {num:150,asset:'MSTRPEPES.64GALLONPEPE',t:'64 Gallon Pepe',y:'2020 AD',mat:'Digital NFT',url:'https://gateway.ar.io/x-r1V7YWWume0c4lbTowovvApQqPt40NT3Inmw74ozk/64GALLONPEPE.png'}
 ];
 
-// ── RENDERER ──────────────────────────────────────────────────────────────────
-const rc=document.getElementById('c');
-const renderer=new THREE.WebGLRenderer({canvas:rc,antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(innerWidth,innerHeight);
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0xB8E898); // pastel green fallback
-scene.fog=new THREE.FogExp2(0xC0EAA0,0.0018); // soft pastel green haze
-const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,0.1,800);
-camera.rotation.order='YXZ';
-camera.position.set(0,1.7,180);
-window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();});
-
-// ── DREAMY PEPE GREEN SKY ─────────────────────────────────────────────────────
-(function buildSky(){
-  const C=document.createElement('canvas');C.width=2048;C.height=1024;
-  const ctx=C.getContext('2d');
-
-  // Base pastel green gradient
-  const g=ctx.createLinearGradient(0,0,0,1024);
-  g.addColorStop(0,'#CCF5AA');    // zenith — lightest mint
-  g.addColorStop(0.3,'#B8EC98');
-  g.addColorStop(0.65,'#AADC88');
-  g.addColorStop(1,'#C0EAA0');    // horizon
-  ctx.fillStyle=g;ctx.fillRect(0,0,2048,1024);
-
-  // Dreamy sun glow — pale chartreuse
-  const sun=ctx.createRadialGradient(1380,160,0,1380,160,340);
-  sun.addColorStop(0,'rgba(235,255,190,0.6)');
-  sun.addColorStop(0.4,'rgba(210,250,170,0.28)');
-  sun.addColorStop(1,'rgba(200,240,160,0)');
-  ctx.fillStyle=sun;ctx.fillRect(0,0,2048,1024);
-
-  // Green dreamy clouds — scattered puffs of darker green
-  const clouds=[
-    [180,  90,  8, 95, '#6DB848',0.72],[600,  70,  6,115,'#60AC40',0.65],
-    [1050,140,  9,100,'#72C050',0.70],[1480, 85,  5,125,'#58A838',0.62],
-    [1870,180,  7, 88,'#68B844',0.68],[80,  260,  5, 72,'#70BA4C',0.52],
-    [420, 300,  8,105,'#5CAA3C',0.58],[870, 240,  6,118,'#65B245',0.62],
-    [1280,290,  7, 92,'#62B040',0.55],[1680,255,  5, 78,'#5AA83A',0.50],
-    [320, 400,  6, 68,'#6CBB48',0.42],[740, 380,  5, 82,'#5EAC3E',0.46],
-    [1120,370,  8, 75,'#64B242',0.44],[1520,420,  4, 95,'#58A438',0.40],
-    // Wispy high ones
-    [480,  42,  4, 52,'#98DC78',0.28],[980,  25,  3, 60,'#90D870',0.24],
-    [1550, 50,  5, 55,'#9ADD75',0.30],[1200, 95,  3, 45,'#88D068',0.22],
-  ];
-
-  clouds.forEach(([cx,cy,puffs,sz,col,alpha])=>{
-    const r=parseInt(col.slice(1,3),16),gv=parseInt(col.slice(3,5),16),b=parseInt(col.slice(5,7),16);
-    // Compute random puff offsets once per cloud
-    const puffList=Array.from({length:puffs},()=>[
-      (Math.random()-.5)*sz*1.7,(Math.random()-.5)*sz*0.48,
-      sz*(0.48+Math.random()*0.72),sz*(0.30+Math.random()*0.40)
-    ]);
-    // Soft glow pass
-    puffList.forEach(([dx,dy,ew,eh])=>{
-      const cg=ctx.createRadialGradient(cx+dx,cy+dy,0,cx+dx,cy+dy,ew*1.2);
-      cg.addColorStop(0,`rgba(${r},${gv},${b},${alpha*0.85})`);
-      cg.addColorStop(0.55,`rgba(${r},${gv},${b},${alpha*0.45})`);
-      cg.addColorStop(1,`rgba(${r},${gv},${b},0)`);
-      ctx.fillStyle=cg;ctx.beginPath();ctx.ellipse(cx+dx,cy+dy,ew*1.2,eh*1.15,0,0,Math.PI*2);ctx.fill();
-    });
-    // Crisp core pass
-    puffList.forEach(([dx,dy,ew,eh])=>{
-      ctx.fillStyle=`rgba(${r},${gv},${b},${alpha*0.75})`;
-      ctx.beginPath();ctx.ellipse(cx+dx,cy+dy,ew,eh,0.06,0,Math.PI*2);ctx.fill();
-    });
-  });
-
-  // Dreamy iridescent shimmer overlay
-  const shimmer=ctx.createRadialGradient(1024,350,0,1024,350,850);
-  shimmer.addColorStop(0,'rgba(180,255,160,0.10)');
-  shimmer.addColorStop(0.5,'rgba(160,240,140,0.05)');
-  shimmer.addColorStop(1,'rgba(140,220,120,0)');
-  ctx.fillStyle=shimmer;ctx.fillRect(0,0,2048,1024);
-
-  const skyTex=new THREE.CanvasTexture(C);
-  const skyGeo=new THREE.SphereGeometry(580,48,24);
-  const skyMat=new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,depthWrite:false,fog:false});
-  scene.add(new THREE.Mesh(skyGeo,skyMat));
-})();
-
-// ── LIGHTING ──────────────────────────────────────────────────────────────────
-scene.add(new THREE.AmbientLight(0xC8F0A0,0.85));  // green-tinted ambient
-const sun=new THREE.DirectionalLight(0xEEFFD0,2.0);sun.position.set(80,200,60);scene.add(sun);
-scene.add(new THREE.HemisphereLight(0xAAE880,0xE0342F,0.6));  // green sky / red ground bounce
-[[-150,-170],[150,-170],[0,-170],[-150,10],[150,10],[0,10],
- [-150,200],[150,200],[0,200],[0,260],[-150,300],[150,300]].forEach(([x,z])=>{
-  const l=new THREE.PointLight(0xEEFFDD,0.55,220);l.position.set(x,12,z);scene.add(l);
-});
-
-// ── MATERIALS ─────────────────────────────────────────────────────────────────
-function makeRedFloor(){
-  const C=document.createElement('canvas');C.width=C.height=512;
-  const ctx=C.getContext('2d');
-  ctx.fillStyle='#E0342F';ctx.fillRect(0,0,512,512);
-  ctx.strokeStyle='rgba(180,20,15,0.3)';ctx.lineWidth=1.5;
-  for(let i=0;i<=512;i+=64){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,512);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(512,i);ctx.stroke();}
-  for(let tx=0;tx<8;tx++)for(let ty=0;ty<8;ty++){
-    const grd=ctx.createRadialGradient(tx*64+20,ty*64+16,0,tx*64+32,ty*64+32,36);
-    grd.addColorStop(0,'rgba(255,120,100,0.18)');grd.addColorStop(1,'rgba(255,120,100,0)');
-    ctx.fillStyle=grd;ctx.fillRect(tx*64,ty*64,64,64);
-  }
-  const t=new THREE.CanvasTexture(C);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(40,50);return t;
-}
-function makePlaceholder(work){
-  const C=document.createElement('canvas');C.width=512;C.height=512;
-  const ctx=C.getContext('2d');
-  ctx.fillStyle='#C02820';ctx.fillRect(0,0,512,512);
-  ctx.strokeStyle='#DAA520';ctx.lineWidth=6;ctx.strokeRect(8,8,496,496);
-  ctx.strokeStyle='rgba(218,165,32,0.4)';ctx.lineWidth=2;ctx.strokeRect(22,22,468,468);
-  ctx.fillStyle='#FFD700';ctx.font='bold 36px Arial';ctx.textAlign='center';
-  ctx.fillText('No. '+work.num,256,80);
-  ctx.fillStyle='#FFE4C4';ctx.font='24px Arial';
-  const words=work.t.split(' ');let line='',y=150;
-  words.forEach(w=>{const test=line+w+' ';if(ctx.measureText(test).width>460&&line){ctx.fillText(line.trim(),256,y);line=w+' ';y+=34;}else line=test;});
-  ctx.fillText(line.trim(),256,y);
-  ctx.fillStyle='rgba(255,215,0,0.7)';ctx.font='22px Arial';ctx.fillText(work.y,256,420);
-  ctx.fillStyle='rgba(255,228,196,0.5)';ctx.font='18px Arial';ctx.fillText('Walk closer to load',256,460);
-  return new THREE.CanvasTexture(C);
-}
-
-const floorMat=new THREE.MeshLambertMaterial({map:makeRedFloor()});
-const wallMat =new THREE.MeshLambertMaterial({color:0xE0342F,side:THREE.DoubleSide});
-const moldMat =new THREE.MeshLambertMaterial({color:0xC02018});
-const frameHi =new THREE.MeshLambertMaterial({color:0xFFD700});
-const frameLo =new THREE.MeshLambertMaterial({color:0xDAA520});
-
-// ── GEOMETRY ─────────────────────────────────────────────────────────────────
-// Layout (world units):
-//   x outer: ±250,  x dividers: ±40
-//   Wing x: 210 wide each (±40 to ±250)
-//   z dividers: z=-80 (I/II south), z=+120 (III/IV south / V/VI north)
-//   Wing I/II:   z -250..-80  (170 deep)
-//   Wings III/IV: z -100..+120  (220 deep, rotunda z=-100..+120)
-//   Wings V/VI:  z +120..+300  (180 deep)
-//   Entrance:    x -40..+40,  z +120..+340
-
-const H=18, WT=0.5;
-const colliders=[];
-function addBox(w,h,d,mat,x,y,z,col=true){
-  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
-  m.position.set(x,y,z);scene.add(m);if(col)colliders.push(m);return m;
-}
-function segs(a,b,gaps){
-  const gs=[...gaps].sort((p,q)=>p[0]-q[0]);const out=[];let cur=a;
-  gs.forEach(([g1,g2])=>{if(g1>cur)out.push([cur,g1]);cur=g2;});
-  if(cur<b)out.push([cur,b]);return out;
-}
-function wallX(xa,xb,z,gaps=[]){
-  segs(xa,xb,gaps).forEach(([a,b])=>{
-    const l=b-a,cx=(a+b)/2;
-    addBox(l,H,WT,wallMat,cx,H/2,z);
-    addBox(l,0.9,WT+0.05,moldMat,cx,0.45,z,false);
-    addBox(l,0.9,WT+0.05,moldMat,cx,H-0.45,z,false);
-  });
-}
-function wallZ(x,za,zb,gaps=[]){
-  segs(za,zb,gaps).forEach(([a,b])=>{
-    const l=b-a,cz=(a+b)/2;
-    addBox(WT,H,l,wallMat,x,H/2,cz);
-    addBox(WT+0.05,0.9,l,moldMat,x,0.45,cz,false);
-    addBox(WT+0.05,0.9,l,moldMat,x,H-0.45,cz,false);
-  });
-}
-
-// Floor — single enormous slab
-addBox(502,0.25,594,floorMat,0,-0.12,45,false);
-
-// Outer perimeter
-wallX(-250,250,-250); wallX(-250,250,340);
-wallZ(-250,-250,340); wallZ(250,-250,340);
-
-// x dividers at x=±40
-// doors: z=-30..+30 (wings↔rotunda), z=+148..+192 (wings↔entrance)
-wallZ(-40,-250,-80);                  // WingI east — solid
-wallZ(-40,-100, 120,[[-30,30]]);      // WingIII↔Rotunda
-wallZ(-40, 120, 300,[[148,192]]);     // WingV↔Entrance
-wallZ(-40, 300, 340);
-wallZ( 40,-250,-80);
-wallZ( 40,-100, 120,[[-30,30]]);
-wallZ( 40, 120, 300,[[148,192]]);
-wallZ( 40, 300, 340);
-
-// z=-80: Wing I/II south — doors at x=±130 (width 20)
-wallX(-250,-40,-80,[[-140,-120]]);
-wallX( -40,  40,-80);
-wallX(  40, 250,-80,[[ 120, 140]]);
-
-// z=-100: rotunda north wall — solid (no wings I/II connect here directly)
-// Actually wings III connect at z=-100 from z-divider at -80
-// z=-80 IS the divider. Wings III/IV start at z=-100 (their north outer wall)
-// Wait — let me clarify: wings III/IV span z=-100..+120
-// Their north outer wall is at z=-100, south outer at z=+120
-// They connect to wings I/II through the z=-80 divider gap
-// So z=-80 is divider between I/II and III/IV, with doors at x=±130
-
-// z=+120: Wings III/IV south / V/VI north — doors at x=±130
-wallX(-250,-40, 120,[[-140,-120]]);
-wallX( -40,  40, 120,[[-14,14]]);   // Rotunda↔Entrance
-wallX(  40, 250, 120,[[ 120, 140]]);
-
-// z=+300: Wings V/VI south wall
-wallX(-250,-40,300); wallX(40,250,300);
-
-// Rotunda — massive Doric columns
-[[-22,-70],[22,-70],[-22,0],[22,0],[-22,70],[22,70]].forEach(([x,z])=>{
-  addBox(3.5,H,3.5,moldMat,x,H/2,z,true);
-  addBox(5.5,1.8,5.5,moldMat,x,H-0.9,z,false);
-  addBox(5.5,1.2,5.5,moldMat,x,0.6,z,false);
-});
-// Grand entrance archway columns
-[[-30,125],[30,125],[-30,295],[30,295]].forEach(([x,z])=>{
-  addBox(4.5,H,4.5,moldMat,x,H/2,z,true);
-  addBox(7,2,7,moldMat,x,H-1,z,false);
-  addBox(7,1.5,7,moldMat,x,0.75,z,false);
-});
-
-// ── LAZY IMAGE LOADER ─────────────────────────────────────────────────────────
-const artSpots=[];
-const LOAD_DIST=55;
-const LOAD_QUEUE=[];
-let activeLoads=0;
-const MAX_CONCURRENT=4;
-function processQueue(){
-  while(activeLoads<MAX_CONCURRENT&&LOAD_QUEUE.length>0){
-    const{artMat,url}=LOAD_QUEUE.shift();activeLoads++;
-    const img=new Image();img.crossOrigin='anonymous';
-    img.onload=()=>{
-      try{const tex=new THREE.Texture(img);tex.minFilter=THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;tex.needsUpdate=true;artMat.map=tex;artMat.needsUpdate=true;}catch(e){}
-      activeLoads--;processQueue();
-    };
-    img.onerror=()=>{activeLoads--;processQueue();};
-    img.src=url;
-  }
-}
-
-// ── ARTWORK SIZES ─────────────────────────────────────────────────────────────
-// 3× bigger than before: AW=13.5, AH=11.4
-const AW=13.5,AH=11.4,STEP=24.0,AY=8.0,MARGIN=14.0,DPAD=10.0;
-// AY=8: artworks hang with centre at 8 units — bottom at 2.3, top at 13.7 on 18-unit walls
-
-function placeLine(works,wi,wallType,coord,isMin,rangeA,rangeB,gaps){
-  if(wi[0]>=works.length)return;
-  const off=(WT/2+0.12)*(isMin?1:-1);
-  let p=rangeA+MARGIN;
-  while(p<=rangeB-MARGIN){
-    if(wi[0]>=works.length)break;
-    const blocked=gaps.some(([g1,g2])=>p>g1-DPAD&&p<g2+DPAD);
-    if(!blocked){
-      const work=works[wi[0]++];
-      let x,y=AY,z,rotY;
-      if(wallType==='Z'){x=p;z=coord+off;rotY=isMin?0:Math.PI;}
-      else{x=coord+off;z=p;rotY=isMin?-Math.PI/2:Math.PI/2;}
-      placeFrame(work,x,y,z,rotY,false);
-    }
-    p+=STEP;
-  }
-}
-
-function placeFrame(work,x,y,z,rotY,isPortrait){
-  const pW=isPortrait?AW*0.6:AW, pH=isPortrait?AH*1.55:AH;
-  const FW=pW+0.7, FH=pH+0.7;
-  // Gold frame — thick and prominent
-  const frm=new THREE.Mesh(new THREE.BoxGeometry(FW,FH,0.25),frameHi);
-  frm.position.set(x,y,z);frm.rotation.y=rotY;scene.add(frm);
-  // Inner mat — slightly darker gold, recessed
-  const mat2=new THREE.Mesh(new THREE.BoxGeometry(pW+0.18,pH+0.18,0.18),frameLo);
-  mat2.position.set(x,y,z);
-  mat2.position.x+=Math.sin(rotY)*0.05;mat2.position.z+=Math.cos(rotY)*0.05;
-  mat2.rotation.y=rotY;scene.add(mat2);
-  // Artwork canvas
-  const ph=makePlaceholder(work);
-  const artMat=new THREE.MeshBasicMaterial({map:ph,side:THREE.FrontSide});
-  const art=new THREE.Mesh(new THREE.PlaneGeometry(pW,pH),artMat);
-  art.position.set(x,y,z);
-  art.position.x+=Math.sin(rotY)*0.14;art.position.z+=Math.cos(rotY)*0.14;
-  art.rotation.y=rotY;scene.add(art);
-  // Placard
-  const pl=new THREE.Mesh(new THREE.BoxGeometry(Math.min(pW,4.5),0.55,0.12),frameLo);
-  pl.position.set(x,y-pH/2-0.55,z);
-  pl.position.x+=Math.sin(rotY)*0.12;pl.position.z+=Math.cos(rotY)*0.12;
-  pl.rotation.y=rotY;scene.add(pl);
-  const spot=new THREE.Vector3(x,y,z);
-  spot.x+=Math.sin(rotY)*1.5;spot.z+=Math.cos(rotY)*1.5;
-  artSpots.push({pos:spot,work,artMat,loaded:false});
-}
-
-// ── ROOM PLACEMENT DEFINITIONS ─────────────────────────────────────────────────
-const ROOMS=[
-{id:'w1',r:[0,24],walls:[
-  ['Z',-250, true, -250,-40,[]],
-  ['Z', -80,false,-250,-40,[[-140,-120]]],
-  ['X',-250, true, -250,-80,[]],
-  ['X', -40,false,-250,-80,[]],
-]},
-{id:'w2',r:[25,49],walls:[
-  ['Z',-250, true,   40, 250,[]],
-  ['Z', -80,false,   40, 250,[[120,140]]],
-  ['X',  40, true, -250,-80,[]],
-  ['X', 250,false,-250,-80,[]],
-]},
-{id:'w3',r:[50,74],walls:[
-  ['Z',-100, true, -250,-40,[[-140,-120]]],
-  ['Z', 120,false,-250,-40,[[-140,-120]]],
-  ['X',-250, true, -100, 120,[]],
-  ['X', -40,false,-100, 120,[[-30,30]]],
-]},
-{id:'w4',r:[75,99],walls:[
-  ['Z',-100, true,   40, 250,[[120,140]]],
-  ['Z', 120,false,   40, 250,[[120,140]]],
-  ['X',  40, true, -100, 120,[[-30,30]]],
-  ['X', 250,false,-100, 120,[]],
-]},
-{id:'w5',r:[100,124],walls:[
-  ['Z', 120, true, -250,-40,[[-140,-120]]],
-  ['Z', 300,false,-250,-40,[]],
-  ['X',-250, true,  120, 300,[]],
-  ['X', -40,false,  120, 300,[[148,192]]],
-]},
-{id:'w6',r:[125,149],walls:[
-  ['Z', 120, true,   40, 250,[[120,140]]],
-  ['Z', 300,false,   40, 250,[]],
-  ['X',  40, true,  120, 300,[[148,192]]],
-  ['X', 250,false,  120, 300,[]],
-]},
+const ROOMS = [
+  {"id":"w1","name":"Wing I","sub":"The Ancient World","works":[0,24],"walls":[
+    {"id":"w1_N","label":"North Wall","type":"Z","coord":-250,"isMin":true, "range":[-250,-40],"gaps":[]},
+    {"id":"w1_S","label":"South Wall","type":"Z","coord":-80, "isMin":false,"range":[-250,-40],"gaps":[[-140,-120]]},
+    {"id":"w1_W","label":"West Wall", "type":"X","coord":-250,"isMin":true, "range":[-250,-80],"gaps":[]},
+    {"id":"w1_E","label":"East Wall", "type":"X","coord":-40, "isMin":false,"range":[-250,-80],"gaps":[]}
+  ]},
+  {"id":"w2","name":"Wing II","sub":"Early Civilisations","works":[25,49],"walls":[
+    {"id":"w2_N","label":"North Wall","type":"Z","coord":-250,"isMin":true, "range":[40,250],"gaps":[]},
+    {"id":"w2_S","label":"South Wall","type":"Z","coord":-80, "isMin":false,"range":[40,250],"gaps":[[120,140]]},
+    {"id":"w2_W","label":"West Wall", "type":"X","coord":40,  "isMin":true, "range":[-250,-80],"gaps":[]},
+    {"id":"w2_E","label":"East Wall", "type":"X","coord":250, "isMin":false,"range":[-250,-80],"gaps":[]}
+  ]},
+  {"id":"w3","name":"Wing III","sub":"Medieval & Gothic","works":[50,74],"walls":[
+    {"id":"w3_N","label":"North Wall","type":"Z","coord":-100,"isMin":true, "range":[-250,-40],"gaps":[[-140,-120]]},
+    {"id":"w3_S","label":"South Wall","type":"Z","coord":120, "isMin":false,"range":[-250,-40],"gaps":[[-140,-120]]},
+    {"id":"w3_W","label":"West Wall", "type":"X","coord":-250,"isMin":true, "range":[-100,120],"gaps":[]},
+    {"id":"w3_E","label":"East Wall", "type":"X","coord":-40, "isMin":false,"range":[-100,120],"gaps":[[-30,30]]}
+  ]},
+  {"id":"w4","name":"Wing IV","sub":"Renaissance & Beyond","works":[75,99],"walls":[
+    {"id":"w4_N","label":"North Wall","type":"Z","coord":-100,"isMin":true, "range":[40,250],"gaps":[[120,140]]},
+    {"id":"w4_S","label":"South Wall","type":"Z","coord":120, "isMin":false,"range":[40,250],"gaps":[[120,140]]},
+    {"id":"w4_W","label":"West Wall", "type":"X","coord":40,  "isMin":true, "range":[-100,120],"gaps":[[-30,30]]},
+    {"id":"w4_E","label":"East Wall", "type":"X","coord":250, "isMin":false,"range":[-100,120],"gaps":[]}
+  ]},
+  {"id":"w5","name":"Wing V","sub":"Baroque & Enlightenment","works":[100,124],"walls":[
+    {"id":"w5_N","label":"North Wall","type":"Z","coord":120, "isMin":true, "range":[-250,-40],"gaps":[[-140,-120]]},
+    {"id":"w5_S","label":"South Wall","type":"Z","coord":300, "isMin":false,"range":[-250,-40],"gaps":[]},
+    {"id":"w5_W","label":"West Wall", "type":"X","coord":-250,"isMin":true, "range":[120,300],"gaps":[]},
+    {"id":"w5_E","label":"East Wall", "type":"X","coord":-40, "isMin":false,"range":[120,300],"gaps":[[148,192]]}
+  ]},
+  {"id":"w6","name":"Wing VI","sub":"Modern & Contemporary","works":[125,149],"walls":[
+    {"id":"w6_N","label":"North Wall","type":"Z","coord":120, "isMin":true, "range":[40,250],"gaps":[[120,140]]},
+    {"id":"w6_S","label":"South Wall","type":"Z","coord":300, "isMin":false,"range":[40,250],"gaps":[]},
+    {"id":"w6_W","label":"West Wall", "type":"X","coord":40,  "isMin":true, "range":[120,300],"gaps":[[148,192]]},
+    {"id":"w6_E","label":"East Wall", "type":"X","coord":250, "isMin":false,"range":[120,300],"gaps":[]}
+  ]}
 ];
 
-// ── ROOM DEFS (for detection + minimap) ───────────────────────────────────────
-const RDEFS=[
-  {id:'w1',n:'Wing I',   s:'The Ancient World',        x1:-250,x2:-40,z1:-250,z2: -80},
-  {id:'w2',n:'Wing II',  s:'Early Civilisations',      x1:  40,x2:250,z1:-250,z2: -80},
-  {id:'w3',n:'Wing III', s:'Medieval & Gothic',        x1:-250,x2:-40,z1:-100,z2: 120},
-  {id:'w4',n:'Wing IV',  s:'Renaissance & Beyond',     x1:  40,x2:250,z1:-100,z2: 120},
-  {id:'w5',n:'Wing V',   s:'Baroque & Enlightenment',  x1:-250,x2:-40,z1: 120,z2: 300},
-  {id:'w6',n:'Wing VI',  s:'Modern & Contemporary',    x1:  40,x2:250,z1: 120,z2: 300},
-  {id:'rt',n:'Central Rotunda',s:'Overview',           x1: -40,x2:  40,z1:-100,z2: 120},
-  {id:'en',n:'Grand Hall',s:'Entrance',                x1: -40,x2:  40,z1: 120,z2: 340},
-];
+// ── STATE ─────────────────────────────────────────────────────────────────────
+// layout[wallId] = [{num, orient:'landscape'|'portrait'}, ...]
+let layout = {};
+ROOMS.forEach(room => room.walls.forEach(w => layout[w.id] = []));
 
-// ── LAYOUT LOADER ─────────────────────────────────────────────────────────────
-function buildDefaultLayout(){
-  const ST=24.0,MG=14.0,DP=10.0;
+// Track which artworks are placed
+function placedNums(){
+  const s=new Set();
+  Object.values(layout).forEach(slots=>slots.forEach(s2=>s.add(s2.num)));
+  return s;
+}
+
+// ── DRAG STATE ────────────────────────────────────────────────────────────────
+let dragNum=null, dragFromWall=null, dragFromIdx=null;
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function imgUrl(work){ return work.url; }
+function thumbEl(work, orient, small=false){
+  const img=document.createElement('img');
+  img.src=imgUrl(work);
+  img.alt=work.t;
+  img.crossOrigin='anonymous';
+  if(small){
+    img.className = orient==='portrait'?'chip-thumb portrait-thumb':'chip-thumb';
+  }
+  return img;
+}
+
+function renderPool(){
+  const pool=document.getElementById('pool');
+  const query=document.getElementById('searchBox').value.toLowerCase();
+  const placed=placedNums();
+  pool.innerHTML='';
+  PAGES.forEach(work=>{
+    const match=!query||(work.t.toLowerCase().includes(query)||String(work.num).includes(query));
+    if(!match)return;
+    const isPlaced=placed.has(work.num);
+    const chip=document.createElement('div');
+    chip.className='chip'+(isPlaced?' placed':'');
+    chip.draggable=true;
+    chip.dataset.num=work.num;
+    // Determine current orient if placed
+    let orient='landscape';
+    Object.values(layout).forEach(slots=>{const s=slots.find(s=>s.num===work.num);if(s)orient=s.orient;});
+    chip.innerHTML=`
+      <img src="${imgUrl(work)}" alt="${work.t}" class="${orient==='portrait'?'chip-thumb portrait-thumb':'chip-thumb'}" crossorigin="anonymous">
+      <div class="chip-info">
+        <div class="chip-num">No. ${work.num}</div>
+        <div class="chip-title">${work.t}</div>
+        <div class="chip-year">${work.y}</div>
+      </div>`;
+    chip.addEventListener('dragstart',e=>{
+      dragNum=work.num; dragFromWall=null; dragFromIdx=null;
+      e.dataTransfer.effectAllowed='move';
+      chip.classList.add('dragging');
+    });
+    chip.addEventListener('dragend',()=>chip.classList.remove('dragging'));
+    pool.appendChild(chip);
+  });
+}
+
+function renderWings(){
+  const area=document.getElementById('canvasArea');
+  area.innerHTML='';
+  const placed=placedNums();
+
+  ROOMS.forEach(room=>{
+    const totalPlaced=room.walls.reduce((a,w)=>a+layout[w.id].length,0);
+    const wing=document.createElement('div');wing.className='wing';
+    wing.innerHTML=`
+      <div class="wing-head">
+        <div><div class="wing-name">${room.name}</div><div class="wing-sub">${room.sub}</div></div>
+        <div class="wing-count">${totalPlaced} / 25 placed</div>
+      </div>`;
+
+    room.walls.forEach(wallDef=>{
+      const slots=layout[wallDef.id];
+      const wallDiv=document.createElement('div');wallDiv.className='wall';
+      wallDiv.innerHTML=`<div class="wall-label">${wallDef.label}<span>${slots.length} artworks</span></div>`;
+      const slotsDiv=document.createElement('div');slotsDiv.className='wall-slots';
+      slotsDiv.dataset.wall=wallDef.id;
+
+      // Drag-over highlight
+      slotsDiv.addEventListener('dragover',e=>{e.preventDefault();slotsDiv.classList.add('drag-over');});
+      slotsDiv.addEventListener('dragleave',()=>slotsDiv.classList.remove('drag-over'));
+      slotsDiv.addEventListener('drop',e=>{
+        e.preventDefault();slotsDiv.classList.remove('drag-over');
+        if(dragNum===null)return;
+        const targetWall=wallDef.id;
+        // Remove from source if dragging from a wall
+        if(dragFromWall&&dragFromWall!==targetWall){
+          layout[dragFromWall]=layout[dragFromWall].filter((_,i)=>i!==dragFromIdx);
+        }
+        // Avoid duplicate on same wall
+        if(!layout[targetWall].find(s=>s.num===dragNum)){
+          // Determine orient from pool
+          let orient='landscape';
+          Object.values(layout).forEach(ss=>{const s=ss.find(s=>s.num===dragNum);if(s)orient=s.orient;});
+          layout[targetWall].push({num:dragNum,orient});
+        }
+        dragNum=null;dragFromWall=null;dragFromIdx=null;
+        render();
+      });
+
+      // Render placed slots
+      slots.forEach((entry,idx)=>{
+        const work=PAGES.find(p=>p.num===entry.num);if(!work)return;
+        const slotDiv=document.createElement('div');
+        slotDiv.className=`slot ${entry.orient}`;
+        slotDiv.draggable=true;
+        const img=document.createElement('img');
+        img.src=imgUrl(work);img.crossOrigin='anonymous';
+        img.style.cssText='width:100%;height:100%;object-fit:cover;display:block';
+        slotDiv.appendChild(img);
+        // Number badge
+        const badge=document.createElement('div');badge.className='slot-num';badge.textContent='#'+work.num;slotDiv.appendChild(badge);
+        // Remove button
+        const rem=document.createElement('div');rem.className='slot-remove';rem.textContent='×';
+        rem.onclick=e=>{e.stopPropagation();layout[wallDef.id].splice(idx,1);render();};
+        slotDiv.appendChild(rem);
+        // Orient toggle
+        const ort=document.createElement('div');ort.className='slot-orient';ort.textContent='⇕';
+        ort.title='Toggle portrait/landscape';
+        ort.onclick=e=>{
+          e.stopPropagation();
+          entry.orient=entry.orient==='landscape'?'portrait':'landscape';
+          render();
+        };
+        slotDiv.appendChild(ort);
+        // Drag from wall
+        slotDiv.addEventListener('dragstart',e=>{
+          dragNum=work.num;dragFromWall=wallDef.id;dragFromIdx=idx;
+          e.dataTransfer.effectAllowed='move';
+        });
+        slotsDiv.appendChild(slotDiv);
+      });
+
+      wallDiv.appendChild(slotsDiv);wing.appendChild(wallDiv);
+    });
+    area.appendChild(wing);
+  });
+}
+
+function render(){ renderPool(); renderWings(); }
+
+// ── FILTER ────────────────────────────────────────────────────────────────────
+function filterPool(){ renderPool(); }
+
+// ── DEFAULT LAYOUT ────────────────────────────────────────────────────────────
+function applyDefaultLayout(){
+  layout={};
+  ROOMS.forEach(room=>room.walls.forEach(w=>layout[w.id]=[]));
+  const STEP=24.0,MARGIN=14.0,DPAD=10.0;
   function countSlots(rA,rB,gaps){
-    let n=0,p=rA+MG;
-    while(p<=rB-MG){if(!gaps.some(([g1,g2])=>p>g1-DP&&p<g2+DP))n++;p+=ST;}
+    let n=0,p=rA+MARGIN;
+    while(p<=rB-MARGIN){if(!gaps.some(([g1,g2])=>p>g1-DPAD&&p<g2+DPAD))n++;p+=STEP;}
     return n;
   }
-  const layout={};
   ROOMS.forEach(room=>{
-    room.walls.forEach(([type,coord,isMin,r0,r1,gaps],wi)=>{
-      layout[room.id+'_'+['N','S','W','E'][wi]]=[];
-    });
-  });
-  ROOMS.forEach(room=>{
-    const slice=PAGES.slice(room.r[0],room.r[1]+1);let wi2=0;
-    room.walls.forEach(([type,coord,isMin,r0,r1,gaps],wi)=>{
-      const wallId=room.id+'_'+['N','S','W','E'][wi];
-      const n=countSlots(r0,r1,gaps);
-      for(let i=0;i<n&&wi2<slice.length;i++,wi2++){
-        layout[wallId].push({num:slice[wi2].num,orient:'landscape'});
+    const slice=PAGES.slice(room.works[0],room.works[1]+1);
+    let wi=0;
+    room.walls.forEach(wallDef=>{
+      if(wi>=slice.length)return;
+      const n=countSlots(wallDef.range[0],wallDef.range[1],wallDef.gaps);
+      for(let i=0;i<n&&wi<slice.length;i++,wi++){
+        // Simple heuristic: longer title = portrait (placeholder — user can override)
+        const orient='landscape';
+        layout[wallDef.id].push({num:slice[wi].num,orient});
       }
     });
   });
-  return layout;
 }
 
-function applyLayout(layout){
-  const ST=24.0,MG=14.0,DP=10.0;
-  ROOMS.forEach(room=>{
-    room.walls.forEach(([type,coord,isMin,r0,r1,gaps],wi)=>{
-      const wallId=room.id+'_'+['N','S','W','E'][wi];
-      const entries=layout[wallId];
-      if(!entries||!entries.length)return;
-      const off=(WT/2+0.12)*(isMin?1:-1);
-      const slotPositions=[];
-      let p=r0+MG;
-      while(p<=r1-MG){
-        if(!gaps.some(([g1,g2])=>p>g1-DP&&p<g2+DP))slotPositions.push(p);
-        p+=ST;
-      }
-      entries.forEach((entry,idx)=>{
-        if(idx>=slotPositions.length)return;
-        const work=PAGES.find(pg=>pg.num===entry.num);if(!work)return;
-        const pos=slotPositions[idx];
-        let x,y=AY,z,rotY;
-        if(type==='Z'){x=pos;z=coord+off;rotY=isMin?0:Math.PI;}
-        else{x=coord+off;z=pos;rotY=isMin?-Math.PI/2:Math.PI/2;}
-        placeFrame(work,x,y,z,rotY,entry.orient==='portrait');
-      });
-    });
-  });
+function resetLayout(){ applyDefaultLayout(); render(); toast('Layout reset to default'); }
+function clearAll(){
+  layout={};ROOMS.forEach(r=>r.walls.forEach(w=>layout[w.id]=[]));
+  render();toast('All artworks cleared — drag from pool to place');
 }
 
-fetch('museum_layout.json')
-  .then(r=>r.ok?r.json():null).catch(()=>null)
-  .then(custom=>{
-    if(custom&&Object.keys(custom).length>0){console.log('Custom layout loaded');applyLayout(custom);}
-    else{console.log('Default layout');applyLayout(buildDefaultLayout());}
-  });
-
-// ── CONTROLS ──────────────────────────────────────────────────────────────────
-let entered=false,locked=false,yaw=Math.PI,pitch=0;
-let dragging=false,lastMX=0,lastMY=0;
-const keys={};
-document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')e.preventDefault();});
-document.addEventListener('keyup',  e=>keys[e.code]=false);
-const HUD=['cross','rlabel','ctrl','mmap','back'];
-function enterMuseum(){
-  if(entered)return;entered=true;
-  document.getElementById('intro').style.display='none';
-  HUD.forEach(id=>document.getElementById(id).style.display='block');
-  try{rc.requestPointerLock();}catch(e){}
-}
-document.getElementById('intro').addEventListener('click',enterMuseum);
-rc.addEventListener('click',()=>{if(!entered)enterMuseum();else try{rc.requestPointerLock();}catch(e){}});
-document.addEventListener('pointerlockchange',()=>{locked=document.pointerLockElement===rc;});
-document.addEventListener('mousemove',e=>{
-  if(!entered)return;
-  if(locked){yaw-=e.movementX*0.0022;pitch-=e.movementY*0.0022;}
-  else if(dragging){yaw-=(e.clientX-lastMX)*0.004;pitch-=(e.clientY-lastMY)*0.004;lastMX=e.clientX;lastMY=e.clientY;}
-  pitch=Math.max(-1.4,Math.min(1.4,pitch));
-  camera.rotation.y=yaw;camera.rotation.x=pitch;
-});
-rc.addEventListener('mousedown',e=>{dragging=true;lastMX=e.clientX;lastMY=e.clientY;});
-document.addEventListener('mouseup',()=>dragging=false);
-
-// ── MOVEMENT ──────────────────────────────────────────────────────────────────
-const mDir=new THREE.Vector3(),tmpE=new THREE.Euler(0,0,0,'YXZ');
-const SPEED=0.28,PR=0.7;
-const rcaster=new THREE.Raycaster();
-function tryMove(dx,dz){
-  const nx=Math.max(-249,Math.min(249,camera.position.x+dx));
-  const nz=Math.max(-249,Math.min(339,camera.position.z+dz));
-  const d=new THREE.Vector3(nx-camera.position.x,0,nz-camera.position.z).normalize();
-  rcaster.set(new THREE.Vector3(camera.position.x,1.5,camera.position.z),d);
-  const hits=rcaster.intersectObjects(colliders);
-  if(hits.length&&hits[0].distance<PR+0.1)return;
-  camera.position.x=nx;camera.position.z=nz;
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+function exportLayout(){
+  const out={};
+  Object.entries(layout).forEach(([wallId,slots])=>{ if(slots.length) out[wallId]=slots; });
+  const json=JSON.stringify(out,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='museum_layout.json';a.click();
+  toast('Exported museum_layout.json — place in your project folder');
 }
 
-// ── MINIMAP ───────────────────────────────────────────────────────────────────
-const mmC=document.getElementById('mm'),mmCtx=mmC.getContext('2d');
-const MW=mmC.width,MH=mmC.height;
-// World x: -250..250=500, z: -250..340=590
-function w2m(x,z){return[(x+250)*MW/500,(z+250)*MH/590];}
-const RCOLS={w1:'#3A0A08',w2:'#3A0A08',w3:'#4A0C0A',w4:'#4A0C0A',w5:'#3A0A08',w6:'#3A0A08',rt:'#5A1410',en:'#4A1010'};
-function drawMap(){
-  mmCtx.fillStyle='rgba(30,5,5,0.95)';mmCtx.fillRect(0,0,MW,MH);
-  RDEFS.forEach(r=>{
-    const[mx1,my1]=w2m(r.x1,r.z1),[mx2,my2]=w2m(r.x2,r.z2);
-    mmCtx.fillStyle=RCOLS[r.id]||'#3A0A08';mmCtx.fillRect(mx1,my1,mx2-mx1,my2-my1);
-    mmCtx.strokeStyle='#8A2020';mmCtx.lineWidth=0.6;mmCtx.strokeRect(mx1,my1,mx2-mx1,my2-my1);
-    if(r.id.startsWith('w')){
-      mmCtx.fillStyle='#C8901A';mmCtx.font='6px Arial';mmCtx.textAlign='center';
-      const[cx,cy]=w2m((r.x1+r.x2)/2,(r.z1+r.z2)/2);
-      mmCtx.fillText(r.n.substring(0,6),cx,cy);
-    }
-  });
-  const[px,py]=w2m(camera.position.x,camera.position.z);
-  mmCtx.strokeStyle='#FFD700';mmCtx.lineWidth=1.5;
-  mmCtx.beginPath();mmCtx.moveTo(px,py);mmCtx.lineTo(px+Math.sin(-yaw)*10,py+Math.cos(-yaw)*10);mmCtx.stroke();
-  mmCtx.fillStyle='#FFD700';mmCtx.beginPath();mmCtx.arc(px,py,3,0,Math.PI*2);mmCtx.fill();
+// ── TOAST ────────────────────────────────────────────────────────────────────
+function toast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
 }
 
-// ── DETECTION ─────────────────────────────────────────────────────────────────
-let curRoom=null,lastArt=null;
-const ainfoEl=document.getElementById('ainfo');
-function detectRoom(){
-  const cx=camera.position.x,cz=camera.position.z;
-  for(const r of RDEFS){if(cx>r.x1&&cx<r.x2&&cz>r.z1&&cz<r.z2){if(r.id!==curRoom){curRoom=r.id;document.getElementById('rln').textContent=r.n;document.getElementById('rls').textContent=r.s;}return;}}
-}
-function detectArt(){
-  const cp=camera.position;let best=null,bd=8;
-  artSpots.forEach(a=>{
-    const d=cp.distanceTo(a.pos);
-    if(!a.loaded&&d<LOAD_DIST){a.loaded=true;LOAD_QUEUE.push({artMat:a.artMat,url:a.work.url});processQueue();}
-    if(d<bd){bd=d;best=a;}
-  });
-  if(best){if(best!==lastArt){lastArt=best;const w=best.work;document.getElementById('ain').textContent='No. '+w.num;document.getElementById('ait').textContent=w.t;document.getElementById('aiy').textContent=w.y;document.getElementById('aim').textContent=w.mat;ainfoEl.style.display='block';}}
-  else{lastArt=null;ainfoEl.style.display='none';}
-}
-
-// ── LOADING ───────────────────────────────────────────────────────────────────
-const ldfill=document.getElementById('ldfill'),ldtxt=document.getElementById('ldtxt');
-ldfill.style.width='85%';ldtxt.textContent='Constructing the museum...';
-setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
-  setTimeout(()=>{document.getElementById('loading').classList.add('fade');
-    setTimeout(()=>{document.getElementById('loading').style.display='none';},1200);
-    document.getElementById('intro').classList.add('show');},500);},700);
-
-// ── ANIMATE ───────────────────────────────────────────────────────────────────
-(function animate(){
-  requestAnimationFrame(animate);
-  if(entered){
-    mDir.set(0,0,0);
-    if(keys['KeyW']||keys['ArrowUp'])    mDir.z-=1;
-    if(keys['KeyS']||keys['ArrowDown'])  mDir.z+=1;
-    if(keys['KeyA']||keys['ArrowLeft'])  mDir.x-=1;
-    if(keys['KeyD']||keys['ArrowRight']) mDir.x+=1;
-    if(mDir.length()>0){mDir.normalize().multiplyScalar(SPEED);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
-    camera.position.y=1.7;detectRoom();detectArt();drawMap();
-  }
-  renderer.render(scene,camera);
-})();
+// ── INIT ─────────────────────────────────────────────────────────────────────
+applyDefaultLayout();
+render();
 </script>
 </body>
 </html>

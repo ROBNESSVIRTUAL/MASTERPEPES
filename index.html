@@ -354,8 +354,39 @@ GLTFScript.onload = () => {
   new THREE.GLTFLoader().load('masterpepes_book.glb',
     gltf => {
       bookModel = gltf.scene;
-      // GLTFLoader in Three.js r128 handles texture orientation automatically.
-      // No flipY override needed — applying it globally was flipping cover/spine/back upside down.
+
+      // Log all mesh names so we can identify exact targets
+      console.log('=== GLB MESH NAMES ===');
+      bookModel.traverse(child => {
+        if(child.isMesh) console.log('MESH:', child.name);
+      });
+
+      // UV-space vertical flip for cover/back/spine faces.
+      // These faces have their UV origin at the wrong corner in the GLB export.
+      // repeat.y = -1 + offset.y = 1 flips the texture vertically in UV space,
+      // which is different from flipY (which affects WebGL memory layout).
+      const FLIP_TARGETS = ['cover','back','spine','front','jacket','binding'];
+      const fixedTex = new Set();
+      bookModel.traverse(child => {
+        if(!child.isMesh) return;
+        const meshName = (child.name || '').toLowerCase();
+        const shouldFlip = FLIP_TARGETS.some(t => meshName.includes(t));
+        console.log(child.name, '→ flip:', shouldFlip);
+        if(!shouldFlip) return;
+        const mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach(mat => {
+          ['map','normalMap','roughnessMap','metalnessMap','emissiveMap','aoMap','bumpMap','alphaMap'].forEach(key => {
+            const tex = mat[key];
+            if(tex && !fixedTex.has(tex.uuid)) {
+              tex.repeat.set(1, -1);
+              tex.offset.set(0, 1);
+              tex.needsUpdate = true;
+              fixedTex.add(tex.uuid);
+            }
+          });
+        });
+      });
+
       const box = new THREE.Box3().setFromObject(bookModel);
       const center = box.getCenter(new THREE.Vector3());
       const size   = box.getSize(new THREE.Vector3());

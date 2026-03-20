@@ -613,7 +613,9 @@ fetch('museum_layout.json')
   });
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
-let entered=false,locked=false,yaw=Math.PI,pitch=0;
+// yaw=0 → facing -Z (north, into the museum from entrance at z=330)
+let entered=false,locked=false,yaw=0,pitch=0;
+camera.rotation.y=yaw; camera.rotation.x=pitch; // apply immediately so spawn direction is correct
 let dragging=false,lastMX=0,lastMY=0;
 const keys={};
 document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')e.preventDefault();});
@@ -624,13 +626,16 @@ function enterMuseum(){
   if(entered)return;entered=true;
   document.getElementById('intro').style.display='none';
   HUD.forEach(id=>document.getElementById(id).style.display='block');
-  // Show mobile controls only on touch device
   if('ontouchstart' in window){
     document.getElementById('dpad').style.display='block';
     document.getElementById('look-hint').style.display='block';
     document.getElementById('ctrl').style.display='none';
     document.getElementById('mmap').style.display='none';
   }
+  // Apply correct camera direction immediately (no waiting for first mouse move)
+  camera.rotation.y=yaw; camera.rotation.x=pitch;
+  // Load entrance room first, then ripple outward room by room
+  rippleLoad('en');
   try{rc.requestPointerLock();}catch(e){}
 }
 document.getElementById('intro').addEventListener('click',enterMuseum);
@@ -747,6 +752,44 @@ function drawMap(){
   mmCtx.fillStyle='#FFD700';mmCtx.beginPath();mmCtx.arc(px,py,3,0,Math.PI*2);mmCtx.fill();
 }
 
+// ── RIPPLE LOADING ────────────────────────────────────────────────────────────
+// Adjacency map — ordered outward from entrance
+const ADJ={
+  en:['w5','w6','rt'],
+  rt:['w3','w4'],
+  w5:['w3'],w6:['w4'],
+  w3:['w1'],w4:['w2'],
+  w1:[],w2:[],
+};
+const loadedRooms=new Set();
+
+function loadRoomArtworks(roomId){
+  if(loadedRooms.has(roomId))return;
+  loadedRooms.add(roomId);
+  const nums=ROOM_NUMS[roomId];if(!nums||!nums.size)return;
+  artSpots.forEach(a=>{
+    if(!a.loaded&&nums.has(a.work.num)){
+      a.loaded=true;
+      LOAD_QUEUE.push({artMat:a.artMat,art:a.art,frameLines:a.frameLines,anchorY:a.anchorY,url:a.work.url,txid:a.work.txid});
+    }
+  });
+  processQueue();
+}
+
+// Ripple outward from a starting room, with a delay between each ring
+function rippleLoad(startId){
+  const order=[];
+  const visited=new Set([startId]);
+  let ring=[startId];
+  while(ring.length){
+    order.push([...ring]);
+    const next=[];
+    ring.forEach(id=>(ADJ[id]||[]).forEach(nb=>{if(!visited.has(nb)){visited.add(nb);next.push(nb);}}));
+    ring=next;
+  }
+  order.forEach((ring,i)=>setTimeout(()=>ring.forEach(loadRoomArtworks), i*800));
+}
+
 // ── DETECTION ─────────────────────────────────────────────────────────────────
 let curRoom=null,lastArt=null;
 const ainfoEl=document.getElementById('ainfo');
@@ -759,10 +802,9 @@ function detectRoom(){
         curRoom=r.id;
         document.getElementById('rln').textContent=r.n;
         document.getElementById('rls').textContent=r.s;
+        // Load current room immediately + adjacent rooms right after
         loadRoomArtworks(r.id);
-        // Also preload adjacent rooms
-        const adj={w1:['w3'],w2:['w4'],w3:['w1','w5','rt'],w4:['w2','w6','rt'],w5:['w3','en'],w6:['w4','en'],rt:['w3','w4','en'],en:['w5','w6','rt']};
-        (adj[r.id]||[]).forEach(loadRoomArtworks);
+        setTimeout(()=>(ADJ[r.id]||[]).forEach(loadRoomArtworks), 400);
       }
       return;
     }

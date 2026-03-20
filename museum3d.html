@@ -647,7 +647,7 @@ let floatingBook = null;
       floatingBook.position.x = -centre.x * scale;
       floatingBook.position.z = 155 - centre.z * scale;
       // Float at y=7 — waist-to-chest height, clearly airborne
-      floatingBook.position.y = 7 - centre.y * scale;
+      floatingBook.position.y = 12 - centre.y * scale;
       scene.add(floatingBook);
       console.log('Floating book placed in Rotunda at z=155, y=7');
     },
@@ -1312,7 +1312,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     // Floating book — slow rotation + gentle vertical bob
     if(floatingBook){
       floatingBook.rotation.y += 0.008;
-      floatingBook.position.y = 7 + Math.sin(Date.now() * 0.0008) * 0.6;
+      floatingBook.position.y = 12 + Math.sin(Date.now() * 0.0008) * 0.6;
     }
     mDir.set(0,0,0);
     // Keyboard

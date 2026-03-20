@@ -1093,7 +1093,9 @@ function openDetail(work){
   // Fetch token data from Counterparty API
   fetchTokenInfo(work.asset);
 
-  // Pause movement while panel is open
+  // Release pointer lock so cursor is free — also kill all movement inputs
+  try{document.exitPointerLock();}catch(e){}
+  locked=false;
   Object.keys(keys).forEach(k=>keys[k]=false);
   dpState.up=dpState.dn=dpState.lt=dpState.rt=false;
 }
@@ -1203,7 +1205,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
 // ── ANIMATE ───────────────────────────────────────────────────────────────────
 (function animate(){
   requestAnimationFrame(animate);
-  if(entered){
+  if(entered && !document.getElementById('detailPanel').classList.contains('open')){
     mDir.set(0,0,0);
     // Keyboard
     if(keys['KeyW']||keys['ArrowUp'])    mDir.z-=1;

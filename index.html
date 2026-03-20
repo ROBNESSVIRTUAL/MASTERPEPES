@@ -71,7 +71,16 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 .ap-close:hover{border-color:var(--gold);color:var(--gold)}
 
 /* RIGHT */
-.right{flex:0 0 42%;background:var(--panel);display:flex;flex-direction:column;padding:24px 24px 16px;overflow-y:auto}
+.right{flex:0 0 42%;background:var(--panel);display:flex;flex-direction:column;padding:24px 24px 16px;overflow-y:auto;position:relative}
+#rightGate{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;background:rgba(20,60,20,0);border:none;transition:background 0.35s,backdrop-filter 0.35s;cursor:default;pointer-events:all}
+#rightGate:hover,#rightGate.hover{background:rgba(20,80,20,0.72);backdrop-filter:blur(3px)}
+#rightGate-inner{opacity:0;transform:scale(0.94);transition:opacity 0.3s,transform 0.3s;pointer-events:none}
+#rightGate:hover #rightGate-inner,#rightGate.hover #rightGate-inner{opacity:1;transform:scale(1);pointer-events:all}
+.gate-msg{font-size:11px;line-height:1.9;letter-spacing:0.08em;color:#B8FFB8;text-shadow:0 0 18px rgba(57,255,20,0.6);margin-bottom:24px;font-family:'Tenor Sans',serif;text-transform:uppercase}
+.gate-ok{font-size:10px;letter-spacing:0.35em;color:#060D06;background:#39FF14;border:none;padding:10px 32px;cursor:pointer;font-family:'Tenor Sans',serif;text-transform:uppercase;box-shadow:0 0 16px #39FF14,0 0 32px #39FF1466;transition:all 0.2s;animation:kryptonite 1.8s ease-in-out infinite}
+.gate-ok:hover{background:#5FFF44;box-shadow:0 0 24px #39FF14,0 0 50px #39FF1488}
+.gate-glow-ring{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 40px rgba(57,255,20,0.0);transition:box-shadow 0.35s}
+#rightGate:hover .gate-glow-ring,#rightGate.hover .gate-glow-ring{box-shadow:inset 0 0 60px rgba(57,255,20,0.35)}
 .r-eye{font-size:9px;letter-spacing:0.3em;color:var(--gold);margin-bottom:12px}
 .r-title{font-family:'Cinzel Decorative',serif;font-size:clamp(18px,2vw,30px);color:var(--gold2);line-height:1.05;margin-bottom:8px}
 .r-logo{max-width:100%;height:auto;max-height:240px;object-fit:contain;object-position:left center;margin-bottom:8px;display:block}
@@ -325,9 +334,21 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 
   <!-- RIGHT PANEL -->
   <div class="right">
+    <div id="rightGate">
+      <div class="gate-glow-ring"></div>
+      <div id="rightGate-inner">
+        <p class="gate-msg">
+          Before buying works, you must have<br>
+          a BTC / XCP (Counterparty) address<br>
+          to receive works.<br><br>
+          You can pay in either BTC or ETH.<br><br>
+        </p>
+        <button class="gate-ok" onclick="dismissGate()">OK — Let Me In</button>
+      </div>
+    </div>
     <p class="r-eye">A New Pepe Collection on Bitcoin by Robness</p>
     <img src="MASTERPEPES%20LOGO%20GOLD%20HI%20RES.png" alt="MASTERPEPES" class="r-logo" onerror="this.outerHTML='<h1 class=&quot;r-title&quot;>MASTERPEPES</h1>'">
-    <p class="r-sub">150 Masterworks of Art History &mdash; Reimagined as Pepe<br>Permanently Inscribed on the Bitcoin Blockchain</p>
+    <p class="r-sub">150 Masterworks of Art History &mdash; Reimagined as Pepe<br>Permanently Minted on the Bitcoin Blockchain<br><span style="font-size:7px;letter-spacing:0.3em;color:rgba(200,144,26,0.55)">XCP &middot; COUNTERPARTY PROTOCOL</span></p>
     <div class="r-details">
       <div class="drow"><span class="dl">Total Artworks</span><span class="dv">150 Works</span></div>
       <div class="drow"><span class="dl">Editions Per Work</span><span class="dv">300</span></div>
@@ -372,6 +393,25 @@ const PAGES = [{"num": 1, "t": "PEPE OF WILLENDORF", "y": "24000 BC", "mat": "LI
 const DOTS = [{"i": 0, "x": 23.4, "y": 0.6},{"i": 1, "x": 66.4, "y": 0.6},{"i": 2, "x": 109.3, "y": 0.6},{"i": 3, "x": 152.3, "y": 0.6},{"i": 4, "x": 195.2, "y": 0.6},{"i": 5, "x": 238.2, "y": 0.6},{"i": 6, "x": 281.1, "y": 0.6},{"i": 7, "x": 324.1, "y": 0.6},{"i": 8, "x": 23.4, "y": 273.7},{"i": 9, "x": 66.4, "y": 273.7},{"i": 10, "x": 109.3, "y": 273.7},{"i": 11, "x": 238.2, "y": 273.7},{"i": 12, "x": 281.1, "y": 273.7},{"i": 13, "x": 324.1, "y": 273.7},{"i": 14, "x": 0.7, "y": 20.6},{"i": 15, "x": 0.7, "y": 58.3},{"i": 16, "x": 0.7, "y": 96.0},{"i": 17, "x": 0.7, "y": 133.7},{"i": 18, "x": 0.7, "y": 171.4},{"i": 19, "x": 0.7, "y": 209.1},{"i": 20, "x": 0.7, "y": 246.9},{"i": 21, "x": 350.7, "y": 20.6},{"i": 22, "x": 350.7, "y": 58.3},{"i": 23, "x": 350.7, "y": 96.0},{"i": 24, "x": 350.7, "y": 133.7},{"i": 25, "x": 492.0, "y": 0.6},{"i": 26, "x": 535.0, "y": 0.6},{"i": 27, "x": 577.9, "y": 0.6},{"i": 28, "x": 620.9, "y": 0.6},{"i": 29, "x": 663.8, "y": 0.6},{"i": 30, "x": 706.8, "y": 0.6},{"i": 31, "x": 749.7, "y": 0.6},{"i": 32, "x": 792.7, "y": 0.6},{"i": 33, "x": 492.0, "y": 273.7},{"i": 34, "x": 535.0, "y": 273.7},{"i": 35, "x": 577.9, "y": 273.7},{"i": 36, "x": 706.8, "y": 273.7},{"i": 37, "x": 749.7, "y": 273.7},{"i": 38, "x": 792.7, "y": 273.7},{"i": 39, "x": 469.3, "y": 20.6},{"i": 40, "x": 469.3, "y": 58.3},{"i": 41, "x": 469.3, "y": 96.0},{"i": 42, "x": 469.3, "y": 133.7},{"i": 43, "x": 469.3, "y": 171.4},{"i": 44, "x": 469.3, "y": 209.1},{"i": 45, "x": 469.3, "y": 246.9},{"i": 46, "x": 819.3, "y": 20.6},{"i": 47, "x": 819.3, "y": 58.3},{"i": 48, "x": 819.3, "y": 96.0},{"i": 49, "x": 819.3, "y": 133.7},{"i": 50, "x": 23.4, "y": 274.9},{"i": 51, "x": 66.4, "y": 274.9},{"i": 52, "x": 109.3, "y": 274.9},{"i": 53, "x": 238.2, "y": 274.9},{"i": 54, "x": 281.1, "y": 274.9},{"i": 55, "x": 324.1, "y": 274.9},{"i": 56, "x": 23.4, "y": 582.2},{"i": 57, "x": 66.4, "y": 582.2},{"i": 58, "x": 109.3, "y": 582.2},{"i": 59, "x": 238.2, "y": 582.2},{"i": 60, "x": 281.1, "y": 582.2},{"i": 61, "x": 324.1, "y": 582.2},{"i": 62, "x": 0.7, "y": 294.9},{"i": 63, "x": 0.7, "y": 332.6},{"i": 64, "x": 0.7, "y": 370.3},{"i": 65, "x": 0.7, "y": 408.0},{"i": 66, "x": 0.7, "y": 445.7},{"i": 67, "x": 0.7, "y": 483.4},{"i": 68, "x": 0.7, "y": 521.1},{"i": 69, "x": 0.7, "y": 558.9},{"i": 70, "x": 350.7, "y": 294.9},{"i": 71, "x": 350.7, "y": 332.6},{"i": 72, "x": 350.7, "y": 370.3},{"i": 73, "x": 350.7, "y": 483.4},{"i": 74, "x": 350.7, "y": 521.1},{"i": 75, "x": 492.0, "y": 274.9},{"i": 76, "x": 535.0, "y": 274.9},{"i": 77, "x": 577.9, "y": 274.9},{"i": 78, "x": 706.8, "y": 274.9},{"i": 79, "x": 749.7, "y": 274.9},{"i": 80, "x": 792.7, "y": 274.9},{"i": 81, "x": 492.0, "y": 582.2},{"i": 82, "x": 535.0, "y": 582.2},{"i": 83, "x": 577.9, "y": 582.2},{"i": 84, "x": 706.8, "y": 582.2},{"i": 85, "x": 749.7, "y": 582.2},{"i": 86, "x": 792.7, "y": 582.2},{"i": 87, "x": 469.3, "y": 294.9},{"i": 88, "x": 469.3, "y": 332.6},{"i": 89, "x": 469.3, "y": 370.3},{"i": 90, "x": 469.3, "y": 483.4},{"i": 91, "x": 469.3, "y": 521.1},{"i": 92, "x": 469.3, "y": 558.9},{"i": 93, "x": 819.3, "y": 294.9},{"i": 94, "x": 819.3, "y": 332.6},{"i": 95, "x": 819.3, "y": 370.3},{"i": 96, "x": 819.3, "y": 408.0},{"i": 97, "x": 819.3, "y": 445.7},{"i": 98, "x": 819.3, "y": 483.4},{"i": 99, "x": 819.3, "y": 521.1},{"i": 100, "x": 23.4, "y": 583.5},{"i": 101, "x": 66.4, "y": 583.5},{"i": 102, "x": 109.3, "y": 583.5},{"i": 103, "x": 238.2, "y": 583.5},{"i": 104, "x": 281.1, "y": 583.5},{"i": 105, "x": 324.1, "y": 583.5},{"i": 106, "x": 23.4, "y": 856.5},{"i": 107, "x": 66.4, "y": 856.5},{"i": 108, "x": 109.3, "y": 856.5},{"i": 109, "x": 152.3, "y": 856.5},{"i": 110, "x": 195.2, "y": 856.5},{"i": 111, "x": 238.2, "y": 856.5},{"i": 112, "x": 281.1, "y": 856.5},{"i": 113, "x": 324.1, "y": 856.5},{"i": 114, "x": 0.7, "y": 603.4},{"i": 115, "x": 0.7, "y": 641.1},{"i": 116, "x": 0.7, "y": 678.9},{"i": 117, "x": 0.7, "y": 716.6},{"i": 118, "x": 0.7, "y": 754.3},{"i": 119, "x": 0.7, "y": 792.0},{"i": 120, "x": 0.7, "y": 829.7},{"i": 121, "x": 350.7, "y": 603.4},{"i": 122, "x": 350.7, "y": 641.1},{"i": 123, "x": 350.7, "y": 678.9},{"i": 124, "x": 350.7, "y": 792.0},{"i": 125, "x": 492.0, "y": 583.5},{"i": 126, "x": 535.0, "y": 583.5},{"i": 127, "x": 577.9, "y": 583.5},{"i": 128, "x": 706.8, "y": 583.5},{"i": 129, "x": 749.7, "y": 583.5},{"i": 130, "x": 792.7, "y": 583.5},{"i": 131, "x": 492.0, "y": 856.5},{"i": 132, "x": 535.0, "y": 856.5},{"i": 133, "x": 577.9, "y": 856.5},{"i": 134, "x": 620.9, "y": 856.5},{"i": 135, "x": 663.8, "y": 856.5},{"i": 136, "x": 706.8, "y": 856.5},{"i": 137, "x": 749.7, "y": 856.5},{"i": 138, "x": 792.7, "y": 856.5},{"i": 139, "x": 469.3, "y": 603.4},{"i": 140, "x": 469.3, "y": 641.1},{"i": 141, "x": 469.3, "y": 678.9},{"i": 142, "x": 469.3, "y": 792.0},{"i": 143, "x": 469.3, "y": 829.7},{"i": 144, "x": 819.3, "y": 603.4},{"i": 145, "x": 819.3, "y": 641.1},{"i": 146, "x": 819.3, "y": 678.9},{"i": 147, "x": 819.3, "y": 716.6},{"i": 148, "x": 819.3, "y": 754.3},{"i": 149, "x": 819.3, "y": 792.0}];
 let walletAddress = null;
 let selectedIdx   = null;
+
+// ── RIGHT PANEL GATE ──────────────────────────────────────
+function dismissGate(){
+  const gate = document.getElementById('rightGate');
+  gate.style.transition='opacity 0.4s';
+  gate.style.opacity='0';
+  gate.style.pointerEvents='none';
+  setTimeout(()=>gate.style.display='none', 420);
+}
+
+// On touch devices: show gate immediately (no hover available)
+// On desktop: gate appears on hover via CSS
+if('ontouchstart' in window){
+  const gate = document.getElementById('rightGate');
+  const inner = document.getElementById('rightGate-inner');
+  if(gate && inner){
+    gate.classList.add('hover'); // trigger the hover CSS state permanently
+  }
+}
 
 // ── VIEW SWITCHING ──────────────────────────────────────
 function showMuseum() {

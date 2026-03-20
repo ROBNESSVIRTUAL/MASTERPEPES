@@ -749,7 +749,7 @@ document.getElementById('dpad').addEventListener('touchcancel',e=>{
 },{passive:false});
 
 // Look drag — right half of screen only (left half is d-pad)
-let lookDragging=false,lastMX=0,lastMY=0;
+let lookDragging=false;
 rc.addEventListener('touchstart',e=>{
   if(!entered)return;
   e.preventDefault();

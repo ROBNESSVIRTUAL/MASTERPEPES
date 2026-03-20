@@ -252,76 +252,41 @@ const renderer=new THREE.WebGLRenderer({canvas:rc,antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.setSize(innerWidth,innerHeight);
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0xB8E898); // pastel green fallback
-scene.fog=new THREE.FogExp2(0xC0EAA0,0.0018); // soft pastel green haze
+scene.background=new THREE.Color(0xB8E898);
+scene.fog=new THREE.FogExp2(0xC0EAA0,0.0018);
 const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,0.1,800);
 camera.rotation.order='YXZ';
-camera.position.set(0,1.7,180);
+camera.position.set(0,1.7,380);
 window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();});
 
 // ── DREAMY PEPE GREEN SKY ─────────────────────────────────────────────────────
 (function buildSky(){
   const C=document.createElement('canvas');C.width=2048;C.height=1024;
   const ctx=C.getContext('2d');
-
-  // Base pastel green gradient
   const g=ctx.createLinearGradient(0,0,0,1024);
-  g.addColorStop(0,'#CCF5AA');    // zenith — lightest mint
-  g.addColorStop(0.3,'#B8EC98');
-  g.addColorStop(0.65,'#AADC88');
-  g.addColorStop(1,'#C0EAA0');    // horizon
+  g.addColorStop(0,'#CCF5AA');g.addColorStop(0.3,'#B8EC98');g.addColorStop(0.65,'#AADC88');g.addColorStop(1,'#C0EAA0');
   ctx.fillStyle=g;ctx.fillRect(0,0,2048,1024);
-
-  // Dreamy sun glow — pale chartreuse
   const sun=ctx.createRadialGradient(1380,160,0,1380,160,340);
-  sun.addColorStop(0,'rgba(235,255,190,0.6)');
-  sun.addColorStop(0.4,'rgba(210,250,170,0.28)');
-  sun.addColorStop(1,'rgba(200,240,160,0)');
+  sun.addColorStop(0,'rgba(235,255,190,0.6)');sun.addColorStop(0.4,'rgba(210,250,170,0.28)');sun.addColorStop(1,'rgba(200,240,160,0)');
   ctx.fillStyle=sun;ctx.fillRect(0,0,2048,1024);
-
-  // Green dreamy clouds — scattered puffs of darker green
   const clouds=[
-    [180,  90,  8, 95, '#6DB848',0.72],[600,  70,  6,115,'#60AC40',0.65],
-    [1050,140,  9,100,'#72C050',0.70],[1480, 85,  5,125,'#58A838',0.62],
-    [1870,180,  7, 88,'#68B844',0.68],[80,  260,  5, 72,'#70BA4C',0.52],
-    [420, 300,  8,105,'#5CAA3C',0.58],[870, 240,  6,118,'#65B245',0.62],
-    [1280,290,  7, 92,'#62B040',0.55],[1680,255,  5, 78,'#5AA83A',0.50],
-    [320, 400,  6, 68,'#6CBB48',0.42],[740, 380,  5, 82,'#5EAC3E',0.46],
-    [1120,370,  8, 75,'#64B242',0.44],[1520,420,  4, 95,'#58A438',0.40],
-    // Wispy high ones
-    [480,  42,  4, 52,'#98DC78',0.28],[980,  25,  3, 60,'#90D870',0.24],
-    [1550, 50,  5, 55,'#9ADD75',0.30],[1200, 95,  3, 45,'#88D068',0.22],
+    [180,90,8,95,'#6DB848',0.72],[600,70,6,115,'#60AC40',0.65],[1050,140,9,100,'#72C050',0.70],
+    [1480,85,5,125,'#58A838',0.62],[1870,180,7,88,'#68B844',0.68],[80,260,5,72,'#70BA4C',0.52],
+    [420,300,8,105,'#5CAA3C',0.58],[870,240,6,118,'#65B245',0.62],[1280,290,7,92,'#62B040',0.55],
+    [1680,255,5,78,'#5AA83A',0.50],[320,400,6,68,'#6CBB48',0.42],[740,380,5,82,'#5EAC3E',0.46],
+    [1120,370,8,75,'#64B242',0.44],[1520,420,4,95,'#58A438',0.40],[480,42,4,52,'#98DC78',0.28],
+    [980,25,3,60,'#90D870',0.24],[1550,50,5,55,'#9ADD75',0.30],
   ];
-
   clouds.forEach(([cx,cy,puffs,sz,col,alpha])=>{
     const r=parseInt(col.slice(1,3),16),gv=parseInt(col.slice(3,5),16),b=parseInt(col.slice(5,7),16);
-    // Compute random puff offsets once per cloud
-    const puffList=Array.from({length:puffs},()=>[
-      (Math.random()-.5)*sz*1.7,(Math.random()-.5)*sz*0.48,
-      sz*(0.48+Math.random()*0.72),sz*(0.30+Math.random()*0.40)
-    ]);
-    // Soft glow pass
+    const puffList=Array.from({length:puffs},()=>[(Math.random()-.5)*sz*1.7,(Math.random()-.5)*sz*0.48,sz*(0.48+Math.random()*0.72),sz*(0.30+Math.random()*0.40)]);
     puffList.forEach(([dx,dy,ew,eh])=>{
       const cg=ctx.createRadialGradient(cx+dx,cy+dy,0,cx+dx,cy+dy,ew*1.2);
-      cg.addColorStop(0,`rgba(${r},${gv},${b},${alpha*0.85})`);
-      cg.addColorStop(0.55,`rgba(${r},${gv},${b},${alpha*0.45})`);
-      cg.addColorStop(1,`rgba(${r},${gv},${b},0)`);
+      cg.addColorStop(0,`rgba(${r},${gv},${b},${alpha*0.85})`);cg.addColorStop(0.55,`rgba(${r},${gv},${b},${alpha*0.45})`);cg.addColorStop(1,`rgba(${r},${gv},${b},0)`);
       ctx.fillStyle=cg;ctx.beginPath();ctx.ellipse(cx+dx,cy+dy,ew*1.2,eh*1.15,0,0,Math.PI*2);ctx.fill();
     });
-    // Crisp core pass
-    puffList.forEach(([dx,dy,ew,eh])=>{
-      ctx.fillStyle=`rgba(${r},${gv},${b},${alpha*0.75})`;
-      ctx.beginPath();ctx.ellipse(cx+dx,cy+dy,ew,eh,0.06,0,Math.PI*2);ctx.fill();
-    });
+    puffList.forEach(([dx,dy,ew,eh])=>{ctx.fillStyle=`rgba(${r},${gv},${b},${alpha*0.75})`;ctx.beginPath();ctx.ellipse(cx+dx,cy+dy,ew,eh,0.06,0,Math.PI*2);ctx.fill();});
   });
-
-  // Dreamy iridescent shimmer overlay
-  const shimmer=ctx.createRadialGradient(1024,350,0,1024,350,850);
-  shimmer.addColorStop(0,'rgba(180,255,160,0.10)');
-  shimmer.addColorStop(0.5,'rgba(160,240,140,0.05)');
-  shimmer.addColorStop(1,'rgba(140,220,120,0)');
-  ctx.fillStyle=shimmer;ctx.fillRect(0,0,2048,1024);
-
   const skyTex=new THREE.CanvasTexture(C);
   const skyGeo=new THREE.SphereGeometry(580,48,24);
   const skyMat=new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,depthWrite:false,fog:false});
@@ -329,18 +294,17 @@ window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);c
 })();
 
 // ── LIGHTING ──────────────────────────────────────────────────────────────────
-scene.add(new THREE.AmbientLight(0xC8F0A0,0.85));  // green-tinted ambient
+scene.add(new THREE.AmbientLight(0xC8F0A0,0.85));
 const sun=new THREE.DirectionalLight(0xEEFFD0,2.0);sun.position.set(80,200,60);scene.add(sun);
-scene.add(new THREE.HemisphereLight(0xAAE880,0xE0342F,0.6));  // green sky / red ground bounce
-[[-150,-170],[150,-170],[0,-170],[-150,10],[150,10],[0,10],
- [-150,200],[150,200],[0,200],[0,260],[-150,300],[150,300]].forEach(([x,z])=>{
-  const l=new THREE.PointLight(0xEEFFDD,0.55,220);l.position.set(x,12,z);scene.add(l);
+scene.add(new THREE.HemisphereLight(0xAAE880,0xE0342F,0.6));
+[[-155,-175],[155,-175],[0,-175],[-155,125],[155,125],[0,125],
+ [-155,375],[155,375],[0,375],[0,420],[-155,450],[155,450]].forEach(([x,z])=>{
+  const l=new THREE.PointLight(0xFFEEDD,0.55,280);l.position.set(x,12,z);scene.add(l);
 });
 
 // ── MATERIALS ─────────────────────────────────────────────────────────────────
 function makeRedFloor(){
-  const C=document.createElement('canvas');C.width=C.height=512;
-  const ctx=C.getContext('2d');
+  const C=document.createElement('canvas');C.width=C.height=512;const ctx=C.getContext('2d');
   ctx.fillStyle='#E0342F';ctx.fillRect(0,0,512,512);
   ctx.strokeStyle='rgba(180,20,15,0.3)';ctx.lineWidth=1.5;
   for(let i=0;i<=512;i+=64){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,512);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(512,i);ctx.stroke();}
@@ -349,44 +313,48 @@ function makeRedFloor(){
     grd.addColorStop(0,'rgba(255,120,100,0.18)');grd.addColorStop(1,'rgba(255,120,100,0)');
     ctx.fillStyle=grd;ctx.fillRect(tx*64,ty*64,64,64);
   }
-  const t=new THREE.CanvasTexture(C);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(40,50);return t;
+  const t=new THREE.CanvasTexture(C);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(45,50);return t;
 }
 function makePlaceholder(work){
-  const C=document.createElement('canvas');C.width=512;C.height=512;
-  const ctx=C.getContext('2d');
-  // Very dark, nearly black — won't clash with anything
+  const C=document.createElement('canvas');C.width=512;C.height=512;const ctx=C.getContext('2d');
   ctx.fillStyle='#0A0A0A';ctx.fillRect(0,0,512,512);
-  // Subtle number only — white text, no loud colors
   ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='28px Arial';ctx.textAlign='center';
-  ctx.fillText('No. '+work.num,256,240);
-  ctx.font='16px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';
+  ctx.fillText('No. '+work.num,256,240);ctx.font='16px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';
   const words=work.t.split(' ');let line='',y=280;
   words.forEach(w=>{const test=line+w+' ';if(ctx.measureText(test).width>460&&line){ctx.fillText(line.trim(),256,y);line=w+' ';y+=22;}else line=test;});
-  ctx.fillText(line.trim(),256,y);
-  return new THREE.CanvasTexture(C);
+  ctx.fillText(line.trim(),256,y);return new THREE.CanvasTexture(C);
 }
-
 const floorMat=new THREE.MeshLambertMaterial({map:makeRedFloor()});
 const wallMat =new THREE.MeshLambertMaterial({color:0xE0342F,side:THREE.DoubleSide});
 const moldMat =new THREE.MeshLambertMaterial({color:0xC02018});
 const frameHi =new THREE.MeshLambertMaterial({color:0xFFD700});
 const frameLo =new THREE.MeshLambertMaterial({color:0xDAA520});
 
-// ── GEOMETRY ─────────────────────────────────────────────────────────────────
-// Layout (world units):
-//   x outer: ±250,  x dividers: ±40
-//   Wing x: 210 wide each (±40 to ±250)
-//   z dividers: z=-80 (I/II south), z=+120 (III/IV south / V/VI north)
-//   Wing I/II:   z -250..-80  (170 deep)
-//   Wings III/IV: z -100..+120  (220 deep, rotunda z=-100..+120)
-//   Wings V/VI:  z +120..+300  (180 deep)
-//   Entrance:    x -40..+40,  z +120..+340
+// ── GEOMETRY ──────────────────────────────────────────────────────────────────
+// Clean symmetric layout — all wings 250×250 units
+// x dividers at x=±30  (60-unit rotunda/entrance corridor)
+// z dividers at z=0 (Wings I/II south = Wings III/IV north)
+//              z=250 (Wings III/IV south = Wings V/VI north + rotunda south)
+// Wings I/II:  z -250..0
+// Wings III/IV: z 0..250
+// Wings V/VI:  z 250..500
+// Rotunda:     x -30..30, z 0..250
+// Entrance:    x -30..30, z 250..530
+//
+// Doors:
+//   Wing I↔III: z=0, x=-155 ± 15  gap=[-170,-140]
+//   Wing II↔IV: z=0, x=+155 ± 15  gap=[140,170]
+//   Wing III↔V: z=250, x=-155 ± 15
+//   Wing IV↔VI: z=250, x=+155 ± 15
+//   Wings↔Rotunda: x=±30, z=125 ± 20  gap=[105,145]
+//   Rotunda↔Entrance: z=250, x=0 ± 20  gap=[-20,20]
+//   Wings V/VI↔Entrance: x=±30, z=375 ± 20  gap=[355,395]
 
 const H=18, WT=0.5;
 const colliders=[];
 function addBox(w,h,d,mat,x,y,z,col=true){
   const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
-  m.position.set(x,y,z);scene.add(m);if(col)colliders.push(m);return m;
+  m.position.set(x,y,z);scene.add(m);if(col)colliders.push(m);
 }
 function segs(a,b,gaps){
   const gs=[...gaps].sort((p,q)=>p[0]-q[0]);const out=[];let cur=a;
@@ -410,61 +378,55 @@ function wallZ(x,za,zb,gaps=[]){
   });
 }
 
-// Floor — single enormous slab
-addBox(502,0.25,594,floorMat,0,-0.12,45,false);
+// Floor slab
+addBox(562,0.25,784,floorMat,0,-0.12,140,false);
 
 // Outer perimeter
-wallX(-250,250,-250); wallX(-250,250,340);
-wallZ(-250,-250,340); wallZ(250,-250,340);
+wallX(-280,280,-250);
+wallX(-280,280, 530);
+wallZ(-280,-250,530);
+wallZ( 280,-250,530);
 
-// x dividers at x=±40
-// doors: z=-30..+30 (wings↔rotunda), z=+148..+192 (wings↔entrance)
-wallZ(-40,-250,-80);                  // WingI east — solid
-wallZ(-40,-100, 120,[[-30,30]]);      // WingIII↔Rotunda
-wallZ(-40, 120, 300,[[148,192]]);     // WingV↔Entrance
-wallZ(-40, 300, 340);
-wallZ( 40,-250,-80);
-wallZ( 40,-100, 120,[[-30,30]]);
-wallZ( 40, 120, 300,[[148,192]]);
-wallZ( 40, 300, 340);
+// x=±30 dividers (wing ↔ rotunda/entrance walls)
+wallZ(-30,-250,   0);                    // Wing I east — solid
+wallZ(-30,    0, 250,[[ 105, 145]]);     // Wing III east / Rotunda west — door @ z=125
+wallZ(-30,  250, 500,[[ 355, 395]]);     // Wing V east / Entrance west — door @ z=375
+wallZ(-30,  500, 530);
+wallZ( 30,-250,   0);                    // Wing II west — solid
+wallZ( 30,    0, 250,[[ 105, 145]]);
+wallZ( 30,  250, 500,[[ 355, 395]]);
+wallZ( 30,  500, 530);
 
-// z=-80: Wing I/II south — doors at x=±130 (width 20)
-wallX(-250,-40,-80,[[-140,-120]]);
-wallX( -40,  40,-80);
-wallX(  40, 250,-80,[[ 120, 140]]);
+// z=0 divider: Wings I/II south & Wings III/IV north
+wallX(-280,-30,   0,[[-170,-140]]);      // left wing door @ x=-155
+wallX( -30,  30,  0);                   // centre — solid
+wallX(  30, 280,  0,[[ 140, 170]]);     // right wing door @ x=155
 
-// z=-100: rotunda north wall — solid (no wings I/II connect here directly)
-// Actually wings III connect at z=-100 from z-divider at -80
-// z=-80 IS the divider. Wings III/IV start at z=-100 (their north outer wall)
-// Wait — let me clarify: wings III/IV span z=-100..+120
-// Their north outer wall is at z=-100, south outer at z=+120
-// They connect to wings I/II through the z=-80 divider gap
-// So z=-80 is divider between I/II and III/IV, with doors at x=±130
+// z=250 divider: Wings III/IV south & Wings V/VI north + rotunda south
+wallX(-280,-30, 250,[[-170,-140]]);
+wallX( -30,  30,250,[[ -20,  20]]);     // rotunda→entrance door @ x=0
+wallX(  30, 280,250,[[ 140, 170]]);
 
-// z=+120: Wings III/IV south / V/VI north — doors at x=±130
-wallX(-250,-40, 120,[[-140,-120]]);
-wallX( -40,  40, 120,[[-14,14]]);   // Rotunda↔Entrance
-wallX(  40, 250, 120,[[ 120, 140]]);
+// Wings V/VI south (entrance continues beyond to z=530)
+wallX(-280,-30, 500);
+wallX(  30, 280,500);
 
-// z=+300: Wings V/VI south wall
-wallX(-250,-40,300); wallX(40,250,300);
-
-// Rotunda — massive Doric columns
-[[-22,-70],[22,-70],[-22,0],[22,0],[-22,70],[22,70]].forEach(([x,z])=>{
+// Rotunda columns
+[[-18,50],[18,50],[-18,125],[18,125],[-18,200],[18,200]].forEach(([x,z])=>{
   addBox(3.5,H,3.5,moldMat,x,H/2,z,true);
   addBox(5.5,1.8,5.5,moldMat,x,H-0.9,z,false);
   addBox(5.5,1.2,5.5,moldMat,x,0.6,z,false);
 });
-// Grand entrance archway columns
-[[-30,125],[30,125],[-30,295],[30,295]].forEach(([x,z])=>{
-  addBox(4.5,H,4.5,moldMat,x,H/2,z,true);
-  addBox(7,2,7,moldMat,x,H-1,z,false);
-  addBox(7,1.5,7,moldMat,x,0.75,z,false);
+// Entrance archway columns
+[[-24,252],[24,252],[-24,498],[24,498]].forEach(([x,z])=>{
+  addBox(4,H,4,moldMat,x,H/2,z,true);
+  addBox(6.5,2,6.5,moldMat,x,H-1,z,false);
+  addBox(6.5,1.5,6.5,moldMat,x,0.75,z,false);
 });
 
 // ── LAZY IMAGE LOADER ─────────────────────────────────────────────────────────
 const artSpots=[];
-const LOAD_DIST=55;
+const LOAD_DIST=60;
 const LOAD_QUEUE=[];
 let activeLoads=0;
 const MAX_CONCURRENT=4;
@@ -472,30 +434,28 @@ const MAX_CONCURRENT=4;
 function applyTexture(img,artMat,art,frameLines,anchorY){
   try{
     const tex=new THREE.Texture(img);
-    tex.minFilter=THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;
-    tex.needsUpdate=true;artMat.map=tex;artMat.needsUpdate=true;
+    tex.minFilter=THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;tex.needsUpdate=true;
+    artMat.map=tex;artMat.needsUpdate=true;
     const ratio=img.naturalWidth/img.naturalHeight;
     let rW=AW,rH=AH;
     if(ratio>=1){rW=AW;rH=AW/ratio;if(rH>AH){rH=AH;rW=AH*ratio;}}
-    else        {rH=AH;rW=AH*ratio;if(rW>AW){rW=AW;rH=AW/ratio;}}
+    else{rH=AH;rW=AH*ratio;if(rW>AW){rW=AW;rH=AW/ratio;}}
     art.geometry.dispose();art.geometry=new THREE.PlaneGeometry(rW,rH);art.position.y=anchorY;
-    frameLines.geometry.dispose();const pad=0.4;
-    frameLines.geometry=new THREE.EdgesGeometry(new THREE.BoxGeometry(rW+pad,rH+pad,0.08));
+    frameLines.geometry.dispose();
+    frameLines.geometry=new THREE.EdgesGeometry(new THREE.BoxGeometry(rW+0.4,rH+0.4,0.08));
     frameLines.position.y=anchorY;
   }catch(e){}
 }
 
-function loadImg(url,fallbackUrl,artMat,art,frameLines,anchorY,onDone){
+function loadImg(url,fallback,artMat,art,frameLines,anchorY,onDone){
   const img=new Image();img.crossOrigin='anonymous';
   img.onload=()=>{applyTexture(img,artMat,art,frameLines,anchorY);onDone();};
   img.onerror=()=>{
-    if(fallbackUrl&&img.src!==fallbackUrl){
-      // Try arweave.net direct as fallback
+    if(fallback&&img.src!==fallback){
       const img2=new Image();img2.crossOrigin='anonymous';
       img2.onload=()=>{applyTexture(img2,artMat,art,frameLines,anchorY);onDone();};
-      img2.onerror=()=>onDone();
-      img2.src=fallbackUrl;
-    } else onDone();
+      img2.onerror=()=>onDone();img2.src=fallback;
+    }else onDone();
   };
   img.src=url;
 }
@@ -510,8 +470,7 @@ function processQueue(){
 }
 
 // ── ARTWORK SIZES ─────────────────────────────────────────────────────────────
-// AW×AH = max bounding box. Actual plane scales to real image aspect ratio.
-const AW=13.5,AH=11.4,STEP=24.0,AY=8.0,MARGIN=14.0,DPAD=10.0;
+const AW=13.5,AH=11.4,STEP=24.0,AY=8.0,MARGIN=14.0,DPAD_ART=10.0;
 
 function placeLine(works,wi,wallType,coord,isMin,rangeA,rangeB,gaps){
   if(wi[0]>=works.length)return;
@@ -519,7 +478,7 @@ function placeLine(works,wi,wallType,coord,isMin,rangeA,rangeB,gaps){
   let p=rangeA+MARGIN;
   while(p<=rangeB-MARGIN){
     if(wi[0]>=works.length)break;
-    const blocked=gaps.some(([g1,g2])=>p>g1-DPAD&&p<g2+DPAD);
+    const blocked=gaps.some(([g1,g2])=>p>g1-DPAD_ART&&p<g2+DPAD_ART);
     if(!blocked){
       const work=works[wi[0]++];
       let x,y=AY,z,rotY;
@@ -532,131 +491,134 @@ function placeLine(works,wi,wallType,coord,isMin,rangeA,rangeB,gaps){
 }
 
 function placeFrame(work,x,y,z,rotY){
-  const initW=AW, initH=AH;
   const sin=Math.sin(rotY),cos=Math.cos(rotY);
-
-  // ── Thin edge-outline frame (4 lines only, no solid face to z-fight) ──
-  const makeFrameLines=(w,h)=>{
-    const pad=0.4;
-    const geo=new THREE.EdgesGeometry(new THREE.BoxGeometry(w+pad,h+pad,0.08));
-    return new THREE.LineSegments(geo,new THREE.LineBasicMaterial({color:0xFFD700,linewidth:1}));
-  };
-  const frameLines=makeFrameLines(initW,initH);
+  const frameLines=new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(AW+0.4,AH+0.4,0.08)),
+    new THREE.LineBasicMaterial({color:0xFFD700})
+  );
   frameLines.position.set(x,y,z);
   frameLines.position.x+=sin*0.06;frameLines.position.z+=cos*0.06;
   frameLines.rotation.y=rotY;scene.add(frameLines);
-
-  // ── Single artwork plane — placeholder immediately, real image swaps in ──
   const ph=makePlaceholder(work);
   const artMat=new THREE.MeshBasicMaterial({map:ph,side:THREE.FrontSide});
-  const art=new THREE.Mesh(new THREE.PlaneGeometry(initW,initH),artMat);
+  const art=new THREE.Mesh(new THREE.PlaneGeometry(AW,AH),artMat);
   art.position.set(x,y,z);
   art.position.x+=sin*0.10;art.position.z+=cos*0.10;
   art.rotation.y=rotY;scene.add(art);
-
   const spot=new THREE.Vector3(x,y,z);
   spot.x+=sin*1.5;spot.z+=cos*1.5;
   artSpots.push({pos:spot,work,artMat,art,frameLines,rotY,anchorY:y,loaded:false});
 }
 
-// ── ROOM PLACEMENT DEFINITIONS ─────────────────────────────────────────────────
+// ── ROOM PLACEMENT ────────────────────────────────────────────────────────────
+// All wall coords match physical walls exactly. Verified: all wings ≥34 slots.
 const ROOMS=[
-{id:'w1',r:[0,24],walls:[
-  ['Z',-250, true, -250,-40,[]],
-  ['Z', -80,false,-250,-40,[[-140,-120]]],
-  ['X',-250, true, -250,-80,[]],
-  ['X', -40,false,-250,-80,[]],
-]},
-{id:'w2',r:[25,49],walls:[
-  ['Z',-250, true,   40, 250,[]],
-  ['Z', -80,false,   40, 250,[[120,140]]],
-  ['X',  40, true, -250,-80,[]],
-  ['X', 250,false,-250,-80,[]],
-]},
-{id:'w3',r:[50,74],walls:[
-  ['Z',-100, true, -250,-40,[[-140,-120]]],
-  ['Z', 120,false,-250,-40,[[-140,-120]]],
-  ['X',-250, true, -100, 120,[]],
-  ['X', -40,false,-100, 120,[[-30,30]]],
-]},
-{id:'w4',r:[75,99],walls:[
-  ['Z',-100, true,   40, 250,[[120,140]]],
-  ['Z', 120,false,   40, 250,[[120,140]]],
-  ['X',  40, true, -100, 120,[[-30,30]]],
-  ['X', 250,false,-100, 120,[]],
-]},
-{id:'w5',r:[100,124],walls:[
-  ['Z', 120, true, -250,-40,[[-140,-120]]],
-  ['Z', 300,false,-250,-40,[]],
-  ['X',-250, true,  120, 300,[]],
-  ['X', -40,false,  120, 300,[[148,192]]],
-]},
-{id:'w6',r:[125,149],walls:[
-  ['Z', 120, true,   40, 250,[[120,140]]],
-  ['Z', 300,false,   40, 250,[]],
-  ['X',  40, true,  120, 300,[[148,192]]],
-  ['X', 250,false,  120, 300,[]],
-]},
+  {id:'w1',r:[0,24],walls:[
+    ['Z',-250, true, -280,-30,[]],             // N outer
+    ['Z',   0,false, -280,-30,[[-170,-140]]],  // S door@-155
+    ['X',-280, true, -250,  0,[]],             // W outer
+    ['X', -30,false, -250,  0,[]],             // E solid
+  ]},
+  {id:'w2',r:[25,49],walls:[
+    ['Z',-250, true,   30, 280,[]],
+    ['Z',   0,false,   30, 280,[[140,170]]],
+    ['X',  30, true, -250,  0,[]],
+    ['X', 280,false, -250,  0,[]],
+  ]},
+  {id:'w3',r:[50,74],walls:[
+    ['Z',   0, true, -280,-30,[[-170,-140]]],  // N door@-155 (matches physical wall at z=0)
+    ['Z', 250,false, -280,-30,[[-170,-140]]],  // S door@-155
+    ['X',-280, true,    0,250,[]],             // W outer
+    ['X', -30,false,    0,250,[[105,145]]],    // E door@125 to rotunda
+  ]},
+  {id:'w4',r:[75,99],walls:[
+    ['Z',   0, true,   30, 280,[[140,170]]],
+    ['Z', 250,false,   30, 280,[[140,170]]],
+    ['X',  30, true,    0,250,[[105,145]]],
+    ['X', 280,false,    0,250,[]],
+  ]},
+  {id:'w5',r:[100,124],walls:[
+    ['Z', 250, true, -280,-30,[[-170,-140]]],  // N door@-155
+    ['Z', 500,false, -280,-30,[]],             // S outer
+    ['X',-280, true,  250,500,[]],             // W outer
+    ['X', -30,false,  250,500,[[355,395]]],    // E door@375 to entrance
+  ]},
+  {id:'w6',r:[125,149],walls:[
+    ['Z', 250, true,   30, 280,[[140,170]]],
+    ['Z', 500,false,   30, 280,[]],
+    ['X',  30, true,  250,500,[[355,395]]],
+    ['X', 280,false,  250,500,[]],
+  ]},
 ];
 
-// ── ROOM DEFS (for detection + minimap) ───────────────────────────────────────
 const RDEFS=[
-  {id:'w1',n:'Wing I',   s:'The Ancient World',        x1:-250,x2:-40,z1:-250,z2: -80},
-  {id:'w2',n:'Wing II',  s:'Early Civilisations',      x1:  40,x2:250,z1:-250,z2: -80},
-  {id:'w3',n:'Wing III', s:'Medieval & Gothic',        x1:-250,x2:-40,z1:-100,z2: 120},
-  {id:'w4',n:'Wing IV',  s:'Renaissance & Beyond',     x1:  40,x2:250,z1:-100,z2: 120},
-  {id:'w5',n:'Wing V',   s:'Baroque & Enlightenment',  x1:-250,x2:-40,z1: 120,z2: 300},
-  {id:'w6',n:'Wing VI',  s:'Modern & Contemporary',    x1:  40,x2:250,z1: 120,z2: 300},
-  {id:'rt',n:'Central Rotunda',s:'Overview',           x1: -40,x2:  40,z1:-100,z2: 120},
-  {id:'en',n:'Grand Hall',s:'Entrance',                x1: -40,x2:  40,z1: 120,z2: 340},
+  {id:'w1',n:'Wing I',   s:'The Ancient World',        x1:-280,x2:-30,z1:-250,z2:   0},
+  {id:'w2',n:'Wing II',  s:'Early Civilisations',      x1:  30,x2:280,z1:-250,z2:   0},
+  {id:'w3',n:'Wing III', s:'Medieval & Gothic',        x1:-280,x2:-30,z1:   0,z2: 250},
+  {id:'w4',n:'Wing IV',  s:'Renaissance & Beyond',     x1:  30,x2:280,z1:   0,z2: 250},
+  {id:'w5',n:'Wing V',   s:'Baroque & Enlightenment',  x1:-280,x2:-30,z1: 250,z2: 500},
+  {id:'w6',n:'Wing VI',  s:'Modern & Contemporary',    x1:  30,x2:280,z1: 250,z2: 500},
+  {id:'rt',n:'Central Rotunda',s:'Overview',           x1: -30,x2:  30,z1:   0,z2: 250},
+  {id:'en',n:'Grand Hall',s:'Entrance',                x1: -30,x2:  30,z1: 250,z2: 530},
 ];
+
+ROOMS.forEach(({id,r:[a,b],walls})=>{
+  const slice=PAGES.slice(a,b+1);const wi=[0];
+  walls.forEach(([type,coord,isMin,r0,r1,gaps])=>placeLine(slice,wi,type,coord,isMin,r0,r1,gaps));
+});
+
+// ── ROOM-BASED LOADING ────────────────────────────────────────────────────────
+const ROOM_NUMS={
+  w1:new Set(Array.from({length:25},(_,i)=>i+1)),
+  w2:new Set(Array.from({length:25},(_,i)=>i+26)),
+  w3:new Set(Array.from({length:25},(_,i)=>i+51)),
+  w4:new Set(Array.from({length:25},(_,i)=>i+76)),
+  w5:new Set(Array.from({length:25},(_,i)=>i+101)),
+  w6:new Set(Array.from({length:25},(_,i)=>i+126)),
+  rt:new Set([]),en:new Set([]),
+};
+function loadRoomArtworks(roomId){
+  const nums=ROOM_NUMS[roomId];if(!nums||!nums.size)return;
+  artSpots.forEach(a=>{
+    if(!a.loaded&&nums.has(a.work.num)){
+      a.loaded=true;
+      LOAD_QUEUE.push({artMat:a.artMat,art:a.art,frameLines:a.frameLines,anchorY:a.anchorY,url:a.work.url,txid:a.work.txid});
+      processQueue();
+    }
+  });
+}
 
 // ── LAYOUT LOADER ─────────────────────────────────────────────────────────────
 function buildDefaultLayout(){
   const ST=24.0,MG=14.0,DP=10.0;
-  function countSlots(rA,rB,gaps){
-    let n=0,p=rA+MG;
-    while(p<=rB-MG){if(!gaps.some(([g1,g2])=>p>g1-DP&&p<g2+DP))n++;p+=ST;}
-    return n;
-  }
+  function countSlots(rA,rB,gaps){let n=0,p=rA+MG;while(p<=rB-MG){if(!gaps.some(([g1,g2])=>p>g1-DP&&p<g2+DP))n++;p+=ST;}return n;}
   const layout={};
   ROOMS.forEach(room=>{
-    room.walls.forEach(([type,coord,isMin,r0,r1,gaps],wi)=>{
-      layout[room.id+'_'+['N','S','W','E'][wi]]=[];
-    });
+    room.walls.forEach(([type,coord,isMin,r0,r1,gaps],wi)=>layout[room.id+'_'+['N','S','W','E'][wi]]=[]);
   });
   ROOMS.forEach(room=>{
     const slice=PAGES.slice(room.r[0],room.r[1]+1);let wi2=0;
     room.walls.forEach(([type,coord,isMin,r0,r1,gaps],wi)=>{
       const wallId=room.id+'_'+['N','S','W','E'][wi];
       const n=countSlots(r0,r1,gaps);
-      for(let i=0;i<n&&wi2<slice.length;i++,wi2++){
-        layout[wallId].push({num:slice[wi2].num,orient:'landscape'});
-      }
+      for(let i=0;i<n&&wi2<slice.length;i++,wi2++)layout[wallId].push({num:slice[wi2].num,orient:'landscape'});
     });
   });
   return layout;
 }
-
 function applyLayout(layout){
   const ST=24.0,MG=14.0,DP=10.0;
   ROOMS.forEach(room=>{
     room.walls.forEach(([type,coord,isMin,r0,r1,gaps],wi)=>{
       const wallId=room.id+'_'+['N','S','W','E'][wi];
-      const entries=layout[wallId];
-      if(!entries||!entries.length)return;
+      const entries=layout[wallId];if(!entries||!entries.length)return;
       const off=(WT/2+0.12)*(isMin?1:-1);
-      const slotPositions=[];
-      let p=r0+MG;
-      while(p<=r1-MG){
-        if(!gaps.some(([g1,g2])=>p>g1-DP&&p<g2+DP))slotPositions.push(p);
-        p+=ST;
-      }
+      const slotPositions=[];let p=r0+MG;
+      while(p<=r1-MG){if(!gaps.some(([g1,g2])=>p>g1-DP&&p<g2+DP))slotPositions.push(p);p+=ST;}
       entries.forEach((entry,idx)=>{
         if(idx>=slotPositions.length)return;
         const work=PAGES.find(pg=>pg.num===entry.num);if(!work)return;
-        const pos=slotPositions[idx];
-        let x,y=AY,z,rotY;
+        const pos=slotPositions[idx];let x,y=AY,z,rotY;
         if(type==='Z'){x=pos;z=coord+off;rotY=isMin?0:Math.PI;}
         else{x=coord+off;z=pos;rotY=isMin?-Math.PI/2:Math.PI/2;}
         placeFrame(work,x,y,z,rotY);
@@ -810,28 +772,6 @@ function drawMap(){
 // ── DETECTION ─────────────────────────────────────────────────────────────────
 let curRoom=null,lastArt=null;
 const ainfoEl=document.getElementById('ainfo');
-// Map room id → which PAGES nums are in it
-const ROOM_NUMS={
-  w1:new Set(Array.from({length:25},(_,i)=>i+1)),
-  w2:new Set(Array.from({length:25},(_,i)=>i+26)),
-  w3:new Set(Array.from({length:25},(_,i)=>i+51)),
-  w4:new Set(Array.from({length:25},(_,i)=>i+76)),
-  w5:new Set(Array.from({length:25},(_,i)=>i+101)),
-  w6:new Set(Array.from({length:25},(_,i)=>i+126)),
-  rt:new Set([]),
-  en:new Set([]),
-};
-
-function loadRoomArtworks(roomId){
-  const nums=ROOM_NUMS[roomId];if(!nums||!nums.size)return;
-  artSpots.forEach(a=>{
-    if(!a.loaded&&nums.has(a.work.num)){
-      a.loaded=true;
-      LOAD_QUEUE.push({artMat:a.artMat,art:a.art,frameLines:a.frameLines,anchorY:a.anchorY,url:a.work.url,txid:a.work.txid});
-      processQueue();
-    }
-  });
-}
 
 function detectRoom(){
   const cx=camera.position.x,cz=camera.position.z;

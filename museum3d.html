@@ -598,6 +598,35 @@ const lordKekClock = new THREE.Clock();
     err => console.warn('LORDKEK.glb not found or failed to load:', err)
   );
 })();
+
+// ── KEK STATUE — north end of Grand Hall, facing entrance ─────────────────────
+// Grand Hall: x -30..30, z 180..400. North wall = z=180.
+// Statue placed at x=0, z≈200 (20 units inside hall), facing south (rotY=π).
+(function loadKekStatue(){
+  const loader = new THREE.GLTFLoader();
+  loader.load('kekstatue.glb',
+    gltf => {
+      const model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const centre = box.getCenter(new THREE.Vector3());
+      // Scale to 14 units tall — commanding presence without blocking the hall
+      const scale = 14 / Math.max(size.x, size.y, size.z);
+      model.scale.setScalar(scale);
+      // Centre on X axis, sit on floor
+      model.position.x = -centre.x * scale;
+      model.position.y = -box.min.y * scale;
+      // North end of Grand Hall — 20 units south of the z=180 rotunda wall
+      model.position.z = 200 - centre.z * scale;
+      // Face south — toward visitors entering from z=400
+      model.rotation.y = Math.PI;
+      scene.add(model);
+      console.log('Kek statue placed. Size:', size, 'Scale:', scale);
+    },
+    undefined,
+    err => console.warn('kekstatue.glb not found:', err)
+  );
+})();
 // Verified layout: every artwork wall coord matches a physical wall exactly.
 // Wings I/II:   x -210..-30, z -160..0   (180 wide, 160 deep)
 // Wings III/IV: x -210..-30, z 0..180    (180 wide, 180 deep)

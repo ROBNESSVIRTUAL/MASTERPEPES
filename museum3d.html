@@ -339,39 +339,194 @@ camera.rotation.order='YXZ';
 camera.position.set(0,1.7,380);
 window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();});
 
-// ── DREAMY PEPE GREEN SKY ─────────────────────────────────────────────────────
-(function buildSky(){
-  const C=document.createElement('canvas');C.width=2048;C.height=1024;
-  const ctx=C.getContext('2d');
-  const g=ctx.createLinearGradient(0,0,0,1024);
-  g.addColorStop(0,'#CCF5AA');g.addColorStop(0.3,'#B8EC98');g.addColorStop(0.65,'#AADC88');g.addColorStop(1,'#C0EAA0');
-  ctx.fillStyle=g;ctx.fillRect(0,0,2048,1024);
-  const sun=ctx.createRadialGradient(1380,160,0,1380,160,340);
-  sun.addColorStop(0,'rgba(235,255,190,0.6)');sun.addColorStop(0.4,'rgba(210,250,170,0.28)');sun.addColorStop(1,'rgba(200,240,160,0)');
-  ctx.fillStyle=sun;ctx.fillRect(0,0,2048,1024);
-  const clouds=[
-    [180,90,8,95,'#6DB848',0.72],[600,70,6,115,'#60AC40',0.65],[1050,140,9,100,'#72C050',0.70],
-    [1480,85,5,125,'#58A838',0.62],[1870,180,7,88,'#68B844',0.68],[80,260,5,72,'#70BA4C',0.52],
-    [420,300,8,105,'#5CAA3C',0.58],[870,240,6,118,'#65B245',0.62],[1280,290,7,92,'#62B040',0.55],
-    [1680,255,5,78,'#5AA83A',0.50],[320,400,6,68,'#6CBB48',0.42],[740,380,5,82,'#5EAC3E',0.46],
-    [1120,370,8,75,'#64B242',0.44],[1520,420,4,95,'#58A438',0.40],[480,42,4,52,'#98DC78',0.28],
-    [980,25,3,60,'#90D870',0.24],[1550,50,5,55,'#9ADD75',0.30],
+// ── DYNAMIC SKY — day/sunset/night cycle with moving clouds + stars ───────────
+const SKY_CANVAS = document.createElement('canvas');
+SKY_CANVAS.width = 2048; SKY_CANVAS.height = 1024;
+const SKY_CTX = SKY_CANVAS.getContext('2d');
+
+// Pre-generate stable cloud and star positions (don't change per frame)
+const CLOUD_DEFS = [
+  {bx:180, by:90, puffs:8, sz:95, dr:0.018},
+  {bx:600, by:70, puffs:6, sz:115,dr:0.012},
+  {bx:1050,by:140,puffs:9, sz:100,dr:0.022},
+  {bx:1480,by:85, puffs:5, sz:125,dr:0.014},
+  {bx:1870,by:180,puffs:7, sz:88, dr:0.019},
+  {bx:80,  by:260,puffs:5, sz:72, dr:0.016},
+  {bx:420, by:300,puffs:8, sz:105,dr:0.010},
+  {bx:870, by:240,puffs:6, sz:118,dr:0.021},
+  {bx:1280,by:290,puffs:7, sz:92, dr:0.013},
+  {bx:1680,by:255,puffs:5, sz:78, dr:0.017},
+  {bx:320, by:400,puffs:6, sz:68, dr:0.009},
+  {bx:740, by:380,puffs:5, sz:82, dr:0.015},
+  {bx:1120,by:370,puffs:8, sz:75, dr:0.020},
+  {bx:1520,by:420,puffs:4, sz:95, dr:0.011},
+  {bx:480, by:42, puffs:4, sz:52, dr:0.025},
+  {bx:980, by:25, puffs:3, sz:60, dr:0.018},
+  {bx:1550,by:50, puffs:5, sz:55, dr:0.014},
+].map(c=>({
+  ...c,
+  offset: Math.random()*2048, // starting horizontal offset
+  puffList: Array.from({length:c.puffs},()=>[
+    (Math.random()-.5)*c.sz*1.7,
+    (Math.random()-.5)*c.sz*0.48,
+    c.sz*(0.48+Math.random()*0.72),
+    c.sz*(0.30+Math.random()*0.40)
+  ])
+}));
+
+// Stars: 220 random positions in upper hemisphere
+const STARS = Array.from({length:220},()=>({
+  x: Math.random()*2048,
+  y: Math.random()*480,       // upper half of sky texture
+  r: 0.8+Math.random()*2.2,
+  twinkle: Math.random()*Math.PI*2
+}));
+
+// Sky colour stops per phase: [day, sunset, dusk, night]
+// t=0 day, t=0.33 sunset, t=0.5 dusk, t=0.66 night, t=1 back to day
+function skyPhase(t){
+  // t goes 0→1 over the full cycle
+  // Returns {top, mid, horizon, sunX, sunY, sunR, sunCol, cloudR, cloudG, cloudB, cloudA, starsAlpha, fogCol}
+  const phases=[
+    // day
+    {top:'#CCF5AA',mid:'#B8EC98',hor:'#C0EAA0',
+     sunX:1380,sunY:120,sunR:280,sunC:'rgba(235,255,190,0.55)',
+     cr:109,cg:184,cb:72,ca:0.70,sa:0,fog:'#C0EAA0'},
+    // golden hour / sunset
+    {top:'#E8A060',mid:'#F0784A',hor:'#F4C060',
+     sunX:200,sunY:500,sunR:350,sunC:'rgba(255,200,80,0.75)',
+     cr:220,cg:120,cb:60,ca:0.65,sa:0,fog:'#F0906A'},
+    // deep dusk
+    {top:'#1A0830',mid:'#3A1040',hor:'#8A3020',
+     sunX:100,sunY:780,sunR:200,sunC:'rgba(180,60,20,0.45)',
+     cr:100,cg:40,cb:80,ca:0.55,sa:0.6,fog:'#2A0A20'},
+    // night
+    {top:'#020408',mid:'#080C14',hor:'#101828',
+     sunX:-200,sunY:900,sunR:80,sunC:'rgba(20,20,60,0.2)',
+     cr:30,cg:40,cb:80,ca:0.35,sa:1.0,fog:'#060C14'},
+    // back to day (same as phase 0 for smooth loop)
+    {top:'#CCF5AA',mid:'#B8EC98',hor:'#C0EAA0',
+     sunX:1380,sunY:120,sunR:280,sunC:'rgba(235,255,190,0.55)',
+     cr:109,cg:184,cb:72,ca:0.70,sa:0,fog:'#C0EAA0'},
   ];
-  clouds.forEach(([cx,cy,puffs,sz,col,alpha])=>{
-    const r=parseInt(col.slice(1,3),16),gv=parseInt(col.slice(3,5),16),b=parseInt(col.slice(5,7),16);
-    const puffList=Array.from({length:puffs},()=>[(Math.random()-.5)*sz*1.7,(Math.random()-.5)*sz*0.48,sz*(0.48+Math.random()*0.72),sz*(0.30+Math.random()*0.40)]);
-    puffList.forEach(([dx,dy,ew,eh])=>{
-      const cg=ctx.createRadialGradient(cx+dx,cy+dy,0,cx+dx,cy+dy,ew*1.2);
-      cg.addColorStop(0,`rgba(${r},${gv},${b},${alpha*0.85})`);cg.addColorStop(0.55,`rgba(${r},${gv},${b},${alpha*0.45})`);cg.addColorStop(1,`rgba(${r},${gv},${b},0)`);
-      ctx.fillStyle=cg;ctx.beginPath();ctx.ellipse(cx+dx,cy+dy,ew*1.2,eh*1.15,0,0,Math.PI*2);ctx.fill();
+  const seg = t * (phases.length-1);
+  const i = Math.min(Math.floor(seg), phases.length-2);
+  const f = seg - i;
+  const a=phases[i], b=phases[i+1];
+  function lerp(a,b){return a+(b-a)*f;}
+  function lerpCol(ac,bc){
+    // Parse hex or rgba, lerp
+    return [lerp(ac[0],bc[0]),lerp(ac[1],bc[1]),lerp(ac[2],bc[2])];
+  }
+  return {
+    top:lerpHex(a.top,b.top,f), mid:lerpHex(a.mid,b.mid,f), hor:lerpHex(a.hor,b.hor,f),
+    sunX:lerp(a.sunX,b.sunX), sunY:lerp(a.sunY,b.sunY), sunR:lerp(a.sunR,b.sunR),
+    sunC:a.sunC,  // just use phase A's sun color
+    cr:lerp(a.cr,b.cr),cg:lerp(a.cg,b.cg),cb:lerp(a.cb,b.cb),
+    ca:lerp(a.ca,b.ca), sa:lerp(a.sa,b.sa),
+    fog:lerpHex(a.fog,b.fog,f)
+  };
+}
+
+function lerpHex(h1,h2,t){
+  function parse(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+  const [r1,g1,b1]=parse(h1),[r2,g2,b2]=parse(h2);
+  const r=Math.round(r1+(r2-r1)*t),g=Math.round(g1+(g2-g1)*t),b=Math.round(b1+(b2-b1)*t);
+  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+}
+
+function drawSky(t, cloudShift){
+  const ctx=SKY_CTX, W=2048, H=1024;
+  const ph = skyPhase(t);
+
+  // Background gradient
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,ph.top); g.addColorStop(0.45,ph.mid); g.addColorStop(1,ph.hor);
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+  // Sun/moon glow
+  const sg=ctx.createRadialGradient(ph.sunX,ph.sunY,0,ph.sunX,ph.sunY,ph.sunR);
+  sg.addColorStop(0,ph.sunC);
+  sg.addColorStop(0.5,ph.sunC.replace(/[\d.]+\)$/,'0.15)'));
+  sg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=sg; ctx.fillRect(0,0,W,H);
+
+  // Stars — fade in during dusk/night
+  if(ph.sa>0.01){
+    STARS.forEach(s=>{
+      const twink = 0.5+0.5*Math.sin(Date.now()*0.001*1.5+s.twinkle);
+      const alpha = ph.sa * (0.5+0.5*twink);
+      ctx.fillStyle=`rgba(255,255,255,${alpha})`;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
     });
-    puffList.forEach(([dx,dy,ew,eh])=>{ctx.fillStyle=`rgba(${r},${gv},${b},${alpha*0.75})`;ctx.beginPath();ctx.ellipse(cx+dx,cy+dy,ew,eh,0.06,0,Math.PI*2);ctx.fill();});
+    // Moon when night
+    if(ph.sa>0.5){
+      const moonA=(ph.sa-0.5)*2;
+      const moonG=ctx.createRadialGradient(300,150,0,300,150,55);
+      moonG.addColorStop(0,`rgba(220,230,255,${moonA*0.9})`);
+      moonG.addColorStop(0.6,`rgba(180,200,240,${moonA*0.5})`);
+      moonG.addColorStop(1,`rgba(160,180,220,0)`);
+      ctx.fillStyle=moonG; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle=`rgba(235,240,255,${moonA*0.85})`;
+      ctx.beginPath(); ctx.arc(300,150,38,0,Math.PI*2); ctx.fill();
+    }
+  }
+
+  // Clouds — drift horizontally, tint shifts with time of day
+  CLOUD_DEFS.forEach(cloud=>{
+    const cx = ((cloud.bx + cloudShift * cloud.dr * 2048) % 2048 + 2048) % 2048;
+    const cy = cloud.by;
+    const r=Math.round(ph.cr),gv=Math.round(ph.cg),b=Math.round(ph.cb),al=ph.ca;
+    // Draw each puff twice (wrap around canvas edge)
+    [-2048,0].forEach(wrap=>{
+      cloud.puffList.forEach(([dx,dy,ew,eh])=>{
+        const px=cx+dx+wrap, py=cy+dy;
+        if(px<-200||px>W+200) return;
+        const cg2=ctx.createRadialGradient(px,py,0,px,py,ew*1.2);
+        cg2.addColorStop(0,`rgba(${r},${gv},${b},${al*0.85})`);
+        cg2.addColorStop(0.55,`rgba(${r},${gv},${b},${al*0.45})`);
+        cg2.addColorStop(1,`rgba(${r},${gv},${b},0)`);
+        ctx.fillStyle=cg2;
+        ctx.beginPath();ctx.ellipse(px,py,ew*1.2,eh*1.15,0,0,Math.PI*2);ctx.fill();
+      });
+      cloud.puffList.forEach(([dx,dy,ew,eh])=>{
+        const px=cx+dx+wrap, py=cy+dy;
+        if(px<-200||px>W+200) return;
+        ctx.fillStyle=`rgba(${r},${gv},${b},${al*0.75})`;
+        ctx.beginPath();ctx.ellipse(px,py,ew,eh,0.06,0,Math.PI*2);ctx.fill();
+      });
+    });
   });
-  const skyTex=new THREE.CanvasTexture(C);
-  const skyGeo=new THREE.SphereGeometry(580,48,24);
-  const skyMat=new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,depthWrite:false,fog:false});
-  scene.add(new THREE.Mesh(skyGeo,skyMat));
-})();
+}
+
+// Initial draw
+drawSky(0, 0);
+const skyTex = new THREE.CanvasTexture(SKY_CANVAS);
+skyTex.needsUpdate = true;
+const skyGeo = new THREE.SphereGeometry(580,48,24);
+const skyMat = new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,depthWrite:false,fog:false});
+scene.add(new THREE.Mesh(skyGeo,skyMat));
+
+// Sky update state
+const SKY_CYCLE = 120000; // full day/night cycle = 120 seconds
+let skyCloudShift = 0;
+function updateSky(){
+  const t = (Date.now() % SKY_CYCLE) / SKY_CYCLE;
+  skyCloudShift += 0.15; // pixels per frame shift
+  drawSky(t, skyCloudShift);
+  skyTex.needsUpdate = true;
+  // Also shift fog colour to match
+  const ph = skyPhase(t);
+  scene.fog.color.set(ph.fog);
+  scene.background.set(ph.fog);
+  // Adjust ambient light intensity for time of day
+  const dayBright = Math.max(0, Math.sin(t * Math.PI * 2) * 0.5 + 0.5);
+  scene.children.filter(c=>c.isAmbientLight).forEach(l=>{
+    l.intensity = 0.4 + dayBright * 0.7;
+  });
+}
+// Update sky every 4 frames (performance)
+let skyFrame = 0;
 
 // ── LIGHTING ──────────────────────────────────────────────────────────────────
 scene.add(new THREE.AmbientLight(0xC8F0A0,0.85));
@@ -1329,6 +1484,8 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     camera.position.y=1.7;detectRoom();detectArt();drawMap();
   }
   renderer.render(scene,camera);
+  // Update sky every 4 frames
+  if(++skyFrame%4===0) updateSky();
 })();
 </script>
 </body>

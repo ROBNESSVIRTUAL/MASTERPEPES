@@ -451,14 +451,17 @@ function drawSky(t, cloudShift, starShift=0){
   sg.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=sg; ctx.fillRect(0,0,W,H);
 
-  // Stars — fade in during dusk/night
+  // Stars — drift + twinkle
   if(ph.sa>0.01){
     STARS.forEach(s=>{
-      const sx = ((s.x + starShift * 0.04) % 2048 + 2048) % 2048;
+      const sx = ((s.x + starShift) % 2048 + 2048) % 2048;
       const twink = 0.5+0.5*Math.sin(Date.now()*0.00008+s.twinkle);
       const alpha = ph.sa * (0.5+0.5*twink);
       ctx.fillStyle=`rgba(255,255,255,${alpha})`;
-      ctx.beginPath(); ctx.arc(sx,s.y,s.r,0,Math.PI*2); ctx.fill();
+      // wrap star around canvas edge
+      [0, 2048].forEach(wrap=>{
+        ctx.beginPath(); ctx.arc(sx-wrap,s.y,s.r,0,Math.PI*2); ctx.fill();
+      });
     });
     // Moon when night
     if(ph.sa>0.5){
@@ -473,28 +476,40 @@ function drawSky(t, cloudShift, starShift=0){
     }
   }
 
-  // Clouds — drift horizontally, tint shifts with time of day
-  CLOUD_DEFS.forEach(cloud=>{
+  // Clouds — drift + swirl/melt via per-puff sinusoidal offsets
+  const now = Date.now() * 0.0004; // slow time base for swirling
+  CLOUD_DEFS.forEach((cloud, ci)=>{
     const cx = ((cloud.bx + cloudShift * cloud.dr * 2048) % 2048 + 2048) % 2048;
     const cy = cloud.by;
     const r=Math.round(ph.cr),gv=Math.round(ph.cg),b=Math.round(ph.cb),al=ph.ca;
-    // Draw each puff twice (wrap around canvas edge)
     [-2048,0].forEach(wrap=>{
-      cloud.puffList.forEach(([dx,dy,ew,eh])=>{
-        const px=cx+dx+wrap, py=cy+dy;
-        if(px<-200||px>W+200) return;
-        const cg2=ctx.createRadialGradient(px,py,0,px,py,ew*1.2);
+      // Glow pass
+      cloud.puffList.forEach(([dx,dy,ew,eh], pi)=>{
+        // Swirl: each puff orbits slowly around its rest position
+        const phase = ci*1.3 + pi*0.7;
+        const swirlX = Math.sin(now + phase) * ew * 0.18;
+        const swirlY = Math.cos(now * 0.7 + phase) * eh * 0.22;
+        // Melt: size breathes in/out
+        const breathe = 1 + 0.12 * Math.sin(now * 1.1 + phase * 0.5);
+        const px=cx+dx+swirlX+wrap, py=cy+dy+swirlY;
+        if(px<-300||px>W+300) return;
+        const cg2=ctx.createRadialGradient(px,py,0,px,py,ew*1.2*breathe);
         cg2.addColorStop(0,`rgba(${r},${gv},${b},${al*0.85})`);
         cg2.addColorStop(0.55,`rgba(${r},${gv},${b},${al*0.45})`);
         cg2.addColorStop(1,`rgba(${r},${gv},${b},0)`);
         ctx.fillStyle=cg2;
-        ctx.beginPath();ctx.ellipse(px,py,ew*1.2,eh*1.15,0,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.ellipse(px,py,ew*1.2*breathe,eh*1.15*breathe,0,0,Math.PI*2);ctx.fill();
       });
-      cloud.puffList.forEach(([dx,dy,ew,eh])=>{
-        const px=cx+dx+wrap, py=cy+dy;
-        if(px<-200||px>W+200) return;
+      // Crisp core pass
+      cloud.puffList.forEach(([dx,dy,ew,eh], pi)=>{
+        const phase = ci*1.3 + pi*0.7;
+        const swirlX = Math.sin(now + phase) * ew * 0.18;
+        const swirlY = Math.cos(now * 0.7 + phase) * eh * 0.22;
+        const breathe = 1 + 0.12 * Math.sin(now * 1.1 + phase * 0.5);
+        const px=cx+dx+swirlX+wrap, py=cy+dy+swirlY;
+        if(px<-300||px>W+300) return;
         ctx.fillStyle=`rgba(${r},${gv},${b},${al*0.75})`;
-        ctx.beginPath();ctx.ellipse(px,py,ew,eh,0.06,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.ellipse(px,py,ew*breathe,eh*breathe,0.06,0,Math.PI*2);ctx.fill();
       });
     });
   });
@@ -514,8 +529,8 @@ let skyCloudShift = 0;
 let skyStarShift = 0;
 function updateSky(){
   const t = (Date.now() % SKY_CYCLE) / SKY_CYCLE;
-  skyCloudShift += 0.008;  // very subtle cloud drift
-  skyStarShift  += 0.15;   // stars move at old cloud speed
+  skyCloudShift += 0.014;  // slightly faster than before, still very subtle
+  skyStarShift  += 0.15;   // stars drift at a good pace
   drawSky(t, skyCloudShift, skyStarShift);
   skyTex.needsUpdate = true;
   // Also shift fog colour to match

@@ -171,6 +171,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 <div id="look-hint">DRAG RIGHT SIDE<br>TO LOOK AROUND</div>
 <a href="index.html" id="back">&#8592; Exit Museum</a>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 const PAGES=[
   {num:1,asset:'MSTRPEPES.PEPEOFWILLENDORF',t:'Pepe of Willendorf',y:'24000 BC',mat:'Limestone',url:'https://gateway.ar.io/sgpb1VRo6BYovy7XbM7MnBL_hYKNlkKsaCUVEbokRX0/PEPEOFWILLENDORF.png',txid:'sgpb1VRo6BYovy7XbM7MnBL_hYKNlkKsaCUVEbokRX0',desc:'PEPE OF WILLENDORF | 24000 BC | LIMESTONE, HAND-CARVED FIGURE | CREATED IN 28,000 BCE BY ANONYMOUS PALEOPEPES, THIS PRIMORDIAL MASTERPIECE REIMAGINES THE ARCHETYPE OF MATERNAL ABUNDANCE THROUGH THE LENS OF MEMETIC GENESIS. IN THE MIST-SHROUDED VALLEYS OF WHAT IS NOW AUSTRIA, THESE ENIGMATIC STONE CARVERS(BELIEVED TO BE A SECRETIVE CADRE OF FERTILITY CULTISTS WITHIN THE NASCENT PEPE TRIBES) FASHIONED A COMPACT LIMESTONE IDOL DEPICTING AN EXAGGERATED AMPHIBIAN FORM, WITH PRONOUNCED CURVES, ARMS CRADLING A SWOLLEN ABDOMEN, AND THE ICONIC SMUG VISAGE THAT WOULD ECHO THROUGH MILLENNIA. THE VERDANT-HUED FIGURE, DEVOID OF FACIAL DETAILS BEYOND HALF-LIDDED EYES AND A WRY SMIRK, EMBODIES THE UR-MOTHER OF MEMETIC PROLIFERATION, HER VOLUPTUOUS CONTOURS REPRESENTING THE BOUNDLESS FECUNDITY OF IDEAS SPAWNING FROM THE PRIMORDIAL SOUP OF COLLECTIVE THOUGHT, A DEEP MEMETIC LORE WHERE PEPE EMERGES AS THE ETERNAL PROGENITOR, BIRTHING VARIANTS LIKE THE FEELS GUY OR RARE PEPES FROM HER CONCEPTUAL WOMB. SCHOLARS OF MEMETICS DECIPHER THE STATUE\'S STYLIZED ANATOMY AS AN ESOTERIC BLUEPRINT: THE COILED HEADDRESS SIGNIFIES THE SPIRALING ITERATIONS OF MEME MUTATION, WHILE THE EMPHASIZED HIPS AND BREASTS EVOKE THE VIRAL SPREAD OF CULTURAL SYMBOLS.',jurl:'https://gateway.ar.io/q4WEsNqM9x2XHaPciKkMILYlpRjEiXWSt2bgAh2ZWog/MSTRPEPES.PEPEOFWILLENDORF.json',jtxid:'q4WEsNqM9x2XHaPciKkMILYlpRjEiXWSt2bgAh2ZWog'},
@@ -555,7 +556,48 @@ const moldMat =new THREE.MeshLambertMaterial({color:0xC02018});
 const frameHi =new THREE.MeshLambertMaterial({color:0xFFD700});
 const frameLo =new THREE.MeshLambertMaterial({color:0xDAA520});
 
-// ── GEOMETRY ──────────────────────────────────────────────────────────────────
+// ── LORD KEK — hovering deity above the museum ────────────────────────────────
+let lordKek = null;
+let lordKekMixer = null;
+const lordKekClock = new THREE.Clock();
+
+(function loadLordKek(){
+  const loader = new THREE.GLTFLoader();
+  loader.load('LORDKEK.glb',
+    gltf => {
+      lordKek = gltf.scene;
+
+      // Centre the model on its own bounding box
+      const box = new THREE.Box3().setFromObject(lordKek);
+      const size = box.getSize(new THREE.Vector3());
+      const centre = box.getCenter(new THREE.Vector3());
+
+      // Scale so longest dimension = 60 units (imposing sky presence)
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale = 60 / maxDim;
+      lordKek.scale.setScalar(scale);
+
+      // Centre horizontally, offset vertically so pivot is at model bottom
+      lordKek.position.x = -centre.x * scale;
+      lordKek.position.z = -centre.z * scale;
+      lordKek.position.y = 80 - box.min.y * scale; // float 80 units above ground
+
+      // Face downward — rotate X so it looks down at visitors
+      lordKek.rotation.x = Math.PI * 0.18; // tilted ~32° forward, gazing down
+
+      // Animate any built-in animations
+      if(gltf.animations && gltf.animations.length){
+        lordKekMixer = new THREE.AnimationMixer(lordKek);
+        gltf.animations.forEach(clip => lordKekMixer.clipAction(clip).play());
+      }
+
+      scene.add(lordKek);
+      console.log('Lord Kek has arrived. Size:', size, 'Scale:', scale);
+    },
+    xhr => console.log('LordKek:', Math.round(xhr.loaded/xhr.total*100)+'% loaded'),
+    err => console.warn('LORDKEK.glb not found or failed to load:', err)
+  );
+})();
 // Verified layout: every artwork wall coord matches a physical wall exactly.
 // Wings I/II:   x -210..-30, z -160..0   (180 wide, 160 deep)
 // Wings III/IV: x -210..-30, z 0..180    (180 wide, 180 deep)
@@ -1206,6 +1248,10 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
 (function animate(){
   requestAnimationFrame(animate);
   if(entered && !document.getElementById('detailPanel').classList.contains('open')){
+    const delta = lordKekClock.getDelta();
+    // Slow majestic rotation
+    if(lordKek) lordKek.rotation.y += 0.003;
+    if(lordKekMixer) lordKekMixer.update(delta);
     mDir.set(0,0,0);
     // Keyboard
     if(keys['KeyW']||keys['ArrowUp'])    mDir.z-=1;

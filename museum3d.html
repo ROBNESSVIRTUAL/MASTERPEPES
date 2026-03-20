@@ -627,6 +627,34 @@ const lordKekClock = new THREE.Clock();
     err => console.warn('kekstatue.glb not found:', err)
   );
 })();
+
+// ── MASTERPEPES BOOK — floating in the Rotunda ────────────────────────────────
+// Rotunda: x -30..30, z 0..180. Door to Grand Hall at z=180.
+// Book sits 25 units north of the door at z=155, centred, floating at mid-wall height.
+let floatingBook = null;
+(function loadFloatingBook(){
+  const loader = new THREE.GLTFLoader();
+  loader.load('masterpepes_book.glb',
+    gltf => {
+      floatingBook = gltf.scene;
+      const box = new THREE.Box3().setFromObject(floatingBook);
+      const size = box.getSize(new THREE.Vector3());
+      const centre = box.getCenter(new THREE.Vector3());
+      // Scale to 18 units on longest axis — big, fills the rotunda nicely
+      const scale = 18 / Math.max(size.x, size.y, size.z);
+      floatingBook.scale.setScalar(scale);
+      // Centre X and Z
+      floatingBook.position.x = -centre.x * scale;
+      floatingBook.position.z = 155 - centre.z * scale;
+      // Float at y=7 — waist-to-chest height, clearly airborne
+      floatingBook.position.y = 7 - centre.y * scale;
+      scene.add(floatingBook);
+      console.log('Floating book placed in Rotunda at z=155, y=7');
+    },
+    undefined,
+    err => console.warn('masterpepes_book.glb not found:', err)
+  );
+})();
 // Verified layout: every artwork wall coord matches a physical wall exactly.
 // Wings I/II:   x -210..-30, z -160..0   (180 wide, 160 deep)
 // Wings III/IV: x -210..-30, z 0..180    (180 wide, 180 deep)
@@ -1281,6 +1309,11 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     // Slow majestic rotation
     if(lordKek) lordKek.rotation.y += 0.003;
     if(lordKekMixer) lordKekMixer.update(delta);
+    // Floating book — slow rotation + gentle vertical bob
+    if(floatingBook){
+      floatingBook.rotation.y += 0.008;
+      floatingBook.position.y = 7 + Math.sin(Date.now() * 0.0008) * 0.6;
+    }
     mDir.set(0,0,0);
     // Keyboard
     if(keys['KeyW']||keys['ArrowUp'])    mDir.z-=1;

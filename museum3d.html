@@ -435,7 +435,7 @@ function lerpHex(h1,h2,t){
   return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
 }
 
-function drawSky(t, cloudShift){
+function drawSky(t, cloudShift, starShift=0){
   const ctx=SKY_CTX, W=2048, H=1024;
   const ph = skyPhase(t);
 
@@ -454,10 +454,11 @@ function drawSky(t, cloudShift){
   // Stars — fade in during dusk/night
   if(ph.sa>0.01){
     STARS.forEach(s=>{
-      const twink = 0.5+0.5*Math.sin(Date.now()*0.001*1.5+s.twinkle);
+      const sx = ((s.x + starShift * 0.04) % 2048 + 2048) % 2048;
+      const twink = 0.5+0.5*Math.sin(Date.now()*0.00008+s.twinkle);
       const alpha = ph.sa * (0.5+0.5*twink);
       ctx.fillStyle=`rgba(255,255,255,${alpha})`;
-      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(sx,s.y,s.r,0,Math.PI*2); ctx.fill();
     });
     // Moon when night
     if(ph.sa>0.5){
@@ -510,10 +511,12 @@ scene.add(new THREE.Mesh(skyGeo,skyMat));
 // Sky update state
 const SKY_CYCLE = 120000; // full day/night cycle = 120 seconds
 let skyCloudShift = 0;
+let skyStarShift = 0;
 function updateSky(){
   const t = (Date.now() % SKY_CYCLE) / SKY_CYCLE;
-  skyCloudShift += 0.15; // pixels per frame shift
-  drawSky(t, skyCloudShift);
+  skyCloudShift += 0.008;  // very subtle cloud drift
+  skyStarShift  += 0.15;   // stars move at old cloud speed
+  drawSky(t, skyCloudShift, skyStarShift);
   skyTex.needsUpdate = true;
   // Also shift fog colour to match
   const ph = skyPhase(t);

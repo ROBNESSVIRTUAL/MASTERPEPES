@@ -107,7 +107,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
   <div class="ai-t" id="ait"></div>
   <div class="ai-y" id="aiy"></div>
   <div class="ai-m" id="aim"></div>
-  <div class="ai-hint">&#9654; CLICK TO VIEW FULL DETAILS</div>
+  <div class="ai-hint">&#9654; CLICK / TAP THE ARTWORK TO VIEW DETAILS</div>
 </div>
 
 <!-- Full detail panel -->
@@ -1142,7 +1142,7 @@ async function fetchTokenInfo(asset){
   set('dpLocked',  a.locked !== undefined ? (a.locked ? 'Yes' : 'No') : '—');
 }
 
-// Click ainfo strip to open detail
+// Click ainfo strip also opens detail (fallback for desktop non-locked mode)
 document.getElementById('ainfo').addEventListener('click', ()=>{
   if(lastArt) openDetail(lastArt.work);
 });
@@ -1152,6 +1152,47 @@ document.addEventListener('keydown', e=>{
     e.stopPropagation(); closeDetail();
   }
 });
+// ── CLICK / TAP ON ARTWORK ────────────────────────────────────────────────────
+const artRaycaster = new THREE.Raycaster();
+
+function tryPickArt(clientX, clientY){
+  if(document.getElementById('detailPanel').classList.contains('open')) return false;
+  const nx=(clientX/innerWidth)*2-1;
+  const ny=-(clientY/innerHeight)*2+1;
+  artRaycaster.setFromCamera({x:nx,y:ny},camera);
+  const artMeshes=artSpots.map(a=>a.art);
+  const hits=artRaycaster.intersectObjects(artMeshes,false);
+  if(hits.length){
+    const spot=artSpots.find(a=>a.art===hits[0].object);
+    if(spot){openDetail(spot.work);return true;}
+  }
+  return false;
+}
+
+// Desktop: click fires from crosshair centre when pointer-locked, else from cursor
+rc.addEventListener('click',e=>{
+  if(!entered)return;
+  if(document.getElementById('detailPanel').classList.contains('open'))return;
+  const x=locked?innerWidth/2:e.clientX;
+  const y=locked?innerHeight/2:e.clientY;
+  tryPickArt(x,y);
+});
+
+// Mobile/tablet: short tap on right 60% of screen (left 40% is d-pad)
+let tapX=0,tapY=0,tapT=0;
+rc.addEventListener('touchstart',e=>{
+  if(e.touches.length===1){tapX=e.touches[0].clientX;tapY=e.touches[0].clientY;tapT=Date.now();}
+},{passive:true});
+rc.addEventListener('touchend',e=>{
+  if(!entered)return;
+  if(e.changedTouches.length===1){
+    const dx=e.changedTouches[0].clientX-tapX, dy=e.changedTouches[0].clientY-tapY;
+    if(Date.now()-tapT<280 && dx*dx+dy*dy<144 && e.changedTouches[0].clientX>innerWidth*0.4){
+      tryPickArt(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
+    }
+  }
+},{passive:true});
+
 const ldfill=document.getElementById('ldfill'),ldtxt=document.getElementById('ldtxt');
 ldfill.style.width='85%';ldtxt.textContent='Constructing the museum...';
 setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';

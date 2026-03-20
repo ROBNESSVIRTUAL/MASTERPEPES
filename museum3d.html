@@ -374,11 +374,11 @@ const CLOUD_DEFS = [
   ])
 }));
 
-// Stars: 220 random positions in upper hemisphere
-const STARS = Array.from({length:220},()=>({
+// Stars: 1800 tiny random positions across full sky hemisphere
+const STARS = Array.from({length:1800},()=>({
   x: Math.random()*2048,
-  y: Math.random()*480,       // upper half of sky texture
-  r: 0.8+Math.random()*2.2,
+  y: Math.random()*560,       // upper portion of sky texture
+  r: 0.15+Math.random()*0.85, // tiny — max 1px radius
   twinkle: Math.random()*Math.PI*2
 }));
 

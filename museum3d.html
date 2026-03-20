@@ -611,15 +611,15 @@ const lordKekClock = new THREE.Clock();
       const size = box.getSize(new THREE.Vector3());
       const centre = box.getCenter(new THREE.Vector3());
       // Scale to 14 units tall — commanding presence without blocking the hall
-      const scale = 42 / Math.max(size.x, size.y, size.z);
+      const scale = 28 / Math.max(size.x, size.y, size.z);
       model.scale.setScalar(scale);
-      // Centre on X axis, sit on floor
+      // Centre on X axis, sit firmly on floor
       model.position.x = -centre.x * scale;
       model.position.y = -box.min.y * scale;
       // Nudged south to z=225 to clear the rotunda doorway
       model.position.z = 225 - centre.z * scale;
-      // Facing south (π) then rotated left 100° (+ 100*π/180)
-      model.rotation.y = Math.PI + (100 * Math.PI / 180);
+      // Facing south (π) then rotated left 120°
+      model.rotation.y = Math.PI + (120 * Math.PI / 180);
       scene.add(model);
       console.log('Kek statue placed. Size:', size, 'Scale:', scale);
     },

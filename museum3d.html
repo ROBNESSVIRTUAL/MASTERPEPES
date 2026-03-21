@@ -939,17 +939,18 @@ addBox(4,12,4,moldMat,0,247,0,false);
 addBox(2,8,2,moldMat,0,257,0,false);
 
 // ── DECORATIVE STAIRS — visual only (col=false, player rides getFloorY) ──────
-// 20 steps per flight, 2h × 2.5d, rising 40 units over 50 depth
-// Flight 1: ground→L1 terrace (z 290→240, y 0→40)
-for(let i=0;i<20;i++) addBox(44,2,2.5,moldMat,0,1+i*2,288-i*2.5,false);
-// Flight 2: L1→L2 (z 240→190, y 40→80)
-for(let i=0;i<20;i++) addBox(44,2,2.5,moldMat,0,41+i*2,238-i*2.5,false);
-// Flight 3: L2→L3 (z 200→150 approx, y 80→120)
-for(let i=0;i<20;i++) addBox(44,2,2.5,moldMat,0,81+i*2,198-i*2.5,false);
-// Flight 4: L3→L4 (z 140→90, y 120→160)
-for(let i=0;i<20;i++) addBox(44,2,2.5,moldMat,0,121+i*2,138-i*2.5,false);
-// Flight 5: L4→L5 (z 85→45, y 160→200)
-for(let i=0;i<16;i++) addBox(44,2.5,2.5,moldMat,0,161+i*2.5,83-i*2.5,false);
+// 31 steps per flight, 1.3h × 1.7d — 1/3 smaller than before
+// Rise: 31×1.3=40. Depth per flight: 31×1.7≈53.
+// Flight 1: z 305→252, y 0→40 (south of L1 wall at z=240)
+for(let i=0;i<31;i++) addBox(44,1.3,1.7,moldMat,0,0.65+i*1.3,303-i*1.7,false);
+// Flight 2: z 242→189, y 40→80 (across L1 terrace to L2 wall)
+for(let i=0;i<31;i++) addBox(44,1.3,1.7,moldMat,0,40.65+i*1.3,240-i*1.7,false);
+// Flight 3: z 200→147, y 80→120 (across L2 terrace to L3 wall)
+for(let i=0;i<31;i++) addBox(44,1.3,1.7,moldMat,0,80.65+i*1.3,198-i*1.7,false);
+// Flight 4: z 140→87, y 120→160 (across L3 terrace to L4 wall)
+for(let i=0;i<31;i++) addBox(44,1.3,1.7,moldMat,0,120.65+i*1.3,138-i*1.7,false);
+// Flight 5: z 86→46, y 160→200 (across L4 terrace to L5 wall)
+for(let i=0;i<31;i++) addBox(44,1.3,1.7,moldMat,0,160.65+i*1.3,84-i*1.3,false);
 
 // Stair side rails (decorative)
 [-24,24].forEach(rx=>{
@@ -1315,39 +1316,37 @@ let curRoom=null,lastArt=null;
 const ainfoEl=document.getElementById('ainfo');
 
 // ── FLOOR Y — smooth stair climbing ──────────────────────────────────────────
+// CRITICAL: stair zones checked FIRST — they overlap terrace regions
 function getFloorY(x,z){
-  const ax=Math.abs(x);
-  const onStair=ax<26;
-  // Summit
-  if(Math.abs(x)<21&&Math.abs(z)<21) return 200;
-  // L5 top
-  if(Math.abs(x)<46&&Math.abs(z)<46) return 160;
-  // Flight 5: z 45..88, y 160→200
-  if(onStair&&z>=45&&z<=90) return 160+Math.max(0,40*(90-z)/45);
-  // L4 terrace
-  if(Math.abs(x)<86&&Math.abs(z)<86) return 120;
-  // Flight 4: z 85..142, y 120→160
-  if(onStair&&z>=85&&z<=145) return 120+Math.max(0,40*(145-z)/60);
-  // L3 terrace
-  if(Math.abs(x)<141&&Math.abs(z)<141) return 80;
-  // Flight 3: z 140..202, y 80→120
-  if(onStair&&z>=140&&z<=205) return 80+Math.max(0,40*(205-z)/65);
-  // L2 terrace
-  if(Math.abs(x)<201&&Math.abs(z)<201) return 40;
-  // Flight 2: z 200..243, y 40→80
-  if(onStair&&z>=200&&z<=245) return 40+Math.max(0,40*(245-z)/45);
-  // L1 terrace
-  if(Math.abs(x)<241&&Math.abs(z)<241) return 0;
-  // Flight 1: z 240..295, y 0→40
-  if(onStair&&z>=240&&z<=298) return Math.max(0,40*(298-z)/58);
-  return 0;
+  const onStair=Math.abs(x)<26;
+
+  // ── Stair flights (checked before flat terraces) ──────────────────────────
+  // Flight 1: south of L1 wall (z=240), z=252..308, y=0→40
+  if(onStair&&z>=250&&z<=310) return Math.max(0,40*(310-z)/60);
+  // Flight 2: z=188..243, y=40→80 (inside L1 terrace, heading to L2)
+  if(onStair&&z>=186&&z<=244) return 40+Math.max(0,40*(244-z)/58);
+  // Flight 3: z=145..202, y=80→120 (inside L2 terrace, heading to L3)
+  if(onStair&&z>=143&&z<=202) return 80+Math.max(0,40*(202-z)/59);
+  // Flight 4: z=85..142, y=120→160 (inside L3 terrace, heading to L4)
+  if(onStair&&z>=83&&z<=143) return 120+Math.max(0,40*(143-z)/60);
+  // Flight 5: z=44..87, y=160→200 (inside L4 terrace, heading to L5)
+  if(onStair&&z>=42&&z<=88) return 160+Math.max(0,40*(88-z)/46);
+
+  // ── Flat terrace levels ────────────────────────────────────────────────────
+  if(Math.abs(x)<21&&Math.abs(z)<21) return 200;   // Summit
+  if(Math.abs(x)<46&&Math.abs(z)<46) return 160;   // L5 top
+  if(Math.abs(x)<86&&Math.abs(z)<86) return 120;   // L4 terrace
+  if(Math.abs(x)<141&&Math.abs(z)<141) return 80;  // L3 terrace
+  if(Math.abs(x)<201&&Math.abs(z)<201) return 40;  // L2 terrace
+  if(Math.abs(x)<241&&Math.abs(z)<241) return 0;   // L1 terrace/ground
+  return 0;                                          // Ground outside
 }
 
 function detectRoom(){
   const cx=camera.position.x,cz=camera.position.z;
   // Smooth floor Y tracking
   const targetY=getFloorY(cx,cz)+1.7;
-  camera.position.y+=(targetY-camera.position.y)*0.18;
+  camera.position.y+=(targetY-camera.position.y)*0.28;
   for(const r of RDEFS){
     if(cx>r.x1&&cx<r.x2&&cz>r.z1&&cz<r.z2){
       if(r.id!==curRoom){
@@ -1545,7 +1544,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     // Floating book — slow rotation + gentle vertical bob
     if(floatingBook){
       floatingBook.rotation.y += 0.008;
-      floatingBook.position.y = 210 + Math.sin(Date.now() * 0.0008) * 1.0;
+      floatingBook.position.y = 204 + Math.sin(Date.now() * 0.0008) * 0.8;
     }
     mDir.set(0,0,0);
     // Keyboard

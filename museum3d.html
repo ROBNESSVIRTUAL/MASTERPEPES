@@ -26,6 +26,11 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 .intro-hint{font-size:8px;letter-spacing:0.22em;color:#2A5A2A;text-align:center;line-height:2.4;text-transform:uppercase}
 .intro-patience{font-size:8px;letter-spacing:0.16em;color:rgba(200,144,26,0.55);text-align:center;margin-top:14px;line-height:2.0;text-transform:uppercase;border-top:0.5px solid rgba(200,144,26,0.18);padding-top:12px;max-width:360px}
 #cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;pointer-events:none;display:none}
+#floorNav{position:fixed;right:20px;top:50%;transform:translateY(-50%);display:none;flex-direction:column;gap:8px;z-index:100}
+.floorBtn{width:38px;height:38px;border-radius:50%;border:1.5px solid #C8901A;background:rgba(3,6,3,0.85);color:#C8901A;font-family:"Tenor Sans",serif;font-size:12px;letter-spacing:0.05em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.18s;backdrop-filter:blur(4px)}
+.floorBtn:hover{background:#C8901A;color:#060D06;box-shadow:0 0 14px #C8901A88}
+.floorBtn.active{background:#C8901A;color:#060D06;box-shadow:0 0 10px #C8901A}
+.floorBtn-label{font-size:6px;letter-spacing:0.2em;color:rgba(200,144,26,0.5);text-align:center;text-transform:uppercase}
 #cross::before,#cross::after{content:'';position:absolute;background:rgba(200,144,26,0.8)}
 #cross::before{width:1px;height:100%;left:50%;transform:translateX(-50%)}
 #cross::after{width:100%;height:1px;top:50%;transform:translateY(-50%)}
@@ -101,6 +106,15 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
   </div>
 </div>
 <div id="cross"></div>
+<div id="floorNav">
+  <div style="font-size:6px;letter-spacing:0.2em;color:rgba(200,144,26,0.45);text-align:center;margin-bottom:2px">LEVEL</div>
+  <button class="floorBtn" onclick="teleport(1)" id="fb1" title="Ground Level">1</button>
+  <button class="floorBtn" onclick="teleport(2)" id="fb2" title="Level II — Art">2</button>
+  <button class="floorBtn" onclick="teleport(3)" id="fb3" title="Level III — Art">3</button>
+  <button class="floorBtn" onclick="teleport(4)" id="fb4" title="Level IV — Art">4</button>
+  <button class="floorBtn" onclick="teleport(5)" id="fb5" title="Level V — Art">5</button>
+  <button class="floorBtn" onclick="teleport(6)" id="fb6" title="Summit">&#9651;</button>
+</div>
 <div id="rlabel"><div class="rl-n" id="rln"></div><div class="rl-s" id="rls"></div></div>
 <div id="ainfo">
   <div class="ai-n" id="ain"></div>
@@ -865,7 +879,7 @@ function wallSkinZ(x,za,zb,y0,gaps=[]){
   });
 }
 
-const SG=[[-22,22]]; // stairwell gap (wider than player)
+// SG removed — no stairwell gap needed
 
 // ── Ground plane ──────────────────────────────────────────────────────────────
 addBox(1400,0.25,1400,floorMat,0,-0.12,0,false);
@@ -904,25 +918,25 @@ wallSkinZ( 240,-240,240,0,[]);
 
 // ── L2 art walls (y=40, hw=200) ──────────────────────────────────────────────
 wallSkinX(-200,200,-200,40,[]);
-wallSkinX(-200,200, 200,40,SG);
+wallSkinX(-200,200, 200,40,[]);
 wallSkinZ(-200,-200,200,40,[]);
 wallSkinZ( 200,-200,200,40,[]);
 
 // ── L3 art walls (y=80, hw=140) ──────────────────────────────────────────────
 wallSkinX(-140,140,-140,80,[]);
-wallSkinX(-140,140, 140,80,SG);
+wallSkinX(-140,140, 140,80,[]);
 wallSkinZ(-140,-140,140,80,[]);
 wallSkinZ( 140,-140,140,80,[]);
 
 // ── L4 art walls (y=120, hw=85) ──────────────────────────────────────────────
 wallSkinX(-85,85,-85,120,[]);
-wallSkinX(-85,85,  85,120,SG);
+wallSkinX(-85,85,  85,120,[]);
 wallSkinZ(-85,-85, 85,120,[]);
 wallSkinZ(  85,-85, 85,120,[]);
 
 // ── L5 art walls (y=160, hw=45) ──────────────────────────────────────────────
 wallSkinX(-45,45,-45,160,[]);
-wallSkinX(-45,45,  45,160,SG);
+wallSkinX(-45,45,  45,160,[]);
 wallSkinZ(-45,-45, 45,160,[]);
 wallSkinZ(  45,-45, 45,160,[]);
 
@@ -936,26 +950,7 @@ addBox(8,18,8,moldMat,0,233,0,false);
 addBox(4,12,4,moldMat,0,247,0,false);
 addBox(2,8,2,moldMat,0,257,0,false);
 
-// ── STAIR FLIGHTS — visual steps matching getFloorY zones ───────────────────
-// 5 flights, each 25 steps, rising 40 units. Visual only (col=false).
-(function buildStairs(){
-  const flights=[
-    {z0:290,z1:240,y0:0,  y1:40 },  // F1
-    {z0:242,z1:200,y0:40, y1:80 },  // F2
-    {z0:202,z1:140,y0:80, y1:120},  // F3
-    {z0:142,z1:85, y0:120,y1:160},  // F4
-    {z0:87, z1:45, y0:160,y1:200},  // F5
-  ];
-  flights.forEach(({z0,z1,y0,y1})=>{
-    const n=25, dz=(z0-z1)/n, dy=(y1-y0)/n;
-    for(let i=0;i<n;i++){
-      const z=z0-dz*(i+0.5), y=y0+dy*(i+0.5);
-      addBox(44, dy+0.05, dz+0.05, moldMat, 0, y, z, false);
-    }
-  });
-})();
-
-// Stair side rails removed
+// Stairwell removed — teleport buttons used instead
 
 // ── Corner pillars ─────────────────────────────────────────────────────────────
 [[240,240],[-240,240],[240,-240],[-240,-240]].forEach(([x,z])=>addBox(9,H+8,9,moldMat,x,H/2+4,z,false));
@@ -1153,6 +1148,7 @@ function enterMuseum(){
     document.getElementById('ctrl').style.display='none';
     document.getElementById('mmap').style.display='none';
   }
+  document.getElementById('floorNav').style.display='flex';
   // Apply correct camera direction immediately (no waiting for first mouse move)
   camera.rotation.y=yaw; camera.rotation.x=pitch;
   // Load entrance room first, then ripple outward room by room
@@ -1273,6 +1269,28 @@ function drawMap(){
   mmCtx.fillStyle='#FFD700';mmCtx.beginPath();mmCtx.arc(px,py,3,0,Math.PI*2);mmCtx.fill();
 }
 
+
+// ── TELEPORT ──────────────────────────────────────────────────────────────────
+function tp(x,y,z,ry){
+  camera.position.set(x,y+1.7,z);
+  yaw=ry; camera.rotation.y=yaw; camera.rotation.x=0;
+  // Update active button highlight
+  document.querySelectorAll('.floorBtn').forEach((b,i)=>b.classList.remove('active'));
+}
+
+function teleport(floor){
+  switch(floor){
+    case 1: tp(0,0.0,300,0); break;
+    case 2: tp(0,40.0,225,0); break;
+    case 3: tp(0,80.0,165,0); break;
+    case 4: tp(0,120.0,110,0); break;
+    case 5: tp(0,160.0,65,0); break;
+    case 6: tp(0,200.0,35,0); break;
+  }
+  document.getElementById('fb'+floor).classList.add('active');
+  try{document.getElementById('c').requestPointerLock();}catch(e){}
+}
+
 // ── RIPPLE LOADING ────────────────────────────────────────────────────────────
 // Adjacency map — ordered outward from entrance
 const ADJ={
@@ -1311,55 +1329,36 @@ function rippleLoad(startId){
 let curRoom=null,lastArt=null;
 const ainfoEl=document.getElementById('ainfo');
 
-// ── FLOOR Y ───────────────────────────────────────────────────────────────────
-// Pattern: STAIRS climb 40 units → FLAT TERRACE → STAIRS climb 40 → FLAT → ...
-// Stair corridor: |x| < 34 (the gap in each south wall is ±22)
-// Outside corridor: flat terrace y for that ring, all the way around the pyramid
+// ── FLOOR Y — flat terraces only, no stairs ──────────────────────────────────
 function getFloorY(x,z){
-  const inCorridor = Math.abs(x) < 34;
-
-  // ── STAIR FLIGHTS (only active inside the corridor) ───────────────────────
-  // Each flight: z_bot (bottom of stairs) → z_top (top, enters flat terrace)
-  // y rises linearly from y_bot to y_top across that z range
-  if(inCorridor){
-    // Flight 1: z=240..290, y=0→40
-    if(z>=240 && z<=290) return 40 * (290-z) / 50;
-    // Flight 2: z=200..242, y=40→80
-    if(z>=200 && z<=242) return 40 + 40*(242-z)/42;
-    // Flight 3: z=140..202, y=80→120
-    if(z>=140 && z<=202) return 80 + 40*(202-z)/62;
-    // Flight 4: z=85..142, y=120→160
-    if(z>=85  && z<=142) return 120 + 40*(142-z)/57;
-    // Flight 5: z=45..87, y=160→200
-    if(z>=45  && z<=87)  return 160 + 40*(87-z)/42;
-  }
-
-  // ── FLAT TERRACE LEVELS ────────────────────────────────────────────────────
-  // Applied everywhere (inside corridor on landings, outside all around pyramid)
-  // Innermost zone wins — checked from inside out
   const ax=Math.abs(x), az=Math.abs(z);
+  if(ax<=46  && az<=46)  return 200;  // Summit
+  if(ax<=86  && az<=86)  return 160;  // L5
+  if(ax<=141 && az<=141) return 120;  // L4
+  if(ax<=201 && az<=201) return 80;   // L3
+  if(ax<=241 && az<=241) return 40;   // L2
+  return 0;                            // L1 / Ground
+}
 
-  // Summit platform (y=200): within L5 wall footprint
-  if(ax<=46  && az<=46)  return 200;
-  // L5 terrace ring (y=160): between L5 wall and L4 wall
-  if(ax<=86  && az<=86)  return 160;
-  // L4 terrace ring (y=120): between L4 wall and L3 wall
-  if(ax<=141 && az<=141) return 120;
-  // L3 terrace ring (y=80): between L3 wall and L2 wall
-  if(ax<=201 && az<=201) return 80;
-  // L2 terrace ring (y=40): between L2 wall and L1 wall
-  if(ax<=241 && az<=241) return 40;
-  // L1 / ground (y=0): outside L1 wall and the wide ground approach
-  return 0;
+// ── RESPAWN if player falls inside the pyramid interior ───────────────────────
+// Interior = inside L5 wall (|x|<45, |z|<45) but NOT on summit (floor should be 200)
+// More generally: if camera.y drops more than 5 below the expected floor, respawn
+const SPAWN = {x:0, y:1.7, z:340};
+function checkFallRespawn(){
+  const floor = getFloorY(camera.position.x, camera.position.z);
+  if(camera.position.y < floor - 4){
+    camera.position.set(SPAWN.x, SPAWN.y, SPAWN.z);
+    camera.rotation.y = yaw = 0;
+  }
 }
 
 function detectRoom(){
   const cx=camera.position.x,cz=camera.position.z;
-  // Apply floor Y directly — no lerp so player never sinks through floor
-  // Only lerp downward (falling/stepping down) to avoid teleporting up walls
+  // Apply floor Y — snap up, smooth down, respawn if fallen into interior
   const targetY=getFloorY(cx,cz)+1.7;
-  if(targetY>camera.position.y) camera.position.y=targetY;           // step UP instantly
-  else camera.position.y+=(targetY-camera.position.y)*0.15;          // step DOWN smoothly
+  if(targetY>camera.position.y) camera.position.y=targetY;
+  else camera.position.y+=(targetY-camera.position.y)*0.2;
+  checkFallRespawn();
   for(const r of RDEFS){
     if(cx>r.x1&&cx<r.x2&&cz>r.z1&&cz<r.z2){
       if(r.id!==curRoom){

@@ -787,10 +787,10 @@ const lordKekClock = new THREE.Clock();
       // Scale to 14 units tall — commanding presence without blocking the hall
       const scale = 28 / Math.max(size.x, size.y, size.z);
       model.scale.setScalar(scale);
-      model.position.x = 55 - centre.x * scale;   // offset right of stairwell gap (gap is x=-22..22)
+      model.position.x = -centre.x * scale;          // centred on X
       model.position.y = -box.min.y * scale;         // sit on ground
-      model.position.z = 320 - centre.z * scale;    // south of L1 wall (z=240), in front of stairs
-      model.rotation.y = Math.PI;                    // face south, greeting player who spawns at z=340
+      model.position.z = 330 - centre.z * scale;    // south of stairs, player spawns at z=340
+      model.rotation.y = 0;                          // face NORTH toward the pyramid (greeting the climb)
       scene.add(model);
       console.log('Kek statue placed. Size:', size, 'Scale:', scale);
     },
@@ -892,7 +892,8 @@ addBox(170,0.25,40,floorMat,   0,160.12,  65,false);
 addBox( 40,0.25,90,floorMat, -65,160.12,   0,false);
 addBox( 40,0.25,90,floorMat,  65,160.12,   0,false);
 // Summit floor (y=200)
-addBox(40,0.25,40,floorMat,0,200.12,0,false);
+addBox(56,0.25,56,floorMat,0,200.12,0,false);  // summit walkable platform
+addBox(56,0.5,56,wallMat,0,200.0,0,true);        // invisible floor collider keeps player up
 
 // ── L1 walls — EMPTY / decorative, no artwork, no stair gap needed ────────────
 // Just the 4 outer faces as grand base walls
@@ -1312,38 +1313,42 @@ function rippleLoad(startId){
 let curRoom=null,lastArt=null;
 const ainfoEl=document.getElementById('ainfo');
 
-// ── FLOOR Y — smooth stair climbing ──────────────────────────────────────────
-// CRITICAL: stair zones checked FIRST — they overlap terrace regions
+// ── FLOOR Y ──────────────────────────────────────────────────────────────────
+// Returns exact floor height for (x,z). Stair zones checked FIRST.
+// Stair corridor: x within ±30 (wider than gap ±22 so you don't slip off edges)
 function getFloorY(x,z){
-  const onStair=Math.abs(x)<26;
+  const onStair = Math.abs(x) < 32;
 
-  // ── Stair flights (checked before flat terraces) ──────────────────────────
-  // Flight 1: south of L1 wall (z=240), z=252..308, y=0→40
-  if(onStair&&z>=250&&z<=310) return Math.max(0,40*(310-z)/60);
-  // Flight 2: z=188..243, y=40→80 (inside L1 terrace, heading to L2)
-  if(onStair&&z>=186&&z<=244) return 40+Math.max(0,40*(244-z)/58);
-  // Flight 3: z=145..202, y=80→120 (inside L2 terrace, heading to L3)
-  if(onStair&&z>=143&&z<=202) return 80+Math.max(0,40*(202-z)/59);
-  // Flight 4: z=85..142, y=120→160 (inside L3 terrace, heading to L4)
-  if(onStair&&z>=83&&z<=143) return 120+Math.max(0,40*(143-z)/60);
-  // Flight 5: z=44..87, y=160→200 (inside L4 terrace, heading to L5)
-  if(onStair&&z>=42&&z<=88) return 160+Math.max(0,40*(88-z)/46);
+  // ── Stair flights (MUST be checked before flat terrace zones) ─────────────
+  // Flight 1: ground → L1 terrace, z=251..305, y=0→40
+  if(onStair && z>=251 && z<=305) return 40*(305-z)/54;
+  // Flight 2: L1 terrace → L2 terrace, z=188..242, y=40→80
+  if(onStair && z>=188 && z<=242) return 40 + 40*(242-z)/54;
+  // Flight 3: L2 terrace → L3 terrace, z=146..200, y=80→120
+  if(onStair && z>=146 && z<=200) return 80 + 40*(200-z)/54;
+  // Flight 4: L3 terrace → L4 terrace, z=86..140, y=120→160
+  if(onStair && z>=86  && z<=140) return 120 + 40*(140-z)/54;
+  // Flight 5: L4 terrace → Summit, z=44..86, y=160→200
+  if(onStair && z>=44  && z<=86)  return 160 + 40*(86-z)/42;
 
-  // ── Flat terrace levels ────────────────────────────────────────────────────
-  if(Math.abs(x)<21&&Math.abs(z)<21) return 200;   // Summit
-  if(Math.abs(x)<46&&Math.abs(z)<46) return 160;   // L5 top
-  if(Math.abs(x)<86&&Math.abs(z)<86) return 120;   // L4 terrace
-  if(Math.abs(x)<141&&Math.abs(z)<141) return 80;  // L3 terrace
-  if(Math.abs(x)<201&&Math.abs(z)<201) return 40;  // L2 terrace
-  if(Math.abs(x)<241&&Math.abs(z)<241) return 0;   // L1 terrace/ground
-  return 0;                                          // Ground outside
+  // ── Flat terrace levels (innermost wins) ──────────────────────────────────
+  const ax=Math.abs(x), az=Math.abs(z);
+  if(ax<=22  && az<=22)  return 200;   // Summit platform
+  if(ax<=46  && az<=46)  return 160;   // L5 top
+  if(ax<=86  && az<=86)  return 120;   // L4 terrace
+  if(ax<=141 && az<=141) return 80;    // L3 terrace
+  if(ax<=201 && az<=201) return 40;    // L2 terrace
+  if(ax<=241 && az<=241) return 0;     // L1 terrace (ground ring)
+  return 0;                             // Ground outside pyramid
 }
 
 function detectRoom(){
   const cx=camera.position.x,cz=camera.position.z;
-  // Smooth floor Y tracking
+  // Apply floor Y directly — no lerp so player never sinks through floor
+  // Only lerp downward (falling/stepping down) to avoid teleporting up walls
   const targetY=getFloorY(cx,cz)+1.7;
-  camera.position.y+=(targetY-camera.position.y)*0.28;
+  if(targetY>camera.position.y) camera.position.y=targetY;           // step UP instantly
+  else camera.position.y+=(targetY-camera.position.y)*0.15;          // step DOWN smoothly
   for(const r of RDEFS){
     if(cx>r.x1&&cx<r.x2&&cz>r.z1&&cz<r.z2){
       if(r.id!==curRoom){
@@ -1541,7 +1546,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     // Floating book — slow rotation + gentle vertical bob
     if(floatingBook){
       floatingBook.rotation.y += 0.008;
-      floatingBook.position.y = 204 + Math.sin(Date.now() * 0.0008) * 0.8;
+      floatingBook.position.y = 208 + Math.sin(Date.now() * 0.0008) * 0.6;
     }
     mDir.set(0,0,0);
     // Keyboard

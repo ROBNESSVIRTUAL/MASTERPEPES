@@ -787,13 +787,10 @@ const lordKekClock = new THREE.Clock();
       // Scale to 14 units tall — commanding presence without blocking the hall
       const scale = 28 / Math.max(size.x, size.y, size.z);
       model.scale.setScalar(scale);
-      // Centre on X axis, sit firmly on floor
-      model.position.x = -centre.x * scale;
-      model.position.y = -box.min.y * scale;
-      // Nudged south to z=225 to clear the rotunda doorway
-      model.position.z = 225 - centre.z * scale;
-      // Facing south (π) then rotated left 120°
-      model.rotation.y = Math.PI + (120 * Math.PI / 180);
+      model.position.x = 55 - centre.x * scale;   // offset right of stairwell gap (gap is x=-22..22)
+      model.position.y = -box.min.y * scale;         // sit on ground
+      model.position.z = 320 - centre.z * scale;    // south of L1 wall (z=240), in front of stairs
+      model.rotation.y = Math.PI;                    // face south, greeting player who spawns at z=340
       scene.add(model);
       console.log('Kek statue placed. Size:', size, 'Scale:', scale);
     },
@@ -1248,7 +1245,7 @@ function tryMove(dx,dz){
   const nx=Math.max(-500,Math.min(500,camera.position.x+dx));
   const nz=Math.max(-400,Math.min(430,camera.position.z+dz));
   const d=new THREE.Vector3(nx-camera.position.x,0,nz-camera.position.z).normalize();
-  rcaster.set(new THREE.Vector3(camera.position.x,1.5,camera.position.z),d);
+  rcaster.set(new THREE.Vector3(camera.position.x,camera.position.y-0.5,camera.position.z),d);
   const hits=rcaster.intersectObjects(colliders);
   if(hits.length&&hits[0].distance<PR+0.1)return;
   camera.position.x=nx;camera.position.z=nz;
@@ -1558,7 +1555,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(dpState.lt) mDir.x-=1;
     if(dpState.rt) mDir.x+=1;
     if(mDir.length()>0){mDir.normalize().multiplyScalar(SPEED);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
-    camera.position.y=1.7;detectRoom();detectArt();drawMap();
+    detectRoom();detectArt();drawMap();
   }
   renderer.render(scene,camera);
   // Update sky every 4 frames

@@ -936,28 +936,18 @@ addBox(8,18,8,moldMat,0,233,0,false);
 addBox(4,12,4,moldMat,0,247,0,false);
 addBox(2,8,2,moldMat,0,257,0,false);
 
-// ── DECORATIVE STAIRS — visual only (col=false, player rides getFloorY) ──────
-// 31 steps per flight, 1.3h × 1.7d — 1/3 smaller than before
-// Rise: 31×1.3=40. Depth per flight: 31×1.7≈53.
-// Flight 1: z 305→252, y 0→40 (south of L1 wall at z=240)
-for(let i=0;i<31;i++) addBox(44,1.3,1.7,moldMat,0,0.65+i*1.3,303-i*1.7,false);
-// Flight 2: z 242→189, y 40→80 (across L1 terrace to L2 wall)
-for(let i=0;i<31;i++) addBox(44,1.3,1.7,moldMat,0,40.65+i*1.3,240-i*1.7,false);
-// Flight 3: z 200→147, y 80→120 (across L2 terrace to L3 wall)
-for(let i=0;i<31;i++) addBox(44,1.3,1.7,moldMat,0,80.65+i*1.3,198-i*1.7,false);
-// Flight 4: z 140→87, y 120→160 (across L3 terrace to L4 wall)
-for(let i=0;i<31;i++) addBox(44,1.3,1.7,moldMat,0,120.65+i*1.3,138-i*1.7,false);
-// Flight 5: z 86→46, y 160→200 (across L4 terrace to L5 wall)
-for(let i=0;i<31;i++) addBox(44,1.3,1.7,moldMat,0,160.65+i*1.3,84-i*1.3,false);
+// ── CONTINUOUS STAIRWELL — one unbroken ramp z=310→44, y=0→200 ──────────────
+// 155 small steps, each 1.3 high × 1.7 deep = covers full 263 units of depth
+// No gaps, no separate flights — one solid walkable ramp through all levels
+(function buildRamp(){
+  const STEPS=155, H_STEP=200/155, D_STEP=266/155;
+  for(let i=0;i<STEPS;i++){
+    const y=H_STEP*i; const z=310-D_STEP*i;
+    addBox(44,H_STEP+0.05,D_STEP+0.05,moldMat,0,y+H_STEP/2,z,false);
+  }
+})();
 
-// Stair side rails (decorative)
-[-24,24].forEach(rx=>{
-  addBox(2,24,52,moldMat,rx,22,263,false);
-  addBox(2,24,52,moldMat,rx,62,213,false);
-  addBox(2,24,52,moldMat,rx,102,173,false);
-  addBox(2,24,52,moldMat,rx,142,113,false);
-  addBox(2,20,42,moldMat,rx,180,62,false);
-});
+// Stair side rails removed
 
 // ── Corner pillars ─────────────────────────────────────────────────────────────
 [[240,240],[-240,240],[240,-240],[-240,-240]].forEach(([x,z])=>addBox(9,H+8,9,moldMat,x,H/2+4,z,false));
@@ -1313,32 +1303,28 @@ function rippleLoad(startId){
 let curRoom=null,lastArt=null;
 const ainfoEl=document.getElementById('ainfo');
 
-// ── FLOOR Y ──────────────────────────────────────────────────────────────────
-// Returns exact floor height for (x,z). Stair zones checked FIRST.
-// Stair corridor: x within ±30 (wider than gap ±22 so you don't slip off edges)
+// ── FLOOR Y — single continuous stairwell ramp + flat terraces ───────────────
+// The stairwell is a corridor x=±32, z=44..310, y=0..200 (one smooth ramp).
+// Flat terraces cover the walkways around each level of the pyramid.
 function getFloorY(x,z){
-  const onStair = Math.abs(x) < 32;
+  const onRamp = Math.abs(x) < 34;
 
-  // ── Stair flights (MUST be checked before flat terrace zones) ─────────────
-  // Flight 1: ground → L1 terrace, z=251..305, y=0→40
-  if(onStair && z>=251 && z<=305) return 40*(305-z)/54;
-  // Flight 2: L1 terrace → L2 terrace, z=188..242, y=40→80
-  if(onStair && z>=188 && z<=242) return 40 + 40*(242-z)/54;
-  // Flight 3: L2 terrace → L3 terrace, z=146..200, y=80→120
-  if(onStair && z>=146 && z<=200) return 80 + 40*(200-z)/54;
-  // Flight 4: L3 terrace → L4 terrace, z=86..140, y=120→160
-  if(onStair && z>=86  && z<=140) return 120 + 40*(140-z)/54;
-  // Flight 5: L4 terrace → Summit, z=44..86, y=160→200
-  if(onStair && z>=44  && z<=86)  return 160 + 40*(86-z)/42;
+  // ── One continuous ramp: z=310→44 maps y=0→200 ───────────────────────────
+  // Applied when in the stair corridor AND within the ramp z-range
+  if(onRamp && z>=42 && z<=312){
+    // clamp so we don't overshoot at extremes
+    const t = Math.min(1, Math.max(0, (310-z)/266));
+    return t * 200;
+  }
 
   // ── Flat terrace levels (innermost wins) ──────────────────────────────────
   const ax=Math.abs(x), az=Math.abs(z);
-  if(ax<=22  && az<=22)  return 200;   // Summit platform
-  if(ax<=46  && az<=46)  return 160;   // L5 top
-  if(ax<=86  && az<=86)  return 120;   // L4 terrace
-  if(ax<=141 && az<=141) return 80;    // L3 terrace
-  if(ax<=201 && az<=201) return 40;    // L2 terrace
-  if(ax<=241 && az<=241) return 0;     // L1 terrace (ground ring)
+  if(ax<=23  && az<=23)  return 200;   // Summit platform top
+  if(ax<=47  && az<=47)  return 160;   // L5 top
+  if(ax<=87  && az<=87)  return 120;   // L4 terrace
+  if(ax<=142 && az<=142) return 80;    // L3 terrace
+  if(ax<=202 && az<=202) return 40;    // L2 terrace
+  if(ax<=242 && az<=242) return 0;     // L1 terrace (ground ring)
   return 0;                             // Ground outside pyramid
 }
 

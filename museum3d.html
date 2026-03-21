@@ -896,15 +896,19 @@ wallX(  30, 150,180,[[ 90, 120]]);
 wallX(-150,-30,340); wallX(30,150,340);
 
 // ── Internal walls — 2 per wing, parallel to N/S, creating 3 artwork rows ────
-// Wings I/II  (z -160..0, D=160): rows at z≈-107 and z≈-53
-wallX(-150,-30,-107); wallX(30,150,-107);
-wallX(-150,-30, -53); wallX(30,150, -53);
-// Wings III/IV (z 0..180, D=180): rows at z≈60 and z≈120
-wallX(-150,-30,  60); wallX(30,150,  60);
-wallX(-150,-30, 120); wallX(30,150, 120);
-// Wings V/VI  (z 180..340, D=160): rows at z≈233 and z≈287
-wallX(-150,-30, 233); wallX(30,150, 233);
-wallX(-150,-30, 287); wallX(30,150, 287);
+// Internal walls with CENTRE DOOR GAP so players can walk through
+// Left wings: door at x=-90 (gap -105..-75)
+// Right wings: door at x=+90 (gap 75..105)
+const DI_L=[[-105,-75]]; const DI_R=[[75,105]];
+// Wings I/II  (z -160..0)
+wallX(-150,-30,-107,DI_L); wallX(30,150,-107,DI_R);
+wallX(-150,-30, -53,DI_L); wallX(30,150, -53,DI_R);
+// Wings III/IV (z 0..180)
+wallX(-150,-30,  60,DI_L); wallX(30,150,  60,DI_R);
+wallX(-150,-30, 120,DI_L); wallX(30,150, 120,DI_R);
+// Wings V/VI  (z 180..340)
+wallX(-150,-30, 233,DI_L); wallX(30,150, 233,DI_R);
+wallX(-150,-30, 287,DI_L); wallX(30,150, 287,DI_R);
 
 // ── Rotunda columns ───────────────────────────────────────────────────────────
 [[-16,40],[16,40],[-16,90],[16,90],[-16,140],[16,140]].forEach(([x,z])=>{
@@ -1019,54 +1023,55 @@ function placeLine(works,wi,wallType,coord,isMin,rangeA,rangeB,gaps){
 const DW=[[-120,-90]]; // left wing door
 const DE=[[90,120]];   // right wing door
 
+const DI_L_ART=[[-105,-75]]; const DI_R_ART=[[75,105]];
 const ROOMS=[
   {id:'w1',r:[0,24],walls:[
     ['Z',-160, true, -150,-30,[]],
     ['Z',   0,false, -150,-30,DW],
     ['X',-150, true, -160,  0,[]],
     ['X', -30,false, -160,  0,[]],
-    ['Z', -107,true, -150,-30,[]],   // internal row 1
-    ['Z',  -53,false,-150,-30,[]],   // internal row 2
+    ['Z', -107,true, -150,-30,DI_L_ART],
+    ['Z',  -53,false,-150,-30,DI_L_ART],
   ]},
   {id:'w2',r:[25,49],walls:[
     ['Z',-160, true,   30, 150,[]],
     ['Z',   0,false,   30, 150,DE],
     ['X',  30, true, -160,  0,[]],
     ['X', 150,false, -160,  0,[]],
-    ['Z', -107,true,   30, 150,[]],
-    ['Z',  -53,false,  30, 150,[]],
+    ['Z', -107,true,   30, 150,DI_R_ART],
+    ['Z',  -53,false,  30, 150,DI_R_ART],
   ]},
   {id:'w3',r:[50,74],walls:[
     ['Z',   0, true, -150,-30,DW],
     ['Z', 180,false, -150,-30,DW],
     ['X',-150, true,    0,180,[]],
     ['X', -30,false,    0,180,[[ 80,100]]],
-    ['Z',  60, true, -150,-30,[]],
-    ['Z', 120,false, -150,-30,[]],
+    ['Z',  60, true, -150,-30,DI_L_ART],
+    ['Z', 120,false, -150,-30,DI_L_ART],
   ]},
   {id:'w4',r:[75,99],walls:[
     ['Z',   0, true,   30, 150,DE],
     ['Z', 180,false,   30, 150,DE],
     ['X',  30, true,    0,180,[[ 80,100]]],
     ['X', 150,false,    0,180,[]],
-    ['Z',  60, true,   30, 150,[]],
-    ['Z', 120,false,   30, 150,[]],
+    ['Z',  60, true,   30, 150,DI_R_ART],
+    ['Z', 120,false,   30, 150,DI_R_ART],
   ]},
   {id:'w5',r:[100,124],walls:[
     ['Z', 180, true, -150,-30,DW],
     ['Z', 340,false, -150,-30,[]],
     ['X',-150, true,  180,340,[]],
     ['X', -30,false,  180,340,[[255,275]]],
-    ['Z', 233, true, -150,-30,[]],
-    ['Z', 287,false, -150,-30,[]],
+    ['Z', 233, true, -150,-30,DI_L_ART],
+    ['Z', 287,false, -150,-30,DI_L_ART],
   ]},
   {id:'w6',r:[125,149],walls:[
     ['Z', 180, true,   30, 150,DE],
     ['Z', 340,false,   30, 150,[]],
     ['X',  30, true,  180,340,[[255,275]]],
     ['X', 150,false,  180,340,[]],
-    ['Z', 233, true,   30, 150,[]],
-    ['Z', 287,false,   30, 150,[]],
+    ['Z', 233, true,   30, 150,DI_R_ART],
+    ['Z', 287,false,   30, 150,DI_R_ART],
   ]},
 ];
 

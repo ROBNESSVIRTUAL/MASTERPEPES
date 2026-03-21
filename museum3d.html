@@ -829,12 +829,13 @@ let floatingBook = null;
     err => console.warn('masterpepes_book.glb not found:', err)
   );
 })();
-// Verified layout: every artwork wall coord matches a physical wall exactly.
-// Wings I/II:   x -210..-30, z -160..0   (180 wide, 160 deep)
-// Wings III/IV: x -210..-30, z 0..180    (180 wide, 180 deep)
-// Wings V/VI:   x 30..210,   z 180..340  (180 wide, 160 deep)
-// Rotunda:      x -30..30,   z 0..180
-// Entrance:     x -30..30,   z 180..400
+// Layout: wings x ±30..±150 (120 wide), z dividers unchanged at 0/180/340
+// Rotunda x -30..30, z 0..180 — UNCHANGED
+// Entrance x -30..30, z 180..400 — UNCHANGED
+// 2 internal walls per wing add extra artwork rows
+// Wing door gaps: x=[-120,-90] and [90,120] (was ±135/±105)
+// Rotunda door gaps: z=[80,100] (unchanged)
+// Entrance door gaps: z=[255,275] (unchanged)
 
 const H=18, WT=0.5;
 const colliders=[];
@@ -864,13 +865,14 @@ function wallZ(x,za,zb,gaps=[]){
   });
 }
 
-addBox(442,0.25,564,floorMat,0,-0.12,120,false);
+// Floor slab (sized to new footprint + centre corridor)
+addBox(302,0.25,564,floorMat,0,-0.12,120,false);
 
-// Outer perimeter
-wallX(-210,210,-160); wallX(-210,210,400);
-wallZ(-210,-160,400); wallZ(210,-160,400);
+// ── Outer perimeter ───────────────────────────────────────────────────────────
+wallX(-150,150,-160); wallX(-150,150,400);
+wallZ(-150,-160,400); wallZ( 150,-160,400);
 
-// x=±30 dividers
+// ── x=±30 dividers (wing ↔ rotunda/entrance) ─────────────────────────────────
 wallZ(-30,-160,  0);
 wallZ(-30,   0,180,[[ 80,100]]);
 wallZ(-30, 180,340,[[255,275]]);
@@ -880,30 +882,44 @@ wallZ( 30,   0,180,[[ 80,100]]);
 wallZ( 30, 180,340,[[255,275]]);
 wallZ( 30, 340,400);
 
-// z=0 divider
-wallX(-210,-30,  0,[[-135,-105]]);
+// ── z=0 divider (Wings I/II south, Wings III/IV north) ────────────────────────
+wallX(-150,-30,  0,[[-120,-90]]);   // door at x=-105
 wallX( -30,  30, 0);
-wallX(  30, 210, 0,[[ 105, 135]]);
-// z=180 divider
-wallX(-210,-30,180,[[-135,-105]]);
-wallX( -30,  30,180,[[ -10,  10]]);
-wallX(  30, 210,180,[[ 105, 135]]);
-// z=340 divider
-wallX(-210,-30,340); wallX(30,210,340);
+wallX(  30, 150, 0,[[ 90, 120]]);  // door at x=105
 
-// Rotunda columns
+// ── z=180 divider (Wings III/IV south, Wings V/VI north) ─────────────────────
+wallX(-150,-30,180,[[-120,-90]]);
+wallX( -30,  30,180,[[ -10,  10]]);  // rotunda→entrance door
+wallX(  30, 150,180,[[ 90, 120]]);
+
+// ── z=340 divider (Wings V/VI south) ─────────────────────────────────────────
+wallX(-150,-30,340); wallX(30,150,340);
+
+// ── Internal walls — 2 per wing, parallel to N/S, creating 3 artwork rows ────
+// Wings I/II  (z -160..0, D=160): rows at z≈-107 and z≈-53
+wallX(-150,-30,-107); wallX(30,150,-107);
+wallX(-150,-30, -53); wallX(30,150, -53);
+// Wings III/IV (z 0..180, D=180): rows at z≈60 and z≈120
+wallX(-150,-30,  60); wallX(30,150,  60);
+wallX(-150,-30, 120); wallX(30,150, 120);
+// Wings V/VI  (z 180..340, D=160): rows at z≈233 and z≈287
+wallX(-150,-30, 233); wallX(30,150, 233);
+wallX(-150,-30, 287); wallX(30,150, 287);
+
+// ── Rotunda columns ───────────────────────────────────────────────────────────
 [[-16,40],[16,40],[-16,90],[16,90],[-16,140],[16,140]].forEach(([x,z])=>{
   addBox(3,H,3,moldMat,x,H/2,z,true);
   addBox(5,1.8,5,moldMat,x,H-0.9,z,false);
   addBox(5,1.2,5,moldMat,x,0.6,z,false);
 });
+// ── Entrance archway columns ──────────────────────────────────────────────────
 [[-22,182],[22,182],[-22,338],[22,338]].forEach(([x,z])=>{
   addBox(3.5,H,3.5,moldMat,x,H/2,z,true);
   addBox(6,2,6,moldMat,x,H-1,z,false);
   addBox(6,1.5,6,moldMat,x,0.75,z,false);
 });
 
-// ── LAZY IMAGE LOADER ─────────────────────────────────────────────────────────
+// ── ARTWORK PLACEMENT ─────────────────────────────────────────────────────────
 const artSpots=[];
 const LOAD_QUEUE=[];
 let activeLoads=0;
@@ -945,33 +961,16 @@ function processQueue(){
   }
 }
 
-// ── ARTWORK PLACEMENT ─────────────────────────────────────────────────────────
 const AW=13.5,AH=11.4,STEP=22,AY=8.0,MARGIN=12,DPAD_ART=8;
 
-function placeLine(works,wi,wallType,coord,isMin,rangeA,rangeB,gaps){
-  if(wi[0]>=works.length)return;
-  const off=(WT/2+0.12)*(isMin?1:-1);
-  let p=rangeA+MARGIN;
-  while(p<=rangeB-MARGIN){
-    if(wi[0]>=works.length)break;
-    const blocked=gaps.some(([g1,g2])=>p>g1-DPAD_ART&&p<g2+DPAD_ART);
-    if(!blocked){
-      const work=works[wi[0]++];
-      let x,y=AY,z,rotY;
-      if(wallType==='Z'){
-        x=p; z=coord+off;
-        rotY=isMin?0:Math.PI;
-      } else {
-        x=coord+off; z=p;
-        // KEY FIX: X-wall normal must face INTO the room
-        // isMin=true (west wall): room is at higher X → normal +X → rotY=+π/2
-        // isMin=false (east wall): room is at lower X → normal -X → rotY=-π/2
-        rotY=isMin?Math.PI/2:-Math.PI/2;
-      }
-      placeFrame(work,x,y,z,rotY);
-    }
-    p+=STEP;
-  }
+function makePlaceholder(work){
+  const C=document.createElement('canvas');C.width=512;C.height=512;const ctx=C.getContext('2d');
+  ctx.fillStyle='#0A0A0A';ctx.fillRect(0,0,512,512);
+  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='28px Arial';ctx.textAlign='center';
+  ctx.fillText('No. '+work.num,256,240);ctx.font='16px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';
+  const words=work.t.split(' ');let line='',y=280;
+  words.forEach(w=>{const test=line+w+' ';if(ctx.measureText(test).width>460&&line){ctx.fillText(line.trim(),256,y);line=w+' ';y+=22;}else line=test;});
+  ctx.fillText(line.trim(),256,y);return new THREE.CanvasTexture(C);
 }
 
 function placeFrame(work,x,y,z,rotY){
@@ -994,52 +993,90 @@ function placeFrame(work,x,y,z,rotY){
   artSpots.push({pos:spot,work,artMat,art,frameLines,rotY,anchorY:y,loaded:false});
 }
 
+function placeLine(works,wi,wallType,coord,isMin,rangeA,rangeB,gaps){
+  if(wi[0]>=works.length)return;
+  const off=(WT/2+0.12)*(isMin?1:-1);
+  let p=rangeA+MARGIN;
+  while(p<=rangeB-MARGIN){
+    if(wi[0]>=works.length)break;
+    const blocked=gaps.some(([g1,g2])=>p>g1-DPAD_ART&&p<g2+DPAD_ART);
+    if(!blocked){
+      const work=works[wi[0]++];
+      let x,y=AY,z,rotY;
+      if(wallType==='Z'){
+        x=p;z=coord+off;rotY=isMin?0:Math.PI;
+      }else{
+        x=coord+off;z=p;
+        rotY=isMin?Math.PI/2:-Math.PI/2;
+      }
+      placeFrame(work,x,y,z,rotY);
+    }
+    p+=STEP;
+  }
+}
+
+// Wing door gap positions (scaled to new hw=120)
+const DW=[[-120,-90]]; // left wing door
+const DE=[[90,120]];   // right wing door
+
 const ROOMS=[
   {id:'w1',r:[0,24],walls:[
-    ['Z',-160, true, -210,-30,[]],
-    ['Z',   0,false, -210,-30,[[-135,-105]]],
-    ['X',-210, true, -160,  0,[]],
+    ['Z',-160, true, -150,-30,[]],
+    ['Z',   0,false, -150,-30,DW],
+    ['X',-150, true, -160,  0,[]],
     ['X', -30,false, -160,  0,[]],
+    ['Z', -107,true, -150,-30,[]],   // internal row 1
+    ['Z',  -53,false,-150,-30,[]],   // internal row 2
   ]},
   {id:'w2',r:[25,49],walls:[
-    ['Z',-160, true,   30, 210,[]],
-    ['Z',   0,false,   30, 210,[[105,135]]],
+    ['Z',-160, true,   30, 150,[]],
+    ['Z',   0,false,   30, 150,DE],
     ['X',  30, true, -160,  0,[]],
-    ['X', 210,false, -160,  0,[]],
+    ['X', 150,false, -160,  0,[]],
+    ['Z', -107,true,   30, 150,[]],
+    ['Z',  -53,false,  30, 150,[]],
   ]},
   {id:'w3',r:[50,74],walls:[
-    ['Z',   0, true, -210,-30,[[-135,-105]]],
-    ['Z', 180,false, -210,-30,[[-135,-105]]],
-    ['X',-210, true,    0,180,[]],
-    ['X', -30,false,    0,180,[[80,100]]],
+    ['Z',   0, true, -150,-30,DW],
+    ['Z', 180,false, -150,-30,DW],
+    ['X',-150, true,    0,180,[]],
+    ['X', -30,false,    0,180,[[ 80,100]]],
+    ['Z',  60, true, -150,-30,[]],
+    ['Z', 120,false, -150,-30,[]],
   ]},
   {id:'w4',r:[75,99],walls:[
-    ['Z',   0, true,   30, 210,[[105,135]]],
-    ['Z', 180,false,   30, 210,[[105,135]]],
-    ['X',  30, true,    0,180,[[80,100]]],
-    ['X', 210,false,    0,180,[]],
+    ['Z',   0, true,   30, 150,DE],
+    ['Z', 180,false,   30, 150,DE],
+    ['X',  30, true,    0,180,[[ 80,100]]],
+    ['X', 150,false,    0,180,[]],
+    ['Z',  60, true,   30, 150,[]],
+    ['Z', 120,false,   30, 150,[]],
   ]},
   {id:'w5',r:[100,124],walls:[
-    ['Z', 180, true, -210,-30,[[-135,-105]]],
-    ['Z', 340,false, -210,-30,[]],
-    ['X',-210, true,  180,340,[]],
+    ['Z', 180, true, -150,-30,DW],
+    ['Z', 340,false, -150,-30,[]],
+    ['X',-150, true,  180,340,[]],
     ['X', -30,false,  180,340,[[255,275]]],
+    ['Z', 233, true, -150,-30,[]],
+    ['Z', 287,false, -150,-30,[]],
   ]},
   {id:'w6',r:[125,149],walls:[
-    ['Z', 180, true,   30, 210,[[105,135]]],
-    ['Z', 340,false,   30, 210,[]],
+    ['Z', 180, true,   30, 150,DE],
+    ['Z', 340,false,   30, 150,[]],
     ['X',  30, true,  180,340,[[255,275]]],
-    ['X', 210,false,  180,340,[]],
+    ['X', 150,false,  180,340,[]],
+    ['Z', 233, true,   30, 150,[]],
+    ['Z', 287,false,   30, 150,[]],
   ]},
 ];
 
 const RDEFS=[
-  {id:'w1',n:'Wing I',   s:'The Ancient World',        x1:-210,x2:-30,z1:-160,z2:  0},
-  {id:'w2',n:'Wing II',  s:'Early Civilisations',      x1:  30,x2:210,z1:-160,z2:  0},
-  {id:'w3',n:'Wing III', s:'Medieval & Gothic',        x1:-210,x2:-30,z1:   0,z2:180},
-  {id:'w4',n:'Wing IV',  s:'Renaissance & Beyond',     x1:  30,x2:210,z1:   0,z2:180},
-  {id:'w5',n:'Wing V',   s:'Baroque & Enlightenment',  x1:-210,x2:-30,z1: 180,z2:340},
-  {id:'w6',n:'Wing VI',  s:'Modern & Contemporary',    x1:  30,x2:210,z1: 180,z2:340},
+  {id:'w1',n:'Wing I',   s:'The Ancient World',        x1:-150,x2:-30,z1:-160,z2:  0},
+  {id:'w2',n:'Wing II',  s:'Early Civilisations',      x1:  30,x2:150,z1:-160,z2:  0},
+  {id:'w3',n:'Wing III', s:'Medieval & Gothic',        x1:-150,x2:-30,z1:   0,z2:180},
+  {id:'w4',n:'Wing IV',  s:'Renaissance & Beyond',     x1:  30,x2:150,z1:   0,z2:180},
+  {id:'w5',n:'Wing V',   s:'Baroque & Enlightenment',  x1:-150,x2:-30,z1: 180,z2:340},
+  {id:'w6',n:'Wing VI',  s:'Modern & Contemporary',    x1:  30,x2:150,z1: 180,z2:340},
   {id:'rt',n:'Central Rotunda',s:'Overview',           x1: -30,x2: 30,z1:   0,z2:180},
   {id:'en',n:'Grand Hall',s:'Entrance',                x1: -30,x2: 30,z1: 180,z2:400},
 ];
@@ -1218,8 +1255,8 @@ const mDir=new THREE.Vector3(),tmpE=new THREE.Euler(0,0,0,'YXZ');
 const SPEED=0.28,PR=0.7;
 const rcaster=new THREE.Raycaster();
 function tryMove(dx,dz){
-  const nx=Math.max(-209,Math.min(209,camera.position.x+dx));
-  const nz=Math.max(-159,Math.min(399,camera.position.z+dz));
+  const nx=Math.max(-155,Math.min(155,camera.position.x+dx));
+  const nz=Math.max(-165,Math.min(399,camera.position.z+dz));
   const d=new THREE.Vector3(nx-camera.position.x,0,nz-camera.position.z).normalize();
   rcaster.set(new THREE.Vector3(camera.position.x,1.5,camera.position.z),d);
   const hits=rcaster.intersectObjects(colliders);
@@ -1230,7 +1267,7 @@ function tryMove(dx,dz){
 // ── MINIMAP ───────────────────────────────────────────────────────────────────
 const mmC=document.getElementById('mm'),mmCtx=mmC.getContext('2d');
 const MW=mmC.width,MH=mmC.height;
-function w2m(x,z){return[(x+210)*MW/420,(z+160)*MH/560];}
+function w2m(x,z){return[(x+155)*MW/310,(z+165)*MH/570];}
 const RCOLS={w1:'#3A0A08',w2:'#3A0A08',w3:'#4A0C0A',w4:'#4A0C0A',w5:'#3A0A08',w6:'#3A0A08',rt:'#5A1410',en:'#4A1010'};
 function drawMap(){
   mmCtx.fillStyle='rgba(30,5,5,0.95)';mmCtx.fillRect(0,0,MW,MH);

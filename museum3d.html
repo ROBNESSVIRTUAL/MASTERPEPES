@@ -936,15 +936,23 @@ addBox(8,18,8,moldMat,0,233,0,false);
 addBox(4,12,4,moldMat,0,247,0,false);
 addBox(2,8,2,moldMat,0,257,0,false);
 
-// ── CONTINUOUS STAIRWELL — one unbroken ramp z=310→44, y=0→200 ──────────────
-// 155 small steps, each 1.3 high × 1.7 deep = covers full 263 units of depth
-// No gaps, no separate flights — one solid walkable ramp through all levels
-(function buildRamp(){
-  const STEPS=155, H_STEP=200/155, D_STEP=266/155;
-  for(let i=0;i<STEPS;i++){
-    const y=H_STEP*i; const z=310-D_STEP*i;
-    addBox(44,H_STEP+0.05,D_STEP+0.05,moldMat,0,y+H_STEP/2,z,false);
-  }
+// ── STAIR FLIGHTS — visual steps matching getFloorY zones ───────────────────
+// 5 flights, each 25 steps, rising 40 units. Visual only (col=false).
+(function buildStairs(){
+  const flights=[
+    {z0:290,z1:240,y0:0,  y1:40 },  // F1
+    {z0:242,z1:200,y0:40, y1:80 },  // F2
+    {z0:202,z1:140,y0:80, y1:120},  // F3
+    {z0:142,z1:85, y0:120,y1:160},  // F4
+    {z0:87, z1:45, y0:160,y1:200},  // F5
+  ];
+  flights.forEach(({z0,z1,y0,y1})=>{
+    const n=25, dz=(z0-z1)/n, dy=(y1-y0)/n;
+    for(let i=0;i<n;i++){
+      const z=z0-dz*(i+0.5), y=y0+dy*(i+0.5);
+      addBox(44, dy+0.05, dz+0.05, moldMat, 0, y, z, false);
+    }
+  });
 })();
 
 // Stair side rails removed
@@ -1303,29 +1311,46 @@ function rippleLoad(startId){
 let curRoom=null,lastArt=null;
 const ainfoEl=document.getElementById('ainfo');
 
-// ── FLOOR Y — single continuous stairwell ramp + flat terraces ───────────────
-// The stairwell is a corridor x=±32, z=44..310, y=0..200 (one smooth ramp).
-// Flat terraces cover the walkways around each level of the pyramid.
+// ── FLOOR Y ───────────────────────────────────────────────────────────────────
+// Pattern: STAIRS climb 40 units → FLAT TERRACE → STAIRS climb 40 → FLAT → ...
+// Stair corridor: |x| < 34 (the gap in each south wall is ±22)
+// Outside corridor: flat terrace y for that ring, all the way around the pyramid
 function getFloorY(x,z){
-  const onRamp = Math.abs(x) < 34;
+  const inCorridor = Math.abs(x) < 34;
 
-  // ── One continuous ramp: z=310→44 maps y=0→200 ───────────────────────────
-  // Applied when in the stair corridor AND within the ramp z-range
-  if(onRamp && z>=42 && z<=312){
-    // clamp so we don't overshoot at extremes
-    const t = Math.min(1, Math.max(0, (310-z)/266));
-    return t * 200;
+  // ── STAIR FLIGHTS (only active inside the corridor) ───────────────────────
+  // Each flight: z_bot (bottom of stairs) → z_top (top, enters flat terrace)
+  // y rises linearly from y_bot to y_top across that z range
+  if(inCorridor){
+    // Flight 1: z=240..290, y=0→40
+    if(z>=240 && z<=290) return 40 * (290-z) / 50;
+    // Flight 2: z=200..242, y=40→80
+    if(z>=200 && z<=242) return 40 + 40*(242-z)/42;
+    // Flight 3: z=140..202, y=80→120
+    if(z>=140 && z<=202) return 80 + 40*(202-z)/62;
+    // Flight 4: z=85..142, y=120→160
+    if(z>=85  && z<=142) return 120 + 40*(142-z)/57;
+    // Flight 5: z=45..87, y=160→200
+    if(z>=45  && z<=87)  return 160 + 40*(87-z)/42;
   }
 
-  // ── Flat terrace levels (innermost wins) ──────────────────────────────────
+  // ── FLAT TERRACE LEVELS ────────────────────────────────────────────────────
+  // Applied everywhere (inside corridor on landings, outside all around pyramid)
+  // Innermost zone wins — checked from inside out
   const ax=Math.abs(x), az=Math.abs(z);
-  if(ax<=23  && az<=23)  return 200;   // Summit platform top
-  if(ax<=47  && az<=47)  return 160;   // L5 top
-  if(ax<=87  && az<=87)  return 120;   // L4 terrace
-  if(ax<=142 && az<=142) return 80;    // L3 terrace
-  if(ax<=202 && az<=202) return 40;    // L2 terrace
-  if(ax<=242 && az<=242) return 0;     // L1 terrace (ground ring)
-  return 0;                             // Ground outside pyramid
+
+  // Summit platform (y=200): within L5 wall footprint
+  if(ax<=46  && az<=46)  return 200;
+  // L5 terrace ring (y=160): between L5 wall and L4 wall
+  if(ax<=86  && az<=86)  return 160;
+  // L4 terrace ring (y=120): between L4 wall and L3 wall
+  if(ax<=141 && az<=141) return 120;
+  // L3 terrace ring (y=80): between L3 wall and L2 wall
+  if(ax<=201 && az<=201) return 80;
+  // L2 terrace ring (y=40): between L2 wall and L1 wall
+  if(ax<=241 && az<=241) return 40;
+  // L1 / ground (y=0): outside L1 wall and the wide ground approach
+  return 0;
 }
 
 function detectRoom(){

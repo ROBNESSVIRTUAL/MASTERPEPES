@@ -336,7 +336,7 @@ scene.background=new THREE.Color(0xB8E898);
 scene.fog=new THREE.FogExp2(0xC0EAA0,0.0018);
 const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,0.1,800);
 camera.rotation.order='YXZ';
-camera.position.set(0,1.7,330);
+camera.position.set(0,1.7,340);
 window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();});
 
 // ── DYNAMIC SKY — day/sunset/night cycle with moving clouds + stars ───────────
@@ -829,13 +829,16 @@ let floatingBook = null;
     err => console.warn('masterpepes_book.glb not found:', err)
   );
 })();
-// ── PYRAMID — 5-LEVEL EXTERIOR STEP PYRAMID ──────────────────────────────────
-// Thin wall SKINS only (no solid blocks = no collision traps)
-// Players walk freely around each terrace level
-// Artwork on OUTER faces, facing outward
-// Levels rise 40 units each. Stairs: 20 small steps (2 high, 2.5 deep) per flight
-// L1: hw=240 y=0    L2: hw=175 y=40   L3: hw=115 y=80
-// L4: hw=65  y=120  Summit: hw=28 y=160
+// ── PYRAMID — 5-LEVEL STEP PYRAMID (EXTERIOR, FUTURISTIC) ────────────────────
+// Level heights rise 40 units per terrace
+// L1 (y=0,   hw=240): EMPTY — grand base, decorative only, no artwork
+// L2 (y=40,  hw=200): art level 1   (70 slots)
+// L3 (y=80,  hw=140): art level 2   (45 slots)
+// L4 (y=120, hw=85):  art level 3   (26 slots)
+// L5 (y=160, hw=45):  art level 4   (14 slots)
+// Summit (y=200, hw=20): book + obelisk
+//
+// KEY: stairs are VISUAL ONLY (col=false). Floor height from getFloorY().
 
 const H=18, WT=0.5;
 const colliders=[];
@@ -848,9 +851,6 @@ function segs(a,b,gaps){
   gs.forEach(([g1,g2])=>{if(g1>cur)out.push([cur,g1]);cur=g2;});
   if(cur<b)out.push([cur,b]);return out;
 }
-
-// Wall slab: thin skin with art-height H, at terrace floor y0
-// Adds collider so player can't walk through the wall face
 function wallSkinX(xa,xb,z,y0,gaps=[]){
   segs(xa,xb,gaps).forEach(([a,b])=>{
     const l=b-a,cx=(a+b)/2;
@@ -868,115 +868,106 @@ function wallSkinZ(x,za,zb,y0,gaps=[]){
   });
 }
 
-const SG=[[-20,20]]; // stair gap on south face
+const SG=[[-22,22]]; // stairwell gap (wider than player)
 
-// ── Huge ground plane ─────────────────────────────────────────────────────────
-addBox(1200,0.25,1200,floorMat,0,-0.12,0,false);
+// ── Ground plane ──────────────────────────────────────────────────────────────
+addBox(1400,0.25,1400,floorMat,0,-0.12,0,false);
 
-// ── L1 terrace floor (y=40): ring between hw=175..240 ────────────────────────
-// Four rectangular strips forming the ring walkway at L1 top
-addBox(480,0.25, 65,floorMat,   0,40.12,-207,false); // N strip
-addBox(480,0.25, 65,floorMat,   0,40.12, 207,false); // S strip
-addBox( 65,0.25,350,floorMat,-207,40.12,   0,false); // W strip
-addBox( 65,0.25,350,floorMat, 207,40.12,   0,false); // E strip
+// ── Terrace floor rings (walkable) ────────────────────────────────────────────
+// L1→L2 ring (y=40): hw 200..240, 40 units wide
+addBox(480,0.25,40,floorMat,   0,40.12,-220,false);
+addBox(480,0.25,40,floorMat,   0,40.12, 220,false);
+addBox( 40,0.25,400,floorMat,-220,40.12,  0,false);
+addBox( 40,0.25,400,floorMat, 220,40.12,  0,false);
+// L2→L3 ring (y=80): hw 140..200, 60 units wide
+addBox(400,0.25,60,floorMat,   0,80.12,-170,false);
+addBox(400,0.25,60,floorMat,   0,80.12, 170,false);
+addBox( 60,0.25,280,floorMat,-170,80.12,  0,false);
+addBox( 60,0.25,280,floorMat, 170,80.12,  0,false);
+// L3→L4 ring (y=120): hw 85..140, 55 units wide
+addBox(280,0.25,55,floorMat,   0,120.12,-112,false);
+addBox(280,0.25,55,floorMat,   0,120.12, 112,false);
+addBox( 55,0.25,170,floorMat,-112,120.12,  0,false);
+addBox( 55,0.25,170,floorMat, 112,120.12,  0,false);
+// L4→L5 ring (y=160): hw 45..85, 40 units wide
+addBox(170,0.25,40,floorMat,   0,160.12,-65,false);
+addBox(170,0.25,40,floorMat,   0,160.12,  65,false);
+addBox( 40,0.25,90,floorMat, -65,160.12,   0,false);
+addBox( 40,0.25,90,floorMat,  65,160.12,   0,false);
+// Summit floor (y=200)
+addBox(40,0.25,40,floorMat,0,200.12,0,false);
 
-// ── L2 terrace floor (y=80): ring between hw=115..175 ────────────────────────
-addBox(350,0.25, 60,floorMat,   0,80.12,-147,false);
-addBox(350,0.25, 60,floorMat,   0,80.12, 147,false);
-addBox( 60,0.25,230,floorMat,-147,80.12,   0,false);
-addBox( 60,0.25,230,floorMat, 147,80.12,   0,false);
+// ── L1 walls — EMPTY / decorative, no artwork, no stair gap needed ────────────
+// Just the 4 outer faces as grand base walls
+wallSkinX(-240,240,-240,0,[]);
+wallSkinX(-240,240, 240,0,[]);
+wallSkinZ(-240,-240,240,0,[]);
+wallSkinZ( 240,-240,240,0,[]);
 
-// ── L3 terrace floor (y=120): ring between hw=65..115 ────────────────────────
-addBox(230,0.25, 50,floorMat,   0,120.12,-90,false);
-addBox(230,0.25, 50,floorMat,   0,120.12,  90,false);
-addBox( 50,0.25,130,floorMat, -90,120.12,   0,false);
-addBox( 50,0.25,130,floorMat,  90,120.12,   0,false);
+// ── L2 art walls (y=40, hw=200) ──────────────────────────────────────────────
+wallSkinX(-200,200,-200,40,[]);
+wallSkinX(-200,200, 200,40,SG);
+wallSkinZ(-200,-200,200,40,[]);
+wallSkinZ( 200,-200,200,40,[]);
 
-// ── Summit floor (y=160): full slab ──────────────────────────────────────────
-addBox(56,0.25,56,floorMat,0,160.12,0,false);
+// ── L3 art walls (y=80, hw=140) ──────────────────────────────────────────────
+wallSkinX(-140,140,-140,80,[]);
+wallSkinX(-140,140, 140,80,SG);
+wallSkinZ(-140,-140,140,80,[]);
+wallSkinZ( 140,-140,140,80,[]);
 
-// ── L1 outer wall skins (y=0, hw=240) ────────────────────────────────────────
-wallSkinX(-240,240,-240,0,[]);           // N
-wallSkinX(-240,240, 240,0,SG);           // S (stair gap)
-wallSkinZ(-240,-240,240,0,[]);           // W
-wallSkinZ( 240,-240,240,0,[]);           // E
+// ── L4 art walls (y=120, hw=85) ──────────────────────────────────────────────
+wallSkinX(-85,85,-85,120,[]);
+wallSkinX(-85,85,  85,120,SG);
+wallSkinZ(-85,-85, 85,120,[]);
+wallSkinZ(  85,-85, 85,120,[]);
 
-// ── L2 outer wall skins (y=40, hw=175) ───────────────────────────────────────
-wallSkinX(-175,175,-175,40,[]);
-wallSkinX(-175,175, 175,40,SG);
-wallSkinZ(-175,-175,175,40,[]);
-wallSkinZ( 175,-175,175,40,[]);
+// ── L5 art walls (y=160, hw=45) ──────────────────────────────────────────────
+wallSkinX(-45,45,-45,160,[]);
+wallSkinX(-45,45,  45,160,SG);
+wallSkinZ(-45,-45, 45,160,[]);
+wallSkinZ(  45,-45, 45,160,[]);
 
-// ── L3 outer wall skins (y=80, hw=115) ───────────────────────────────────────
-wallSkinX(-115,115,-115,80,[]);
-wallSkinX(-115,115, 115,80,SG);
-wallSkinZ(-115,-115,115,80,[]);
-wallSkinZ( 115,-115,115,80,[]);
+// ── Summit cap + obelisk (y=200, hw=20) ──────────────────────────────────────
+wallSkinX(-20,20,-20,200,[]);
+wallSkinX(-20,20, 20,200,[]);
+wallSkinZ(-20,-20,20,200,[]);
+wallSkinZ( 20,-20,20,200,[]);
+addBox(14,30,14,moldMat,0,215,0,false);
+addBox(8,18,8,moldMat,0,233,0,false);
+addBox(4,12,4,moldMat,0,247,0,false);
+addBox(2,8,2,moldMat,0,257,0,false);
 
-// ── L4 outer wall skins (y=120, hw=65) ───────────────────────────────────────
-wallSkinX(-65,65,-65,120,[]);
-wallSkinX(-65,65,  65,120,SG);
-wallSkinZ(-65,-65, 65,120,[]);
-wallSkinZ( 65,-65, 65,120,[]);
+// ── DECORATIVE STAIRS — visual only (col=false, player rides getFloorY) ──────
+// 20 steps per flight, 2h × 2.5d, rising 40 units over 50 depth
+// Flight 1: ground→L1 terrace (z 290→240, y 0→40)
+for(let i=0;i<20;i++) addBox(44,2,2.5,moldMat,0,1+i*2,288-i*2.5,false);
+// Flight 2: L1→L2 (z 240→190, y 40→80)
+for(let i=0;i<20;i++) addBox(44,2,2.5,moldMat,0,41+i*2,238-i*2.5,false);
+// Flight 3: L2→L3 (z 200→150 approx, y 80→120)
+for(let i=0;i<20;i++) addBox(44,2,2.5,moldMat,0,81+i*2,198-i*2.5,false);
+// Flight 4: L3→L4 (z 140→90, y 120→160)
+for(let i=0;i<20;i++) addBox(44,2,2.5,moldMat,0,121+i*2,138-i*2.5,false);
+// Flight 5: L4→L5 (z 85→45, y 160→200)
+for(let i=0;i<16;i++) addBox(44,2.5,2.5,moldMat,0,161+i*2.5,83-i*2.5,false);
 
-// ── Summit cap walls (y=160, hw=28) ──────────────────────────────────────────
-wallSkinX(-28,28,-28,160,[]);
-wallSkinX(-28,28, 28,160,[]);
-wallSkinZ(-28,-28,28,160,[]);
-wallSkinZ( 28,-28,28,160,[]);
-// Apex obelisk
-addBox(12,30,12,moldMat,0,175,0,false);
-addBox(6,16,6,moldMat,0,193,0,false);
-addBox(3,8,3,moldMat,0,205,0,false);
-
-// ── Terrace retaining ledges (outer edge of each terrace ring) ────────────────
-// Low curb walls so player knows the edge (decorative, short)
-function ledgeX(xa,xb,z,y){ addBox(xb-xa,2,1.2,moldMat,(xa+xb)/2,y+1,z,false); }
-function ledgeZ(x,za,zb,y){ addBox(1.2,2,zb-za,moldMat,x,y+1,(za+zb)/2,false); }
-// L1 outer edge (ground level — no ledge needed, just a step up)
-// L2 terrace outer edge (y=40)
-ledgeX(-240,240,-241,40); ledgeX(-240,240,241,40);
-ledgeZ(-241,-240,240,40); ledgeZ(241,-240,240,40);
-// L3 terrace outer edge (y=80)
-ledgeX(-175,175,-176,80); ledgeX(-175,175,176,80);
-ledgeZ(-176,-175,175,80); ledgeZ(176,-175,175,80);
-// L4 terrace outer edge (y=120)
-ledgeX(-115,115,-116,120); ledgeX(-115,115,116,120);
-ledgeZ(-116,-115,115,120); ledgeZ(116,-115,115,120);
-
-// ── Corner pillars ────────────────────────────────────────────────────────────
-[[240,240],[-240,240],[240,-240],[-240,-240]].forEach(([x,z])=>{addBox(8,H+6,8,moldMat,x,H/2+3,z,false);});
-[[175,175],[-175,175],[175,-175],[-175,-175]].forEach(([x,z])=>{addBox(7,H+6,7,moldMat,x,40+H/2+3,z,false);});
-[[115,115],[-115,115],[115,-115],[-115,-115]].forEach(([x,z])=>{addBox(6,H+6,6,moldMat,x,80+H/2+3,z,false);});
-[[65,65],[-65,65],[65,-65],[-65,-65]].forEach(([x,z])=>{addBox(5,H+6,5,moldMat,x,120+H/2+3,z,false);});
-
-// ── STAIRS — small steps (2 units high, 2.5 deep), 20 per flight ─────────────
-// Each stair flight climbs 40 units over 50 units of horizontal distance
-// Flight 1: ground (z≈290..240) → L1 south face (z=240), y=0→40
-for(let i=0;i<20;i++){
-  addBox(40,2,2.5,moldMat,0,1+i*2,288-i*2.5,true);
-}
-// Flight 2: L1 terrace (z≈240..190) → L2 south face (z=175), y=40→80
-for(let i=0;i<20;i++){
-  addBox(40,2,2.5,moldMat,0,41+i*2,238-i*2.5,true);
-}
-// Flight 3: L2 terrace (z≈180..130) → L3 south face (z=115), y=80→120
-for(let i=0;i<20;i++){
-  addBox(40,2,2.5,moldMat,0,81+i*2,178-i*2.5,true);
-}
-// Flight 4: L3 terrace (z≈120..70) → L4 south face (z=65), y=120→160
-for(let i=0;i<20;i++){
-  addBox(40,2,2.5,moldMat,0,121+i*2,118-i*2.5,true);
-}
-// Stair handrails (low walls beside each flight)
-[-22,22].forEach(rx=>{
-  addBox(2,22,52,moldMat,rx,21,263,false);
-  addBox(2,22,52,moldMat,rx,61,213,false);
-  addBox(2,22,52,moldMat,rx,101,153,false);
-  addBox(2,22,52,moldMat,rx,141,93,false);
+// Stair side rails (decorative)
+[-24,24].forEach(rx=>{
+  addBox(2,24,52,moldMat,rx,22,263,false);
+  addBox(2,24,52,moldMat,rx,62,213,false);
+  addBox(2,24,52,moldMat,rx,102,173,false);
+  addBox(2,24,52,moldMat,rx,142,113,false);
+  addBox(2,20,42,moldMat,rx,180,62,false);
 });
 
-// ── ARTWORK PLACEMENT ─────────────────────────────────────────────────────────
+// ── Corner pillars ─────────────────────────────────────────────────────────────
+[[240,240],[-240,240],[240,-240],[-240,-240]].forEach(([x,z])=>addBox(9,H+8,9,moldMat,x,H/2+4,z,false));
+[[200,200],[-200,200],[200,-200],[-200,-200]].forEach(([x,z])=>addBox(8,H+8,8,moldMat,x,40+H/2+4,z,false));
+[[140,140],[-140,140],[140,-140],[-140,-140]].forEach(([x,z])=>addBox(7,H+8,7,moldMat,x,80+H/2+4,z,false));
+[[85,85],[-85,85],[85,-85],[-85,-85]].forEach(([x,z])=>addBox(6,H+8,6,moldMat,x,120+H/2+4,z,false));
+[[45,45],[-45,45],[45,-45],[-45,-45]].forEach(([x,z])=>addBox(5,H+8,5,moldMat,x,160+H/2+4,z,false));
+
+// ── ARTWORK ───────────────────────────────────────────────────────────────────
 const artSpots=[];
 const LOAD_QUEUE=[];
 let activeLoads=0;
@@ -1065,31 +1056,32 @@ function placeLine(works,wi,type,coord,outward,r0,r1,gaps,fy){
   }
 }
 
-// 4 art levels (L1–L4), artwork on outer faces
+// Art on L2-L5 outer faces only (L1 is empty grand base)
 const PYR=[
-  {y:0,  hw:240,walls:[['Z',-240,-1,-240,240,[]],['Z',240,+1,-240,240,SG],['X',-240,-1,-240,240,[]],['X',240,+1,-240,240,[]]]},
-  {y:40, hw:175,walls:[['Z',-175,-1,-175,175,[]],['Z',175,+1,-175,175,SG],['X',-175,-1,-175,175,[]],['X',175,+1,-175,175,[]]]},
-  {y:80, hw:115,walls:[['Z',-115,-1,-115,115,[]],['Z',115,+1,-115,115,SG],['X',-115,-1,-115,115,[]],['X',115,+1,-115,115,[]]]},
-  {y:120,hw:65, walls:[['Z', -65,-1, -65, 65,[]],['Z', 65,+1, -65, 65,SG],['X', -65,-1, -65, 65,[]],['X', 65,+1, -65, 65,[]]]},
+  {y:40, hw:200,walls:[['Z',-200,-1,-200,200,[]],['Z',200,+1,-200,200,SG],['X',-200,-1,-200,200,[]],['X',200,+1,-200,200,[]]]},
+  {y:80, hw:140,walls:[['Z',-140,-1,-140,140,[]],['Z',140,+1,-140,140,SG],['X',-140,-1,-140,140,[]],['X',140,+1,-140,140,[]]]},
+  {y:120,hw:85, walls:[['Z', -85,-1, -85, 85,[]],['Z', 85,+1, -85, 85,SG],['X', -85,-1, -85, 85,[]],['X', 85,+1, -85, 85,[]]]},
+  {y:160,hw:45, walls:[['Z', -45,-1, -45, 45,[]],['Z', 45,+1, -45, 45,SG],['X', -45,-1, -45, 45,[]],['X', 45,+1, -45, 45,[]]]},
 ];
-
 const allWorks=[...PAGES];let wi=[0];
 PYR.forEach(lvl=>lvl.walls.forEach(([t,c,o,r0,r1,g])=>placeLine(allWorks,wi,t,c,o,r0,r1,g,lvl.y)));
 
-// ── ROOM DETECTION ─────────────────────────────────────────────────────────────
+// ── ROOM DETECTION ────────────────────────────────────────────────────────────
 const RDEFS=[
-  {id:'l1',n:'Level I',   s:'The Ancient World & Early Civilisations',x1:-300,x2:300,z1:-300,z2:340},
-  {id:'l2',n:'Level II',  s:'Medieval, Gothic & Renaissance',         x1:-240,x2:240,z1:-240,z2:240},
-  {id:'l3',n:'Level III', s:'Baroque, Enlightenment & Modern',        x1:-175,x2:175,z1:-175,z2:175},
-  {id:'l4',n:'Level IV',  s:'Modern & Contemporary',                  x1:-115,x2:115,z1:-115,z2:115},
-  {id:'summit',n:'Summit',s:'The Apex of Masterpepes',                x1:  -65,x2: 65,z1: -65,z2:  65},
+  {id:'l1',n:'Level I',    s:'Grand Base — The Ancient World',          x1:-300,x2:300,z1:-300,z2:350},
+  {id:'l2',n:'Level II',   s:'Early Civilisations & Medieval',          x1:-240,x2:240,z1:-240,z2:240},
+  {id:'l3',n:'Level III',  s:'Gothic, Renaissance & Baroque',           x1:-200,x2:200,z1:-200,z2:200},
+  {id:'l4',n:'Level IV',   s:'Enlightenment & Modern',                  x1:-140,x2:140,z1:-140,z2:140},
+  {id:'l5',n:'Level V',    s:'Contemporary',                            x1: -85,x2: 85,z1: -85,z2:  85},
+  {id:'summit',n:'Summit', s:'The Apex',                                x1: -45,x2: 45,z1: -45,z2:  45},
 ];
 
 const ROOM_NUMS={
-  l1:new Set(Array.from({length:82},(_,i)=>i+1)),
-  l2:new Set(Array.from({length:58},(_,i)=>i+83)),
-  l3:new Set(Array.from({length:10},(_,i)=>i+141)),
-  l4:new Set(Array.from({length:0},(_,i)=>i+151)),
+  l1:new Set([]),
+  l2:new Set(Array.from({length:70},(_,i)=>i+1)),
+  l3:new Set(Array.from({length:45},(_,i)=>i+71)),
+  l4:new Set(Array.from({length:26},(_,i)=>i+116)),
+  l5:new Set(Array.from({length:9},(_,i)=>i+142)),
   summit:new Set([]),
 };
 function loadRoomArtworks(roomId){
@@ -1252,8 +1244,8 @@ const mDir=new THREE.Vector3(),tmpE=new THREE.Euler(0,0,0,'YXZ');
 const SPEED=0.28,PR=0.7;
 const rcaster=new THREE.Raycaster();
 function tryMove(dx,dz){
-  const nx=Math.max(-400,Math.min(400,camera.position.x+dx));
-  const nz=Math.max(-350,Math.min(400,camera.position.z+dz));
+  const nx=Math.max(-500,Math.min(500,camera.position.x+dx));
+  const nz=Math.max(-400,Math.min(430,camera.position.z+dz));
   const d=new THREE.Vector3(nx-camera.position.x,0,nz-camera.position.z).normalize();
   rcaster.set(new THREE.Vector3(camera.position.x,1.5,camera.position.z),d);
   const hits=rcaster.intersectObjects(colliders);
@@ -1264,7 +1256,7 @@ function tryMove(dx,dz){
 // ── MINIMAP ───────────────────────────────────────────────────────────────────
 const mmC=document.getElementById('mm'),mmCtx=mmC.getContext('2d');
 const MW=mmC.width,MH=mmC.height;
-function w2m(x,z){return[(x+350)*MW/700,(z+350)*MH/730];}
+function w2m(x,z){return[(x+400)*MW/800,(z+400)*MH/830];}
 const RCOLS={w1:'#3A0A08',w2:'#3A0A08',w3:'#4A0C0A',w4:'#4A0C0A',w5:'#3A0A08',w6:'#3A0A08',rt:'#5A1410',en:'#4A1010'};
 function drawMap(){
   mmCtx.fillStyle='rgba(30,5,5,0.95)';mmCtx.fillRect(0,0,MW,MH);
@@ -1287,7 +1279,7 @@ function drawMap(){
 // ── RIPPLE LOADING ────────────────────────────────────────────────────────────
 // Adjacency map — ordered outward from entrance
 const ADJ={
-  l1:['l2'],l2:['l1','l3'],l3:['l2','l4'],l4:['l3','summit'],summit:['l4'],
+  l1:['l2'],l2:['l1','l3'],l3:['l2','l4'],l4:['l3','l5'],l5:['l4','summit'],summit:['l5'],
 };
 const loadedRooms=new Set();
 
@@ -1325,24 +1317,29 @@ const ainfoEl=document.getElementById('ainfo');
 // ── FLOOR Y — smooth stair climbing ──────────────────────────────────────────
 function getFloorY(x,z){
   const ax=Math.abs(x);
-  const inStair=ax<24;
-  // Flight 1: z 240..290, y 0→40
-  if(inStair&&z>=240&&z<=295) return Math.max(0,40*(295-z)/55);
-  // Flight 2: z 175..240, y 40→80
-  if(inStair&&z>=175&&z<=243) return 40+Math.max(0,40*(243-z)/68);
-  // Flight 3: z 115..178, y 80→120
-  if(inStair&&z>=115&&z<=182) return 80+Math.max(0,40*(182-z)/67);
-  // Flight 4: z 65..120, y 120→160
-  if(inStair&&z>=65&&z<=123) return 120+Math.max(0,40*(123-z)/58);
-  // Summit top
-  if(Math.abs(x)<66&&Math.abs(z)<66) return 160;
+  const onStair=ax<26;
+  // Summit
+  if(Math.abs(x)<21&&Math.abs(z)<21) return 200;
+  // L5 top
+  if(Math.abs(x)<46&&Math.abs(z)<46) return 160;
+  // Flight 5: z 45..88, y 160→200
+  if(onStair&&z>=45&&z<=90) return 160+Math.max(0,40*(90-z)/45);
   // L4 terrace
-  if(Math.abs(x)<116&&Math.abs(z)<116) return 120;
+  if(Math.abs(x)<86&&Math.abs(z)<86) return 120;
+  // Flight 4: z 85..142, y 120→160
+  if(onStair&&z>=85&&z<=145) return 120+Math.max(0,40*(145-z)/60);
   // L3 terrace
-  if(Math.abs(x)<176&&Math.abs(z)<176) return 80;
+  if(Math.abs(x)<141&&Math.abs(z)<141) return 80;
+  // Flight 3: z 140..202, y 80→120
+  if(onStair&&z>=140&&z<=205) return 80+Math.max(0,40*(205-z)/65);
   // L2 terrace
-  if(Math.abs(x)<241&&Math.abs(z)<241) return 40;
-  // Ground
+  if(Math.abs(x)<201&&Math.abs(z)<201) return 40;
+  // Flight 2: z 200..243, y 40→80
+  if(onStair&&z>=200&&z<=245) return 40+Math.max(0,40*(245-z)/45);
+  // L1 terrace
+  if(Math.abs(x)<241&&Math.abs(z)<241) return 0;
+  // Flight 1: z 240..295, y 0→40
+  if(onStair&&z>=240&&z<=298) return Math.max(0,40*(298-z)/58);
   return 0;
 }
 
@@ -1539,16 +1536,16 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     // Lord Kek orbits the pyramid apex
     if(lordKek){
       const kt=Date.now()*0.0003;
-      lordKek.position.x=Math.sin(kt)*220;
-      lordKek.position.z=Math.cos(kt)*220;
-      lordKek.position.y=200;
+      lordKek.position.x=Math.sin(kt)*280;
+      lordKek.position.z=Math.cos(kt)*280;
+      lordKek.position.y=260;
       lordKek.rotation.y+=0.005;
     }
     if(lordKekMixer) lordKekMixer.update(delta);
     // Floating book — slow rotation + gentle vertical bob
     if(floatingBook){
       floatingBook.rotation.y += 0.008;
-      floatingBook.position.y = 168 + Math.sin(Date.now() * 0.0008) * 0.8;
+      floatingBook.position.y = 210 + Math.sin(Date.now() * 0.0008) * 1.0;
     }
     mDir.set(0,0,0);
     // Keyboard

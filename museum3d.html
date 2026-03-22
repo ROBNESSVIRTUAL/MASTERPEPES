@@ -731,112 +731,88 @@ const frameHi =new THREE.MeshLambertMaterial({color:0xFFD700});
 const frameLo =new THREE.MeshLambertMaterial({color:0xDAA520});
 
 // ── LORD KEK — hovering deity above the museum ────────────────────────────────
-let lordKek = null;
-let lordKekMixer = null;
-const lordKekClock = new THREE.Clock();
+// ── GLB STATUE LOADER HELPER ──────────────────────────────────────────────────
+function loadStatue(file, x, z, scale, rotY, name, onLoad){
+  new THREE.GLTFLoader().load(file, gltf=>{
+    const m=gltf.scene;
+    const box=new THREE.Box3().setFromObject(m);
+    const size=box.getSize(new THREE.Vector3());
+    const centre=box.getCenter(new THREE.Vector3());
+    const sc=scale/Math.max(size.x,size.y,size.z);
+    m.scale.setScalar(sc);
+    m.position.x=x-centre.x*sc;
+    m.position.y=-box.min.y*sc;
+    m.position.z=z-centre.z*sc;
+    m.rotation.y=rotY||0;
+    if(gltf.animations&&gltf.animations.length){
+      const mx=new THREE.AnimationMixer(m);
+      gltf.animations.forEach(c=>mx.clipAction(c).play());
+      if(onLoad) onLoad(m,mx); else onLoad&&onLoad(m,null);
+    } else { if(onLoad) onLoad(m,null); }
+    scene.add(m);
+    console.log(name,'loaded');
+  }, undefined, e=>console.warn(name,'not found:',e));
+}
 
-(function loadLordKek(){
-  const loader = new THREE.GLTFLoader();
-  loader.load('LORDKEK.glb',
-    gltf => {
-      lordKek = gltf.scene;
+// ── LORD KEK — flies along corridor back and forth ────────────────────────────
+let lordKek=null, lordKekMixer=null;
+const lordKekClock=new THREE.Clock();
+loadStatue('LORDKEK.glb', 0, 0, 50, 0, 'LordKek', (m,mx)=>{
+  lordKek=m; lordKekMixer=mx;
+  lordKek.position.y=40; // start high
+});
 
-      // Centre the model on its own bounding box
-      const box = new THREE.Box3().setFromObject(lordKek);
-      const size = box.getSize(new THREE.Vector3());
-      const centre = box.getCenter(new THREE.Vector3());
+// ── ROOM STATUES (room centres: z=205,455,705,955,1205) ──────────────────────
+// Room 1 (z=205): Masterpepes Book — floating, rotating
+let floatingBook=null;
+loadStatue('masterpepes_book.glb', 0, 205, 14, 0, 'Book', (m)=>{
+  floatingBook=m; floatingBook.position.y=8;
+});
 
-      // Scale so longest dimension = 60 units (imposing sky presence)
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const scale = 60 / maxDim;
-      lordKek.scale.setScalar(scale);
+// Room 2 (z=455): Robness
+loadStatue('ROBNESS1.glb', 0, 455, 20, Math.PI, 'Robness', null);
 
-      // Centre horizontally, offset vertically so pivot is at model bottom
-      lordKek.position.x = -centre.x * scale;
-      lordKek.position.z = -centre.z * scale;
-      lordKek.position.y = 80 - box.min.y * scale; // float 80 units above ground
+// Room 3 (z=705): Nu Pepe Desu
+loadStatue('NUPEPEDESU.glb', 0, 705, 20, Math.PI, 'NuPepeDesu', null);
 
-      // Face downward — rotate X so it looks down at visitors
-      lordKek.rotation.x = Math.PI * 0.18; // tilted ~32° forward, gazing down
+// Room 4 (z=955): Kek Statue
+loadStatue('kekstatue.glb', 0, 955, 22, Math.PI, 'KekStatue', null);
 
-      // Animate any built-in animations
-      if(gltf.animations && gltf.animations.length){
-        lordKekMixer = new THREE.AnimationMixer(lordKek);
-        gltf.animations.forEach(clip => lordKekMixer.clipAction(clip).play());
-      }
+// Room 5 (z=1205): DSSL
+loadStatue('DSSL.glb', 0, 1205, 20, Math.PI, 'DSSL', null);
 
-      scene.add(lordKek);
-      console.log('Lord Kek has arrived. Size:', size, 'Scale:', scale);
-    },
-    xhr => console.log('LordKek:', Math.round(xhr.loaded/xhr.total*100)+'% loaded'),
-    err => console.warn('LORDKEK.glb not found or failed to load:', err)
-  );
-})();
+// ── TRASHCANS — one per area (corners) ───────────────────────────────────────
+// 6 corridor segments + 5 rooms = 11 areas
+// Place in corner of each room and at start/end of corridor
+const trashPositions=[
+  // Room corners (south-east corner of each room)
+  [38, 185],[38, 435],[38, 685],[38, 935],[38, 1185],
+  // Corridor spots (alternating sides)
+  [-8, 80],[ 8, 330],[-8, 580],[ 8, 830],[-8, 1100],[ 8, 1400],
+];
+trashPositions.forEach(([tx,tz])=>{
+  new THREE.GLTFLoader().load('64 Gallon Toter 3D.glb', gltf=>{
+    const m=gltf.scene;
+    const box=new THREE.Box3().setFromObject(m);
+    const size=box.getSize(new THREE.Vector3());
+    const sc=3.5/Math.max(size.x,size.y,size.z); // small — 3.5 unit scale
+    m.scale.setScalar(sc);
+    const centre=box.getCenter(new THREE.Vector3());
+    m.position.x=tx-centre.x*sc;
+    m.position.y=-box.min.y*sc;
+    m.position.z=tz-centre.z*sc;
+    scene.add(m);
+  }, undefined, ()=>{});
+});
+// ── GRAND CORRIDOR — long hall with 5 break rooms ────────────────────────────
+// Corridor: x=-12..12 (24 wide), runs along Z axis z=0..1530
+// 6 corridor segments (seg=180 each), 5 break rooms (90x90)
+// Rooms at z: 180..270, 430..520, 680..770, 930..1020, 1180..1270
+// Final corridor: 1270..1530
+// Lord Kek flies along corridor path
+// 5 GLB statues centred in each room + trashcans in corners
 
-// ── KEK STATUE — north end of Grand Hall, facing entrance ─────────────────────
-// Grand Hall: x -30..30, z 180..400. North wall = z=180.
-// Statue placed at x=0, z≈200 (20 units inside hall), facing south (rotY=π).
-(function loadKekStatue(){
-  const loader = new THREE.GLTFLoader();
-  loader.load('kekstatue.glb',
-    gltf => {
-      const model = gltf.scene;
-      const box = new THREE.Box3().setFromObject(model);
-      const size = box.getSize(new THREE.Vector3());
-      const centre = box.getCenter(new THREE.Vector3());
-      // Scale to 14 units tall — commanding presence without blocking the hall
-      const scale = 28 / Math.max(size.x, size.y, size.z);
-      model.scale.setScalar(scale);
-      // Centre on X axis, sit firmly on floor
-      model.position.x = -centre.x * scale;
-      model.position.y = -box.min.y * scale;
-      // Nudged south to z=225 to clear the rotunda doorway
-      model.position.z = 225 - centre.z * scale;
-      // Facing south (π) then rotated left 120°
-      model.rotation.y = Math.PI + (120 * Math.PI / 180);
-      scene.add(model);
-      console.log('Kek statue placed. Size:', size, 'Scale:', scale);
-    },
-    undefined,
-    err => console.warn('kekstatue.glb not found:', err)
-  );
-})();
-
-// ── MASTERPEPES BOOK — floating in the Rotunda ────────────────────────────────
-// Rotunda: x -30..30, z 0..180. Door to Grand Hall at z=180.
-// Book sits 25 units north of the door at z=155, centred, floating at mid-wall height.
-let floatingBook = null;
-(function loadFloatingBook(){
-  const loader = new THREE.GLTFLoader();
-  loader.load('masterpepes_book.glb',
-    gltf => {
-      floatingBook = gltf.scene;
-      const box = new THREE.Box3().setFromObject(floatingBook);
-      const size = box.getSize(new THREE.Vector3());
-      const centre = box.getCenter(new THREE.Vector3());
-      // Scale to 18 units on longest axis — big, fills the rotunda nicely
-      const scale = 18 / Math.max(size.x, size.y, size.z);
-      floatingBook.scale.setScalar(scale);
-      // Centre X and Z
-      floatingBook.position.x = -centre.x * scale;
-      floatingBook.position.z = 155 - centre.z * scale;
-      // Float at y=7 — waist-to-chest height, clearly airborne
-      floatingBook.position.y = 12 - centre.y * scale;
-      scene.add(floatingBook);
-      console.log('Floating book placed in Rotunda at z=155, y=7');
-    },
-    undefined,
-    err => console.warn('masterpepes_book.glb not found:', err)
-  );
-})();
-// Verified layout: every artwork wall coord matches a physical wall exactly.
-// Wings I/II:   x -210..-30, z -160..0   (180 wide, 160 deep)
-// Wings III/IV: x -210..-30, z 0..180    (180 wide, 180 deep)
-// Wings V/VI:   x 30..210,   z 180..340  (180 wide, 160 deep)
-// Rotunda:      x -30..30,   z 0..180
-// Entrance:     x -30..30,   z 180..400
-
-const H=18, WT=0.5;
+const H=18, WT=0.5, CW=12, RH=45, SEG=180, RD=90;
 const colliders=[];
 function addBox(w,h,d,mat,x,y,z,col=true){
   const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
@@ -864,46 +840,61 @@ function wallZ(x,za,zb,gaps=[]){
   });
 }
 
-addBox(442,0.25,564,floorMat,0,-0.12,120,false);
+const CORRIDOR_GAP=[-(CW+2),CW+2];
 
-// Outer perimeter
-wallX(-210,210,-160); wallX(-210,210,400);
-wallZ(-210,-160,400); wallZ(210,-160,400);
+// Room Z positions
+const ROOMS_Z=[];
+let _z=0;
+for(let i=0;i<5;i++){_z+=SEG;ROOMS_Z.push([_z,_z+RD,_z+RD/2]);_z+=RD;}
+const END_Z=_z+SEG; // 1530
 
-// x=±30 dividers
-wallZ(-30,-160,  0);
-wallZ(-30,   0,180,[[ 80,100]]);
-wallZ(-30, 180,340,[[255,275]]);
-wallZ(-30, 340,400);
-wallZ( 30,-160,  0);
-wallZ( 30,   0,180,[[ 80,100]]);
-wallZ( 30, 180,340,[[255,275]]);
-wallZ( 30, 340,400);
-
-// z=0 divider
-wallX(-210,-30,  0,[[-135,-105]]);
-wallX( -30,  30, 0);
-wallX(  30, 210, 0,[[ 105, 135]]);
-// z=180 divider
-wallX(-210,-30,180,[[-135,-105]]);
-wallX( -30,  30,180,[[ -10,  10]]);
-wallX(  30, 210,180,[[ 105, 135]]);
-// z=340 divider
-wallX(-210,-30,340); wallX(30,210,340);
-
-// Rotunda columns
-[[-16,40],[16,40],[-16,90],[16,90],[-16,140],[16,140]].forEach(([x,z])=>{
-  addBox(3,H,3,moldMat,x,H/2,z,true);
-  addBox(5,1.8,5,moldMat,x,H-0.9,z,false);
-  addBox(5,1.2,5,moldMat,x,0.6,z,false);
-});
-[[-22,182],[22,182],[-22,338],[22,338]].forEach(([x,z])=>{
-  addBox(3.5,H,3.5,moldMat,x,H/2,z,true);
-  addBox(6,2,6,moldMat,x,H-1,z,false);
-  addBox(6,1.5,6,moldMat,x,0.75,z,false);
+// ── Floor ─────────────────────────────────────────────────────────────────────
+// Corridor floor strips
+addBox(CW*2,0.25,END_Z,floorMat,0,-0.12,END_Z/2,false);
+// Room floor squares (wider)
+ROOMS_Z.forEach(([rz0,rz1,rc])=>{
+  addBox(RH*2,0.25,RD,floorMat,0,-0.12,rc,false);
 });
 
-// ── LAZY IMAGE LOADER ─────────────────────────────────────────────────────────
+// ── South entrance wall ───────────────────────────────────────────────────────
+wallX(-RH,RH,0,[CORRIDOR_GAP]);
+
+// ── Corridor walls (Z-running walls at x=±CW) ─────────────────────────────────
+// Build continuous walls along full length, with breaks at each room
+let wz=0;
+ROOMS_Z.forEach(([rz0,rz1])=>{
+  wallZ(-CW,wz,rz0);  // left wall segment up to room
+  wallZ( CW,wz,rz0);  // right wall segment up to room
+  wz=rz1;
+});
+wallZ(-CW,wz,END_Z);  // final segment
+wallZ( CW,wz,END_Z);
+
+// ── Room walls ────────────────────────────────────────────────────────────────
+ROOMS_Z.forEach(([rz0,rz1,rc])=>{
+  wallX(-RH,RH,rz0,[CORRIDOR_GAP]);  // S room wall (corridor gap)
+  wallX(-RH,RH,rz1,[CORRIDOR_GAP]);  // N room wall (corridor gap)
+  wallZ(-RH,rz0,rz1,[]);             // W room wall (full)
+  wallZ( RH,rz0,rz1,[]);             // E room wall (full)
+});
+
+// ── North end wall ─────────────────────────────────────────────────────────────
+wallX(-RH,RH,END_Z,[CORRIDOR_GAP]);
+
+// ── Room floor detail: decorative pit ring in each room centre ────────────────
+ROOMS_Z.forEach(([rz0,rz1,rc])=>{
+  // Just a darker ring inset (visual only)
+  addBox(20,0.26,20,moldMat,0,-0.10,rc,false);
+});
+
+// ── Decorative corner pilasters at room corners ───────────────────────────────
+ROOMS_Z.forEach(([rz0,rz1])=>{
+  [[-RH,rz0],[ RH,rz0],[-RH,rz1],[ RH,rz1]].forEach(([px,pz])=>{
+    addBox(3,H,3,moldMat,px,H/2,pz,false);
+  });
+});
+
+// ── ARTWORK PLACEMENT ─────────────────────────────────────────────────────────
 const artSpots=[];
 const LOAD_QUEUE=[];
 let activeLoads=0;
@@ -945,118 +936,92 @@ function processQueue(){
   }
 }
 
-// ── ARTWORK PLACEMENT ─────────────────────────────────────────────────────────
 const AW=13.5,AH=11.4,STEP=22,AY=8.0,MARGIN=12,DPAD_ART=8;
 
-function placeLine(works,wi,wallType,coord,isMin,rangeA,rangeB,gaps){
+function makePlaceholder(work){
+  const C=document.createElement('canvas');C.width=512;C.height=512;const ctx=C.getContext('2d');
+  ctx.fillStyle='#0A0A0A';ctx.fillRect(0,0,512,512);
+  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='28px Arial';ctx.textAlign='center';
+  ctx.fillText('No. '+work.num,256,240);ctx.font='16px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';
+  const words=work.t.split(' ');let line='',y=280;
+  words.forEach(w=>{const test=line+w+' ';if(ctx.measureText(test).width>460&&line){ctx.fillText(line.trim(),256,y);line=w+' ';y+=22;}else line=test;});
+  ctx.fillText(line.trim(),256,y);return new THREE.CanvasTexture(C);
+}
+function placeFrame(work,x,y,z,rotY){
+  const sin=Math.sin(rotY),cos=Math.cos(rotY);
+  const fl=new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(AW+0.4,AH+0.4,0.08)),
+    new THREE.LineBasicMaterial({color:0xFFD700})
+  );
+  fl.position.set(x,y,z);fl.position.x+=sin*0.06;fl.position.z+=cos*0.06;
+  fl.rotation.y=rotY;scene.add(fl);
+  const ph=makePlaceholder(work);
+  const am=new THREE.MeshBasicMaterial({map:ph,side:THREE.FrontSide});
+  const art=new THREE.Mesh(new THREE.PlaneGeometry(AW,AH),am);
+  art.position.set(x,y,z);art.position.x+=sin*0.10;art.position.z+=cos*0.10;
+  art.rotation.y=rotY;scene.add(art);
+  const spot=new THREE.Vector3(x,y,z);spot.x+=sin*1.5;spot.z+=cos*1.5;
+  artSpots.push({pos:spot,work,artMat:am,art,frameLines:fl,rotY,anchorY:y,loaded:false});
+}
+
+function placeWallZ(works,wi,x,isMin,za,zb,gaps){
   if(wi[0]>=works.length)return;
   const off=(WT/2+0.12)*(isMin?1:-1);
-  let p=rangeA+MARGIN;
-  while(p<=rangeB-MARGIN){
+  const rotY=isMin?Math.PI/2:-Math.PI/2;
+  let p=za+MARGIN;
+  while(p<=zb-MARGIN){
     if(wi[0]>=works.length)break;
-    const blocked=gaps.some(([g1,g2])=>p>g1-DPAD_ART&&p<g2+DPAD_ART);
-    if(!blocked){
-      const work=works[wi[0]++];
-      let x,y=AY,z,rotY;
-      if(wallType==='Z'){
-        x=p; z=coord+off;
-        rotY=isMin?0:Math.PI;
-      } else {
-        x=coord+off; z=p;
-        // KEY FIX: X-wall normal must face INTO the room
-        // isMin=true (west wall): room is at higher X → normal +X → rotY=+π/2
-        // isMin=false (east wall): room is at lower X → normal -X → rotY=-π/2
-        rotY=isMin?Math.PI/2:-Math.PI/2;
-      }
-      placeFrame(work,x,y,z,rotY);
+    if(!gaps.some(([g1,g2])=>p>g1-DPAD_ART&&p<g2+DPAD_ART)){
+      placeFrame(works[wi[0]++],x+off,AY,p,rotY);
+    }
+    p+=STEP;
+  }
+}
+function placeWallX(works,wi,xA,xB,z,isMin,gaps){
+  if(wi[0]>=works.length)return;
+  const off=(WT/2+0.12)*(isMin?1:-1);
+  const rotY=isMin?0:Math.PI;
+  let p=xA+MARGIN;
+  while(p<=xB-MARGIN){
+    if(wi[0]>=works.length)break;
+    if(!gaps.some(([g1,g2])=>p>g1-DPAD_ART&&p<g2+DPAD_ART)){
+      placeFrame(works[wi[0]++],p,AY,z+off,rotY);
     }
     p+=STEP;
   }
 }
 
-function placeFrame(work,x,y,z,rotY){
-  const sin=Math.sin(rotY),cos=Math.cos(rotY);
-  const frameLines=new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.BoxGeometry(AW+0.4,AH+0.4,0.08)),
-    new THREE.LineBasicMaterial({color:0xFFD700})
-  );
-  frameLines.position.set(x,y,z);
-  frameLines.position.x+=sin*0.06;frameLines.position.z+=cos*0.06;
-  frameLines.rotation.y=rotY;scene.add(frameLines);
-  const ph=makePlaceholder(work);
-  const artMat=new THREE.MeshBasicMaterial({map:ph,side:THREE.FrontSide});
-  const art=new THREE.Mesh(new THREE.PlaneGeometry(AW,AH),artMat);
-  art.position.set(x,y,z);
-  art.position.x+=sin*0.10;art.position.z+=cos*0.10;
-  art.rotation.y=rotY;scene.add(art);
-  const spot=new THREE.Vector3(x,y,z);
-  spot.x+=sin*1.5;spot.z+=cos*1.5;
-  artSpots.push({pos:spot,work,artMat,art,frameLines,rotY,anchorY:y,loaded:false});
-}
-
-const ROOMS=[
-  {id:'w1',r:[0,24],walls:[
-    ['Z',-160, true, -210,-30,[]],
-    ['Z',   0,false, -210,-30,[[-135,-105]]],
-    ['X',-210, true, -160,  0,[]],
-    ['X', -30,false, -160,  0,[]],
-  ]},
-  {id:'w2',r:[25,49],walls:[
-    ['Z',-160, true,   30, 210,[]],
-    ['Z',   0,false,   30, 210,[[105,135]]],
-    ['X',  30, true, -160,  0,[]],
-    ['X', 210,false, -160,  0,[]],
-  ]},
-  {id:'w3',r:[50,74],walls:[
-    ['Z',   0, true, -210,-30,[[-135,-105]]],
-    ['Z', 180,false, -210,-30,[[-135,-105]]],
-    ['X',-210, true,    0,180,[]],
-    ['X', -30,false,    0,180,[[80,100]]],
-  ]},
-  {id:'w4',r:[75,99],walls:[
-    ['Z',   0, true,   30, 210,[[105,135]]],
-    ['Z', 180,false,   30, 210,[[105,135]]],
-    ['X',  30, true,    0,180,[[80,100]]],
-    ['X', 210,false,    0,180,[]],
-  ]},
-  {id:'w5',r:[100,124],walls:[
-    ['Z', 180, true, -210,-30,[[-135,-105]]],
-    ['Z', 340,false, -210,-30,[]],
-    ['X',-210, true,  180,340,[]],
-    ['X', -30,false,  180,340,[[255,275]]],
-  ]},
-  {id:'w6',r:[125,149],walls:[
-    ['Z', 180, true,   30, 210,[[105,135]]],
-    ['Z', 340,false,   30, 210,[]],
-    ['X',  30, true,  180,340,[[255,275]]],
-    ['X', 210,false,  180,340,[]],
-  ]},
-];
-
-const RDEFS=[
-  {id:'w1',n:'Wing I',   s:'The Ancient World',        x1:-210,x2:-30,z1:-160,z2:  0},
-  {id:'w2',n:'Wing II',  s:'Early Civilisations',      x1:  30,x2:210,z1:-160,z2:  0},
-  {id:'w3',n:'Wing III', s:'Medieval & Gothic',        x1:-210,x2:-30,z1:   0,z2:180},
-  {id:'w4',n:'Wing IV',  s:'Renaissance & Beyond',     x1:  30,x2:210,z1:   0,z2:180},
-  {id:'w5',n:'Wing V',   s:'Baroque & Enlightenment',  x1:-210,x2:-30,z1: 180,z2:340},
-  {id:'w6',n:'Wing VI',  s:'Modern & Contemporary',    x1:  30,x2:210,z1: 180,z2:340},
-  {id:'rt',n:'Central Rotunda',s:'Overview',           x1: -30,x2: 30,z1:   0,z2:180},
-  {id:'en',n:'Grand Hall',s:'Entrance',                x1: -30,x2: 30,z1: 180,z2:400},
-];
-
-ROOMS.forEach(({r:[a,b],walls})=>{
-  const slice=PAGES.slice(a,b+1);const wi=[0];
-  walls.forEach(([type,coord,isMin,r0,r1,gaps])=>placeLine(slice,wi,type,coord,isMin,r0,r1,gaps));
+// Place artworks: corridor segs interleaved with rooms
+const works=[...PAGES]; const wi=[0];
+let pz=0;
+ROOMS_Z.forEach(([rz0,rz1,rc],i)=>{
+  // Corridor segment (both walls)
+  placeWallZ(works,wi,-CW,true, pz,rz0,[]);   // left wall faces right (+X)
+  placeWallZ(works,wi, CW,false,pz,rz0,[]);   // right wall faces left (-X)
+  // Room walls
+  placeWallX(works,wi,-RH,RH,rz0,true, [CORRIDOR_GAP]); // S wall faces north
+  placeWallX(works,wi,-RH,RH,rz1,false,[CORRIDOR_GAP]); // N wall faces south
+  placeWallZ(works,wi,-RH,true, rz0,rz1,[]);  // W wall
+  placeWallZ(works,wi, RH,false,rz0,rz1,[]);  // E wall
+  pz=rz1;
 });
+// Final corridor segment
+placeWallZ(works,wi,-CW,true, pz,END_Z,[]);
+placeWallZ(works,wi, CW,false,pz,END_Z,[]);
+
+// ── ROOM DETECTION ─────────────────────────────────────────────────────────────
+const RDEFS=[
+  {id:'hall',n:'Grand Corridor',s:'Masterpepes — 150 Works',x1:-CW,x2:CW,z1:0,z2:END_Z},
+  {id:'r1',n:'Chamber I',  s:'The Book of Masterpepes',        x1:-RH,x2:RH,z1:ROOMS_Z[0][0],z2:ROOMS_Z[0][1]},
+  {id:'r2',n:'Chamber II', s:'Robness',                        x1:-RH,x2:RH,z1:ROOMS_Z[1][0],z2:ROOMS_Z[1][1]},
+  {id:'r3',n:'Chamber III',s:'Nu Pepe Desu',                   x1:-RH,x2:RH,z1:ROOMS_Z[2][0],z2:ROOMS_Z[2][1]},
+  {id:'r4',n:'Chamber IV', s:'Lord Kek',                       x1:-RH,x2:RH,z1:ROOMS_Z[3][0],z2:ROOMS_Z[3][1]},
+  {id:'r5',n:'Chamber V',  s:'DSSL',                           x1:-RH,x2:RH,z1:ROOMS_Z[4][0],z2:ROOMS_Z[4][1]},
+];
 
 const ROOM_NUMS={
-  w1:new Set(Array.from({length:25},(_,i)=>i+1)),
-  w2:new Set(Array.from({length:25},(_,i)=>i+26)),
-  w3:new Set(Array.from({length:25},(_,i)=>i+51)),
-  w4:new Set(Array.from({length:25},(_,i)=>i+76)),
-  w5:new Set(Array.from({length:25},(_,i)=>i+101)),
-  w6:new Set(Array.from({length:25},(_,i)=>i+126)),
-  rt:new Set([]),en:new Set([]),
+  hall:new Set(Array.from({length:150},(_,i)=>i+1)),
+  r1:new Set([]),r2:new Set([]),r3:new Set([]),r4:new Set([]),r5:new Set([]),
 };
 function loadRoomArtworks(roomId){
   const nums=ROOM_NUMS[roomId];if(!nums||!nums.size)return;
@@ -1113,7 +1078,7 @@ fetch('museum_layout.json')
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
 // yaw=0 → facing -Z (north, into the museum from entrance at z=330)
 let entered=false,locked=false,yaw=0,pitch=0;
-camera.rotation.y=yaw; camera.rotation.x=pitch; // apply immediately so spawn direction is correct
+yaw=0;camera.rotation.y=0;camera.rotation.x=0; // apply immediately so spawn direction is correct
 let dragging=false,lastMX=0,lastMY=0;
 const keys={};
 document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')e.preventDefault();});
@@ -1131,9 +1096,9 @@ function enterMuseum(){
     document.getElementById('mmap').style.display='none';
   }
   // Apply correct camera direction immediately (no waiting for first mouse move)
-  camera.rotation.y=yaw; camera.rotation.x=pitch;
+  yaw=0;camera.rotation.y=0;camera.rotation.x=0;
   // Load entrance room first, then ripple outward room by room
-  rippleLoad('en');
+  rippleLoad('hall');
   try{rc.requestPointerLock();}catch(e){}
 }
 document.getElementById('intro').addEventListener('click',enterMuseum);
@@ -1218,8 +1183,8 @@ const mDir=new THREE.Vector3(),tmpE=new THREE.Euler(0,0,0,'YXZ');
 const SPEED=0.28,PR=0.7;
 const rcaster=new THREE.Raycaster();
 function tryMove(dx,dz){
-  const nx=Math.max(-209,Math.min(209,camera.position.x+dx));
-  const nz=Math.max(-159,Math.min(399,camera.position.z+dz));
+  const nx=Math.max(-52,Math.min(52,camera.position.x+dx));
+  const nz=Math.max(-5,Math.min(1535,camera.position.z+dz));
   const d=new THREE.Vector3(nx-camera.position.x,0,nz-camera.position.z).normalize();
   rcaster.set(new THREE.Vector3(camera.position.x,1.5,camera.position.z),d);
   const hits=rcaster.intersectObjects(colliders);
@@ -1230,7 +1195,7 @@ function tryMove(dx,dz){
 // ── MINIMAP ───────────────────────────────────────────────────────────────────
 const mmC=document.getElementById('mm'),mmCtx=mmC.getContext('2d');
 const MW=mmC.width,MH=mmC.height;
-function w2m(x,z){return[(x+210)*MW/420,(z+160)*MH/560];}
+function w2m(x,z){return[(x+55)*MW/110,(z+10)*MH/1550];}
 const RCOLS={w1:'#3A0A08',w2:'#3A0A08',w3:'#4A0C0A',w4:'#4A0C0A',w5:'#3A0A08',w6:'#3A0A08',rt:'#5A1410',en:'#4A1010'};
 function drawMap(){
   mmCtx.fillStyle='rgba(30,5,5,0.95)';mmCtx.fillRect(0,0,MW,MH);
@@ -1253,11 +1218,8 @@ function drawMap(){
 // ── RIPPLE LOADING ────────────────────────────────────────────────────────────
 // Adjacency map — ordered outward from entrance
 const ADJ={
-  en:['w5','w6','rt'],
-  rt:['w3','w4'],
-  w5:['w3'],w6:['w4'],
-  w3:['w1'],w4:['w2'],
-  w1:[],w2:[],
+  hall:['r1','r2','r3','r4','r5'],
+  r1:['hall'],r2:['hall'],r3:['hall'],r4:['hall'],r5:['hall'],
 };
 const loadedRooms=new Set();
 
@@ -1480,13 +1442,19 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
   requestAnimationFrame(animate);
   if(entered && !document.getElementById('detailPanel').classList.contains('open')){
     const delta = lordKekClock.getDelta();
-    // Slow majestic rotation
-    if(lordKek) lordKek.rotation.y += 0.003;
+    // Lord Kek flies down and up the corridor
+    if(lordKek){
+      const kt=Date.now()*0.00035;
+      lordKek.position.z=(Math.sin(kt)*0.5+0.5)*1530;
+      lordKek.position.y=35+Math.sin(kt*3)*10;
+      lordKek.position.x=Math.sin(kt*2)*5;
+      lordKek.rotation.y+=0.012;
+    }
     if(lordKekMixer) lordKekMixer.update(delta);
-    // Floating book — slow rotation + gentle vertical bob
+    // Book floats and rotates in Room 1
     if(floatingBook){
-      floatingBook.rotation.y += 0.008;
-      floatingBook.position.y = 12 + Math.sin(Date.now() * 0.0008) * 0.6;
+      floatingBook.rotation.y+=0.008;
+      floatingBook.position.y=8+Math.sin(Date.now()*0.0008)*0.6;
     }
     mDir.set(0,0,0);
     // Keyboard

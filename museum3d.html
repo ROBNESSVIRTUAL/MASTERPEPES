@@ -522,7 +522,7 @@ skyTex.needsUpdate = true;
 // Open-ended sphere slice — skip the top and bottom 15% to avoid pole pinching
 const skyGeo = new THREE.SphereGeometry(580, 64, 32, 0, Math.PI*2, Math.PI*0.08, Math.PI*0.84);
 const skyMat = new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,depthWrite:false,fog:false});
-scene.add(new THREE.Mesh(skyGeo,skyMat));
+const skyMesh=new THREE.Mesh(skyGeo,skyMat);scene.add(skyMesh);
 
 // Sky update state
 const SKY_CYCLE = 120000; // full day/night cycle = 120 seconds
@@ -765,21 +765,21 @@ loadStatue('LORDKEK.glb', 0, 0, 50, 0, 'LordKek', (m,mx)=>{
 // ── ROOM STATUES (room centres: z=205,455,705,955,1205) ──────────────────────
 // Room 1 (z=205): Masterpepes Book — floating, rotating
 let floatingBook=null;
-loadStatue('masterpepes_book.glb', 0, 205, 14, 0, 'Book', (m)=>{
-  floatingBook=m; floatingBook.position.y=8;
+loadStatue('masterpepes_book.glb', 0, 225, 14, 0, 'Book', (m)=>{
+  floatingBook=m; floatingBook.position.y=9;
 });
 
 // Room 2 (z=455): Robness
-loadStatue('ROBNESS1.glb', 0, 455, 20, Math.PI, 'Robness', null);
+loadStatue('ROBNESS1.glb', 0, 495, 20, Math.PI, 'Robness', null);
 
 // Room 3 (z=705): Nu Pepe Desu
-loadStatue('NUPEPEDESU.glb', 0, 705, 20, Math.PI, 'NuPepeDesu', null);
+loadStatue('NUPEPEDESU.glb', 0, 765, 20, Math.PI, 'NuPepeDesu', null);
 
 // Room 4 (z=955): Kek Statue
-loadStatue('kekstatue.glb', 0, 955, 22, Math.PI, 'KekStatue', null);
+loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI, 'KekStatue', null);
 
 // Room 5 (z=1205): DSSL
-loadStatue('DSSL.glb', 0, 1205, 20, Math.PI, 'DSSL', null);
+loadStatue('DSSL.glb', 0, 1305, 20, Math.PI, 'DSSL', null);
 
 // ── TRASHCANS — one per area (corners) ───────────────────────────────────────
 // 6 corridor segments + 5 rooms = 11 areas
@@ -870,16 +870,20 @@ ROOMS_Z.forEach(([rz0,rz1])=>{
 wallZ(-CW,wz,END_Z);  // final segment
 wallZ( CW,wz,END_Z);
 
-// ── Room walls ────────────────────────────────────────────────────────────────
+// ── Room walls + corner fills ────────────────────────────────────────────────
 ROOMS_Z.forEach(([rz0,rz1,rc])=>{
-  wallX(-RH,RH,rz0,[CORRIDOR_GAP]);  // S room wall (corridor gap)
-  wallX(-RH,RH,rz1,[CORRIDOR_GAP]);  // N room wall (corridor gap)
-  wallZ(-RH,rz0,rz1,[]);             // W room wall (full)
-  wallZ( RH,rz0,rz1,[]);             // E room wall (full)
+  // S wall: corridor gap in centre, but corners filled solid
+  wallX(-RH,-CW,rz0,[]);           // SW corner fill
+  wallX( CW, RH,rz0,[]);           // SE corner fill
+  // N wall: same
+  wallX(-RH,-CW,rz1,[]);           // NW corner fill
+  wallX( CW, RH,rz1,[]);           // NE corner fill
+  wallZ(-RH,rz0,rz1,[]);           // W room wall (full)
+  wallZ( RH,rz0,rz1,[]);           // E room wall (full)
 });
 
 // ── North end wall ─────────────────────────────────────────────────────────────
-wallX(-RH,RH,END_Z,[CORRIDOR_GAP]);
+wallX(-RH,RH,END_Z,[]);  // fully closed north end wall
 
 // ── Room floor detail: decorative pit ring in each room centre ────────────────
 ROOMS_Z.forEach(([rz0,rz1,rc])=>{
@@ -1444,7 +1448,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     const delta = lordKekClock.getDelta();
     // Lord Kek flies down and up the corridor
     if(lordKek){
-      const kt=Date.now()*0.00035;
+      const kt=Date.now()*0.00008;  // slow drift along corridor
       lordKek.position.z=(Math.sin(kt)*0.5+0.5)*1530;
       lordKek.position.y=35+Math.sin(kt*3)*10;
       lordKek.position.x=Math.sin(kt*2)*5;
@@ -1470,6 +1474,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(mDir.length()>0){mDir.normalize().multiplyScalar(SPEED);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
     camera.position.y=1.7;detectRoom();detectArt();drawMap();
   }
+  skyMesh.position.x=camera.position.x;skyMesh.position.z=camera.position.z;
   renderer.render(scene,camera);
   // Update sky every 4 frames
   if(++skyFrame%4===0) updateSky();

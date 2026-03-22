@@ -777,7 +777,7 @@ loadStatue('ROBNESS1.glb', 0, 495, 20, Math.PI, 'Robness', null);
 loadStatue('NUPEPEDESU.glb', 0, 765, 20, Math.PI, 'NuPepeDesu', null);
 
 // Room 4 (z=955): Kek Statue
-loadStatue('kekstatue.glb', 18, 1035, 22, Math.PI/2, 'KekStatue', null);
+loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI/2-(15*Math.PI/180), 'KekStatue', null);
 
 // Room 5 (z=1205): DSSL
 loadStatue('DSSL.glb', 0, 1305, 20, Math.PI, 'DSSL', null);
@@ -886,6 +886,8 @@ ROOMS_Z.forEach(([rz0,rz1,rc])=>{
 
 // ── North end wall ─────────────────────────────────────────────────────────────
 wallX(-RH,RH,END_Z,[]);  // fully closed north end wall
+// Extra safety: fill any gap between corridor wall ends and room corners
+wallX(-RH,-CW,END_Z,[]); wallX(CW,RH,END_Z,[]); // redundant but explicit
 
 // ── Room floor detail: decorative pit ring in each room centre ────────────────
 ROOMS_Z.forEach(([rz0,rz1,rc])=>{
@@ -997,18 +999,32 @@ function placeWallX(works,wi,xA,xB,z,isMin,gaps){
   }
 }
 
+// ── Centred single-piece placement for short wall segments ───────────────────
+function placeCentered(works,wi,x,y,z,rotY){
+  if(wi[0]>=works.length)return;
+  placeFrame(works[wi[0]++],x,y,z,rotY);
+}
+
 // Place artworks: corridor segs interleaved with rooms
 const works=[...PAGES]; const wi=[0];
 let pz=0;
+// Room N/S wall half-segment midpoints
+const NS_LEFT_MID  = -(RH+CW)/2;   // midpoint of -45..-14 ≈ -29.5
+const NS_RIGHT_MID =  (RH+CW)/2;   // midpoint of  14..45  ≈  29.5
 ROOMS_Z.forEach(([rz0,rz1,rc],i)=>{
   // Corridor segment (both walls)
-  placeWallZ(works,wi,-CW,true, pz,rz0,[]);   // left wall faces right (+X)
-  placeWallZ(works,wi, CW,false,pz,rz0,[]);   // right wall faces left (-X)
-  // Room walls
-  placeWallX(works,wi,-RH,RH,rz0,true, [CORRIDOR_GAP]); // S wall faces north
-  placeWallX(works,wi,-RH,RH,rz1,false,[CORRIDOR_GAP]); // N wall faces south
-  placeWallZ(works,wi,-RH,true, rz0,rz1,[]);  // W wall
-  placeWallZ(works,wi, RH,false,rz0,rz1,[]);  // E wall
+  placeWallZ(works,wi,-CW,true, pz,rz0,[]);
+  placeWallZ(works,wi, CW,false,pz,rz0,[]);
+  // Room N/S walls: 1 piece centred in each half-segment
+  const offS=(WT/2+0.12);   // S wall faces north (isMin=true)
+  const offN=-(WT/2+0.12);  // N wall faces south (isMin=false)
+  placeCentered(works,wi, NS_LEFT_MID,  AY, rz0+offS, 0);   // S-left
+  placeCentered(works,wi, NS_RIGHT_MID, AY, rz0+offS, 0);   // S-right
+  placeCentered(works,wi, NS_LEFT_MID,  AY, rz1+offN, Math.PI); // N-left
+  placeCentered(works,wi, NS_RIGHT_MID, AY, rz1+offN, Math.PI); // N-right
+  // Room W/E walls (full depth, multiple pieces, already well-spaced)
+  placeWallZ(works,wi,-RH,true, rz0,rz1,[]);
+  placeWallZ(works,wi, RH,false,rz0,rz1,[]);
   pz=rz1;
 });
 // Final corridor segment

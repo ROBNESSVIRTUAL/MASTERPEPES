@@ -776,7 +776,7 @@ loadStatue('ROBNESS1.glb', 0, 495, 20, Math.PI, 'Robness', null);
 loadStatue('NUPEPEDESU.glb', 0, 765, 20, Math.PI, 'NuPepeDesu', null);
 
 // Room 4 (z=955): Kek Statue
-loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI, 'KekStatue', null);
+loadStatue('kekstatue.glb', 18, 1035, 22, Math.PI/2, 'KekStatue', null);
 
 // Room 5 (z=1205): DSSL
 loadStatue('DSSL.glb', 0, 1305, 20, Math.PI, 'DSSL', null);
@@ -856,8 +856,9 @@ ROOMS_Z.forEach(([rz0,rz1,rc])=>{
   addBox(RH*2,0.25,RD,floorMat,0,-0.12,rc,false);
 });
 
-// ── South entrance wall ───────────────────────────────────────────────────────
-wallX(-RH,RH,0,[CORRIDOR_GAP]);
+// ── South entrance wall (with corner fills, corridor gap in centre) ───────────
+wallX(-RH,-CW,0,[]);        // SW corner fill
+wallX( CW, RH,0,[]);        // SE corner fill
 
 // ── Corridor walls (Z-running walls at x=±CW) ─────────────────────────────────
 // Build continuous walls along full length, with breaks at each room

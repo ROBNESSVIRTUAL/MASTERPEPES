@@ -147,7 +147,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
     </div>
   </div>
 </div>
-<div id="ctrl">W A S D &middot; MOVE<br>MOUSE DRAG &middot; LOOK<br>ESC &middot; RELEASE</div>
+<div id="ctrl">W A S D &middot; MOVE<br>SHIFT &middot; RUN<br>MOUSE DRAG &middot; LOOK<br>ESC &middot; RELEASE</div>
 <div id="mmap"><canvas id="mm" width="175" height="175"></canvas></div>
 <div id="dpad">
   <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" touch-action="none">
@@ -163,12 +163,13 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
     <!-- Right -->
     <polygon id="dp-rt" class="dp-btn" points="115,40 115,80 75,80 82,60 75,40"/>
     <polygon class="dp-arrow" points="108,60 92,52 92,68"/>
-    <!-- Centre cap -->
-    <circle cx="60" cy="60" r="16" fill="rgba(0,0,0,0.5)" stroke="#C8901A" stroke-width="1.5"/>
+    <!-- Centre cap / RUN button -->
+    <circle id="dp-run" cx="60" cy="60" r="16" fill="rgba(0,0,0,0.5)" stroke="#C8901A" stroke-width="1.5" class="dp-btn"/>
     <circle cx="60" cy="60" r="8" fill="rgba(200,144,26,0.4)"/>
+    <text x="60" y="64" text-anchor="middle" font-size="7" fill="#C8901A" font-family="Tenor Sans,serif" letter-spacing="0.5" pointer-events="none">RUN</text>
   </svg>
 </div>
-<div id="look-hint">DRAG RIGHT SIDE<br>TO LOOK AROUND</div>
+<div id="look-hint">DRAG RIGHT SIDE<br>TO LOOK AROUND<br>TAP &#9679; TO RUN</div>
 <a href="index.html" id="back">&#8592; Exit Museum</a>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -1123,8 +1124,8 @@ rc.addEventListener('mousedown',e=>{dragging=true;lastMX=e.clientX;lastMY=e.clie
 document.addEventListener('mouseup',()=>dragging=false);
 
 // ── D-PAD TOUCH CONTROLS ──────────────────────────────────────────────────────
-const dpState={up:false,dn:false,lt:false,rt:false};
-const dpMap={'dp-up':'up','dp-dn':'dn','dp-lt':'lt','dp-rt':'rt'};
+const dpState={up:false,dn:false,lt:false,rt:false,run:false};
+const dpMap={'dp-up':'up','dp-dn':'dn','dp-lt':'lt','dp-rt':'rt','dp-run':'run'};
 
 function dpId(el){
   // Walk up to find the polygon with an id
@@ -1185,7 +1186,7 @@ rc.addEventListener('touchend',e=>{e.preventDefault();if(e.touches.length===0)lo
 
 // ── MOVEMENT ──────────────────────────────────────────────────────────────────
 const mDir=new THREE.Vector3(),tmpE=new THREE.Euler(0,0,0,'YXZ');
-const SPEED=0.28,PR=0.7;
+const WALK=0.28,RUN=0.72,PR=0.7;
 const rcaster=new THREE.Raycaster();
 function tryMove(dx,dz){
   const nx=Math.max(-52,Math.min(52,camera.position.x+dx));
@@ -1472,7 +1473,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(dpState.dn) mDir.z+=1;
     if(dpState.lt) mDir.x-=1;
     if(dpState.rt) mDir.x+=1;
-    if(mDir.length()>0){mDir.normalize().multiplyScalar(SPEED);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
+    if(mDir.length()>0){const spd=keys['ShiftLeft']||keys['ShiftRight']||dpState.run?RUN:WALK;mDir.normalize().multiplyScalar(spd);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
     camera.position.y=1.7;detectRoom();detectArt();drawMap();
   }
   skyMesh.position.x=camera.position.x;skyMesh.position.z=camera.position.z;

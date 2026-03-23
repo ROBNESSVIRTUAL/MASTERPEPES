@@ -777,7 +777,12 @@ loadStatue('ROBNESS1.glb', 0, 495, 20, Math.PI, 'Robness', null);
 loadStatue('NUPEPEDESU.glb', 0, 765, 20, Math.PI, 'NuPepeDesu', null);
 
 // Room 4 (z=955): Kek Statue
-loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI/2-(30*Math.PI/180), 'KekStatue', null);
+// Room 4 centre: x=0, z=1035. Using position override after load.
+loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI/2-(30*Math.PI/180), 'KekStatue', (m)=>{
+  // Force exact room centre regardless of bounding box offset
+  m.position.x = 0;
+  m.position.z = 1035;
+});
 
 // Room 5 (z=1205): DSSL
 loadStatue('DSSL.glb', 0, 1305, 20, Math.PI, 'DSSL', null);
@@ -884,12 +889,13 @@ ROOMS_Z.forEach(([rz0,rz1,rc])=>{
   wallZ( RH,rz0,rz1,[]);           // E room wall (full)
 });
 
-// ── North end wall ─────────────────────────────────────────────────────────────
-wallX(-RH,RH,END_Z,[]);  // fully closed north end wall
-// Outer walls for final corridor segment (room5 exit → end wall)
-// Without these, x=-45..-12 and x=12..45 are open after last room
-wallZ(-RH,ROOMS_Z[4][1],END_Z);  // outer left wall: z=1350..1530
-wallZ( RH,ROOMS_Z[4][1],END_Z);  // outer right wall: z=1350..1530
+// ── North end wall — solid addBox, guaranteed to close ────────────────────────
+addBox(RH*2, H, WT, wallMat, 0, H/2, END_Z);
+addBox(RH*2, 0.9, WT+0.05, moldMat, 0, 0.45, END_Z, false);
+addBox(RH*2, 0.9, WT+0.05, moldMat, 0, H-0.45, END_Z, false);
+// Outer walls for final corridor segment
+wallZ(-RH, ROOMS_Z[4][1], END_Z);
+wallZ( RH, ROOMS_Z[4][1], END_Z);
 
 // ── Room floor detail: decorative pit ring in each room centre ────────────────
 ROOMS_Z.forEach(([rz0,rz1,rc])=>{
@@ -1207,7 +1213,7 @@ const mDir=new THREE.Vector3(),tmpE=new THREE.Euler(0,0,0,'YXZ');
 const WALK=0.28,RUN=0.72,PR=0.7;
 const rcaster=new THREE.Raycaster();
 function tryMove(dx,dz){
-  const nx=Math.max(-52,Math.min(52,camera.position.x+dx));
+  const nx=Math.max(-(RH-1),Math.min(RH-1,camera.position.x+dx));
   const nz=Math.max(-5,Math.min(1535,camera.position.z+dz));
   const d=new THREE.Vector3(nx-camera.position.x,0,nz-camera.position.z).normalize();
   rcaster.set(new THREE.Vector3(camera.position.x,1.5,camera.position.z),d);

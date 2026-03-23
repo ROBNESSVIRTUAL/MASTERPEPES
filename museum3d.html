@@ -797,7 +797,7 @@ const trashPositions=[
   [38, 1342],  // Room 5 SE corner
 ];
 trashPositions.forEach(([tx,tz])=>{
-  new THREE.GLTFLoader().load('64 Gallon Toter 3D.glb', gltf=>{
+  new THREE.GLTFLoader().load('64_Gallon_Toter_3D.glb', gltf=>{
     const m=gltf.scene;
     const box=new THREE.Box3().setFromObject(m);
     const size=box.getSize(new THREE.Vector3());
@@ -1150,42 +1150,101 @@ document.addEventListener('mouseup',()=>dragging=false);
 
 // ── D-PAD TOUCH CONTROLS ──────────────────────────────────────────────────────
 const dpState={up:false,dn:false,lt:false,rt:false,run:false};
-const dpMap={'dp-up':'up','dp-dn':'dn','dp-lt':'lt','dp-rt':'rt','dp-run':'run'};
+const dpMap={'dp-up':'up','dp-dn':'dn','dp-lt':'lt','dp-rt':'rt'};
 
-function dpId(el){
-  // Walk up to find the polygon with an id
-  let e=el;
-  while(e&&e!==document.body){
-    if(e.id&&dpMap[e.id])return e.id;
-    e=e.parentElement;
+// ── JOYSTICK — centre button held and dragged ─────────────────────────────────
+let joystickActive=false, joystickId=-1, joystickOriginX=0, joystickOriginY=0;
+const JOYSTICK_DEAD=8, JOYSTICK_MAX=36;
+
+// Visual joystick knob — injected into dpad svg
+const dpadSvg=document.querySelector('#dpad svg');
+const jKnob=document.createElementNS('http://www.w3.org/2000/svg','circle');
+jKnob.setAttribute('r','12');jKnob.setAttribute('fill','rgba(200,144,26,0.55)');
+jKnob.setAttribute('stroke','#C8901A');jKnob.setAttribute('stroke-width','1.5');
+jKnob.style.display='none';jKnob.style.pointerEvents='none';
+dpadSvg.appendChild(jKnob);
+
+function updateJoystick(cx,cy){
+  const dpad=document.getElementById('dpad');
+  const rect=dpad.getBoundingClientRect();
+  // Convert to SVG coords (viewBox 0 0 120 120)
+  const svgX=(cx-rect.left)/rect.width*120;
+  const svgY=(cy-rect.top)/rect.height*120;
+  const dx=svgX-60, dy=svgY-60; // offset from centre (60,60)
+  const dist=Math.sqrt(dx*dx+dy*dy);
+  const clamped=Math.min(dist,JOYSTICK_MAX);
+  const nx=dist>0?dx/dist:0, ny=dist>0?dy/dist:0;
+  // Move knob
+  jKnob.setAttribute('cx',60+nx*Math.min(dist,JOYSTICK_MAX));
+  jKnob.setAttribute('cy',60+ny*Math.min(dist,JOYSTICK_MAX));
+  // Set direction from dead zone
+  if(dist>JOYSTICK_DEAD){
+    dpState.up  = dy < -JOYSTICK_DEAD;
+    dpState.dn  = dy >  JOYSTICK_DEAD;
+    dpState.lt  = dx < -JOYSTICK_DEAD;
+    dpState.rt  = dx >  JOYSTICK_DEAD;
+    dpState.run = true;
+  } else {
+    dpState.up=dpState.dn=dpState.lt=dpState.rt=false;
+    dpState.run=false;
   }
-  return null;
 }
 
-// D-pad button presses
+function resetJoystick(){
+  joystickActive=false; joystickId=-1;
+  dpState.up=dpState.dn=dpState.lt=dpState.rt=dpState.run=false;
+  jKnob.style.display='none';
+  jKnob.setAttribute('cx','60');jKnob.setAttribute('cy','60');
+}
+
 document.getElementById('dpad').addEventListener('touchstart',e=>{
-  if(!entered)return;e.preventDefault();
+  if(!entered)return; e.preventDefault();
   [...e.changedTouches].forEach(t=>{
-    const id=document.elementFromPoint(t.clientX,t.clientY)?.closest('[id]')?.id;
-    if(id&&dpMap[id]){dpState[dpMap[id]]=true;document.getElementById(id).classList.add('pressed');}
+    const el=document.elementFromPoint(t.clientX,t.clientY);
+    const id=el?.closest('[id]')?.id;
+    // Centre button → start joystick
+    if(id==='dp-run'||el?.closest('#dp-run')){
+      joystickActive=true; joystickId=t.identifier;
+      joystickOriginX=t.clientX; joystickOriginY=t.clientY;
+      jKnob.style.display='block';
+      jKnob.setAttribute('cx','60');jKnob.setAttribute('cy','60');
+    } else if(id&&dpMap[id]){
+      dpState[dpMap[id]]=true;
+      document.getElementById(id)?.classList.add('pressed');
+    }
+  });
+},{passive:false});
+
+document.getElementById('dpad').addEventListener('touchmove',e=>{
+  e.preventDefault();
+  [...e.changedTouches].forEach(t=>{
+    if(joystickActive&&t.identifier===joystickId){
+      updateJoystick(t.clientX, t.clientY);
+    }
   });
 },{passive:false});
 
 document.getElementById('dpad').addEventListener('touchend',e=>{
   e.preventDefault();
   [...e.changedTouches].forEach(t=>{
-    const id=document.elementFromPoint(t.clientX,t.clientY)?.closest('[id]')?.id;
-    if(id&&dpMap[id]){dpState[dpMap[id]]=false;document.getElementById(id).classList.remove('pressed');}
+    if(joystickActive&&t.identifier===joystickId){
+      resetJoystick();
+    } else {
+      const id=document.elementFromPoint(t.clientX,t.clientY)?.closest('[id]')?.id;
+      if(id&&dpMap[id]){dpState[dpMap[id]]=false;document.getElementById(id)?.classList.remove('pressed');}
+    }
   });
-  // Also clear all on full lift (safety)
-  if(e.touches.length===0){Object.keys(dpState).forEach(k=>{dpState[k]=false;});
-    Object.keys(dpMap).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('pressed');});}
+  if(e.touches.length===0){
+    resetJoystick();
+    Object.keys(dpMap).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('pressed');});
+  }
 },{passive:false});
 
 document.getElementById('dpad').addEventListener('touchcancel',e=>{
-  Object.keys(dpState).forEach(k=>dpState[k]=false);
+  resetJoystick();
   Object.keys(dpMap).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('pressed');});
 },{passive:false});
+
 
 // Look drag — right half of screen only (left half is d-pad)
 let lookDragging=false;

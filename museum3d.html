@@ -579,151 +579,6 @@ function makePlaceholder(work){
   ctx.fillText(line.trim(),256,y);return new THREE.CanvasTexture(C);
 }
 const floorMat=new THREE.MeshLambertMaterial({map:makeRedFloor()});
-function makeRococoWall_UNUSED(){
-  const S=512; // tile size — will repeat across walls
-  const C=document.createElement('canvas'); C.width=S; C.height=S;
-  const ctx=C.getContext('2d');
-  const BASE='#E0342F', DARK='#9E1A18', MID='#B82022', LITE='#CC2A28';
-
-  // ── Base fill ────────────────────────────────────────────────────────────
-  ctx.fillStyle=BASE; ctx.fillRect(0,0,S,S);
-
-  // ── Helper: draw a single C-scroll at (cx,cy), size r, angle a ──────────
-  function cscroll(cx,cy,r,angle,flip=false){
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
-    if(flip) ctx.scale(-1,1);
-    ctx.beginPath();
-    // Outer arc
-    ctx.arc(r*0.3, 0, r*0.6, Math.PI*0.6, Math.PI*2.0);
-    // Inner curl
-    ctx.arc(r*0.1, r*0.15, r*0.25, Math.PI*1.4, Math.PI*0.2, true);
-    ctx.strokeStyle=DARK; ctx.lineWidth=3; ctx.stroke();
-    // Tiny terminal dot
-    ctx.beginPath(); ctx.arc(r*0.02, r*0.36, r*0.07, 0, Math.PI*2);
-    ctx.fillStyle=DARK; ctx.fill();
-    ctx.restore();
-  }
-
-  // ── Helper: acanthus leaf ─────────────────────────────────────────────────
-  function leaf(cx,cy,len,angle){
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.bezierCurveTo(len*0.15,-len*0.25, len*0.5,-len*0.35, len*0.55,-len*0.05);
-    ctx.bezierCurveTo(len*0.5, len*0.1,  len*0.2, len*0.1,  0, 0);
-    ctx.fillStyle=DARK; ctx.fill();
-    // Midrib
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(len*0.5,-len*0.08);
-    ctx.strokeStyle=MID; ctx.lineWidth=1.2; ctx.stroke();
-    ctx.restore();
-  }
-
-  // ── Helper: shell / rocaille ──────────────────────────────────────────────
-  function shell(cx,cy,r){
-    // Fan ribs
-    for(let i=0;i<7;i++){
-      const a=-Math.PI*0.55 + i*(Math.PI*1.1/6);
-      ctx.beginPath(); ctx.moveTo(cx,cy);
-      ctx.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
-      ctx.strokeStyle=DARK; ctx.lineWidth=2.2; ctx.stroke();
-    }
-    // Outer arc
-    ctx.beginPath(); ctx.arc(cx,cy-r*0.05,r,Math.PI*1.45,Math.PI*1.95,false); // was -0.1
-    ctx.strokeStyle=DARK; ctx.lineWidth=2.5; ctx.stroke();
-    // Base scallop row
-    for(let i=0;i<5;i++){
-      const bx=cx-r*0.7+i*r*0.35;
-      ctx.beginPath(); ctx.arc(bx,cy+r*0.12,r*0.12,Math.PI,0);
-      ctx.fillStyle=MID; ctx.fill();
-    }
-  }
-
-  // ── Helper: thin floral sprig ─────────────────────────────────────────────
-  function sprig(cx,cy,size,angle){
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
-    // Stem
-    ctx.beginPath(); ctx.moveTo(0,0);
-    ctx.bezierCurveTo(size*0.1,-size*0.4, size*0.05,-size*0.7, 0,-size);
-    ctx.strokeStyle=DARK; ctx.lineWidth=1.8; ctx.stroke();
-    // Small petals at top
-    for(let i=0;i<5;i++){
-      const a=(i/5)*Math.PI*2;
-      ctx.beginPath();
-      ctx.ellipse(Math.cos(a)*size*0.13, -size+Math.sin(a)*size*0.13, size*0.07, size*0.12, a, 0, Math.PI*2);
-      ctx.fillStyle=DARK; ctx.fill();
-    }
-    ctx.restore();
-  }
-
-  // ── Outer border frame ───────────────────────────────────────────────────
-  const BW=18;
-  ctx.strokeStyle=DARK; ctx.lineWidth=3;
-  ctx.strokeRect(BW,BW,S-BW*2,S-BW*2);
-  ctx.strokeStyle=MID; ctx.lineWidth=1.2;
-  ctx.strokeRect(BW+6,BW+6,S-BW*2-12,S-BW*2-12);
-
-  // ── Corner acanthus clusters ──────────────────────────────────────────────
-  const corners=[[BW+28,BW+28],[S-BW-28,BW+28],[BW+28,S-BW-28],[S-BW-28,S-BW-28]];
-  corners.forEach(([cx,cy],i)=>{
-    const baseA=[0.2,Math.PI+0.1,-0.4,Math.PI-0.4][i];
-    leaf(cx,cy,30,baseA);
-    leaf(cx,cy,24,baseA+0.8);
-    leaf(cx,cy,20,baseA+1.5);
-  });
-
-  // ── Midpoint border ornaments (mid-sides) ─────────────────────────────────
-  // Top mid
-  cscroll(S*0.5-28, BW+20, 22, 0);
-  cscroll(S*0.5+28, BW+20, 22, 0, true);
-  shell(S*0.5, BW+14, 14);
-  // Bottom mid
-  cscroll(S*0.5-28, S-BW-20, 22, Math.PI);
-  cscroll(S*0.5+28, S-BW-20, 22, Math.PI, true);
-  shell(S*0.5, S-BW-14, 14);
-  // Left mid
-  cscroll(BW+20, S*0.5-28, 22, Math.PI*0.5);
-  cscroll(BW+20, S*0.5+28, 22, Math.PI*0.5, true);
-  shell(BW+14, S*0.5, 14);
-  // Right mid
-  cscroll(S-BW-20, S*0.5-28, 22, -Math.PI*0.5);
-  cscroll(S-BW-20, S*0.5+28, 22, -Math.PI*0.5, true);
-  shell(S-BW-14, S*0.5, 14);
-
-  // ── Central cartouche ─────────────────────────────────────────────────────
-  const CX=S/2, CY=S/2;
-  // Oval frame
-  ctx.beginPath(); ctx.ellipse(CX,CY,52,62,0,0,Math.PI*2);
-  ctx.strokeStyle=DARK; ctx.lineWidth=3; ctx.stroke();
-  ctx.beginPath(); ctx.ellipse(CX,CY,44,54,0,0,Math.PI*2);
-  ctx.strokeStyle=MID; ctx.lineWidth=1.5; ctx.stroke();
-  // Central shell
-  shell(CX, CY-20, 22);
-  // Flanking C-scrolls
-  cscroll(CX-38, CY+10, 28, 0.3);
-  cscroll(CX+38, CY+10, 28, 0.3, true);
-  cscroll(CX-32, CY-10, 20, -0.6);
-  cscroll(CX+32, CY-10, 20, -0.6, true);
-  // Bottom acanthus drops
-  leaf(CX-12, CY+32, 28, Math.PI*0.6);
-  leaf(CX+12, CY+32, 28, Math.PI*0.4);
-  // Sprigs in inner field
-  sprig(CX-16, CY+8, 22, -0.2);
-  sprig(CX+16, CY+8, 22, 0.2);
-
-  // ── Diagonal runner lines (very faint) ────────────────────────────────────
-  ctx.setLineDash([4,10]);
-  ctx.strokeStyle='rgba(120,10,8,0.22)'; ctx.lineWidth=1;
-  for(let i=-S;i<S*2;i+=48){
-    ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+S,S);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i-S,S);ctx.stroke();
-  }
-  ctx.setLineDash([]);
-
-  const t=new THREE.CanvasTexture(C);
-  t.wrapS=t.wrapT=THREE.RepeatWrapping;
-  t.repeat.set(3,2); // 3 tiles wide, 2 tall per wall segment
-  return t;
-}
 
 const wallMat =new THREE.MeshLambertMaterial({color:0xE0342F,side:THREE.DoubleSide});
 const moldMat =new THREE.MeshLambertMaterial({color:0xC02018});
@@ -777,7 +632,7 @@ loadStatue('NUPEPEDESU.glb', 0, 765, 20, Math.PI, 'NuPepeDesu', null);
 
 // Room 4 (z=955): Kek Statue
 // Room 4 centre: x=0, z=1035. Using position override after load.
-loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI, 'KekStatue', (m)=>{
+loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI+(20*Math.PI/180), 'KekStatue', (m)=>{
   m.position.x = 0;    // absolute centre x
   m.position.z = 1035; // absolute centre z
 });
@@ -1057,10 +912,19 @@ const RDEFS=[
   {id:'r5',n:'Chamber V',  s:'DSSL',                           x1:-RH,x2:RH,z1:ROOMS_Z[4][0],z2:ROOMS_Z[4][1]},
 ];
 
-const ROOM_NUMS={
-  hall:new Set(Array.from({length:150},(_,i)=>i+1)),
-  r1:new Set([]),r2:new Set([]),r3:new Set([]),r4:new Set([]),r5:new Set([]),
-};
+// Build ROOM_NUMS from actual art spot positions — rooms r1-r5 take priority, rest is hall.
+const ROOM_NUMS={hall:new Set(),r1:new Set(),r2:new Set(),r3:new Set(),r4:new Set(),r5:new Set()};
+(function assignRooms(){
+  artSpots.forEach(a=>{
+    const ax=a.pos.x,az=a.pos.z;let assigned=false;
+    for(const r of RDEFS){
+      if(r.id==='hall')continue;
+      if(ax>r.x1&&ax<r.x2&&az>r.z1&&az<r.z2){ROOM_NUMS[r.id].add(a.work.num);assigned=true;break;}
+    }
+    if(!assigned)ROOM_NUMS.hall.add(a.work.num);
+  });
+})();
+
 function loadRoomArtworks(roomId){
   const nums=ROOM_NUMS[roomId];if(!nums||!nums.size)return;
   artSpots.forEach(a=>{
@@ -1071,47 +935,6 @@ function loadRoomArtworks(roomId){
     }
   });
 }
-
-function buildDefaultLayout(){
-  const ST=22,MG=12,DP=8;
-  function cS(rA,rB,gaps){let n=0,p=rA+MG;while(p<=rB-MG){if(!gaps.some(([g1,g2])=>p>g1-DP&&p<g2+DP))n++;p+=ST;}return n;}
-  const layout={};
-  ROOMS.forEach(room=>{room.walls.forEach(([t,c,im,r0,r1,g],wi)=>layout[room.id+'_'+['N','S','W','E'][wi]]=[]);});
-  ROOMS.forEach(room=>{
-    const slice=PAGES.slice(room.r[0],room.r[1]+1);let wi2=0;
-    room.walls.forEach(([t,c,im,r0,r1,g],wi)=>{
-      const n=cS(r0,r1,g);const wid=room.id+'_'+['N','S','W','E'][wi];
-      for(let i=0;i<n&&wi2<slice.length;i++,wi2++)layout[wid].push({num:slice[wi2].num,orient:'landscape'});
-    });
-  });
-  return layout;
-}
-function applyLayout(layout){
-  const ST=22,MG=12,DP=8;
-  ROOMS.forEach(room=>{
-    room.walls.forEach(([type,coord,isMin,r0,r1,gaps],wi)=>{
-      const entries=layout[room.id+'_'+['N','S','W','E'][wi]];if(!entries||!entries.length)return;
-      const off=(WT/2+0.12)*(isMin?1:-1);
-      const sp=[];let p=r0+MG;
-      while(p<=r1-MG){if(!gaps.some(([g1,g2])=>p>g1-DP&&p<g2+DP))sp.push(p);p+=ST;}
-      entries.forEach((entry,idx)=>{
-        if(idx>=sp.length)return;
-        const work=PAGES.find(pg=>pg.num===entry.num);if(!work)return;
-        const pos=sp[idx];let x,y=AY,z,rotY;
-        if(type==='Z'){x=pos;z=coord+off;rotY=isMin?0:Math.PI;}
-        else{x=coord+off;z=pos;rotY=isMin?Math.PI/2:-Math.PI/2;}
-        placeFrame(work,x,y,z,rotY);
-      });
-    });
-  });
-}
-
-fetch('museum_layout.json')
-  .then(r=>r.ok?r.json():null).catch(()=>null)
-  .then(custom=>{
-    if(custom&&Object.keys(custom).length>0){console.log('Custom layout loaded');applyLayout(custom);}
-    else{console.log('Default layout');applyLayout(buildDefaultLayout());}
-  });
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
 // yaw=0 → facing -Z (north, into the museum from entrance at z=330)
@@ -1293,17 +1116,17 @@ function tryMove(dx,dz){
 const mmC=document.getElementById('mm'),mmCtx=mmC.getContext('2d');
 const MW=mmC.width,MH=mmC.height;
 function w2m(x,z){return[(x+55)*MW/110,(z+10)*MH/1550];}
-const RCOLS={w1:'#3A0A08',w2:'#3A0A08',w3:'#4A0C0A',w4:'#4A0C0A',w5:'#3A0A08',w6:'#3A0A08',rt:'#5A1410',en:'#4A1010'};
+const RCOLS={hall:'#1A0505',r1:'#3A0A08',r2:'#4A0C0A',r3:'#3A0A08',r4:'#4A0C0A',r5:'#3A0A08'};
 function drawMap(){
   mmCtx.fillStyle='rgba(30,5,5,0.95)';mmCtx.fillRect(0,0,MW,MH);
   RDEFS.forEach(r=>{
     const[mx1,my1]=w2m(r.x1,r.z1),[mx2,my2]=w2m(r.x2,r.z2);
     mmCtx.fillStyle=RCOLS[r.id]||'#3A0A08';mmCtx.fillRect(mx1,my1,mx2-mx1,my2-my1);
     mmCtx.strokeStyle='#8A2020';mmCtx.lineWidth=0.6;mmCtx.strokeRect(mx1,my1,mx2-mx1,my2-my1);
-    if(r.id.startsWith('w')){
+    if(r.id.startsWith('r')){
       mmCtx.fillStyle='#C8901A';mmCtx.font='6px Arial';mmCtx.textAlign='center';
       const[cx,cy]=w2m((r.x1+r.x2)/2,(r.z1+r.z2)/2);
-      mmCtx.fillText(r.n.substring(0,6),cx,cy);
+      mmCtx.fillText(r.n.substring(0,9),cx,cy);
     }
   });
   const[px,py]=w2m(camera.position.x,camera.position.z);

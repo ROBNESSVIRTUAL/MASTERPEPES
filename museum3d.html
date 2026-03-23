@@ -796,7 +796,7 @@ const trashPositions=[
   [38, 1342],  // Room 5 SE corner
 ];
 trashPositions.forEach(([tx,tz])=>{
-  new THREE.GLTFLoader().load('64_Gallon_Toter_3D.glb', gltf=>{
+  new THREE.GLTFLoader().load('64GALLONTOTER3D.glb', gltf=>{
     const m=gltf.scene;
     const box=new THREE.Box3().setFromObject(m);
     const size=box.getSize(new THREE.Vector3());

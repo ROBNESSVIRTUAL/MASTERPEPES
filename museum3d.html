@@ -779,9 +779,9 @@ loadStatue('NUPEPEDESU.glb', 0, 765, 20, Math.PI, 'NuPepeDesu', null);
 // Room 4 (z=955): Kek Statue
 // Room 4 centre: x=0, z=1035. Using position override after load.
 loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI/2-(30*Math.PI/180), 'KekStatue', (m)=>{
-  // Force exact room centre regardless of bounding box offset
-  m.position.x = 0;
-  m.position.z = 1035;
+  // Nudged slightly east and south of room centre
+  m.position.x = 8;
+  m.position.z = 1030;
 });
 
 // Room 5 (z=1205): DSSL
@@ -1214,7 +1214,7 @@ const WALK=0.28,RUN=0.72,PR=0.7;
 const rcaster=new THREE.Raycaster();
 function tryMove(dx,dz){
   const nx=Math.max(-(RH-1),Math.min(RH-1,camera.position.x+dx));
-  const nz=Math.max(-5,Math.min(1535,camera.position.z+dz));
+  const nz=Math.max(1,Math.min(1529,camera.position.z+dz));
   const d=new THREE.Vector3(nx-camera.position.x,0,nz-camera.position.z).normalize();
   rcaster.set(new THREE.Vector3(camera.position.x,1.5,camera.position.z),d);
   const hits=rcaster.intersectObjects(colliders);

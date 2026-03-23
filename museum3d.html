@@ -337,7 +337,7 @@ scene.background=new THREE.Color(0xB8E898);
 scene.fog=new THREE.FogExp2(0xC0EAA0,0.0018);
 const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,0.1,800);
 camera.rotation.order='YXZ';
-camera.position.set(0,1.7,380);
+camera.position.set(20,1.7,225);
 window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();});
 
 // ── DYNAMIC SKY — day/sunset/night cycle with moving clouds + stars ───────────
@@ -780,8 +780,8 @@ loadStatue('NUPEPEDESU.glb', 0, 765, 20, Math.PI, 'NuPepeDesu', null);
 // Room 4 centre: x=0, z=1035. Using position override after load.
 loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI/2-(30*Math.PI/180), 'KekStatue', (m)=>{
   // Nudged slightly east and south of room centre
-  m.position.x = 8;
-  m.position.z = 1030;
+  m.position.x = -6;
+  m.position.z = 1042;
 });
 
 // Room 5 (z=1205): DSSL
@@ -862,9 +862,10 @@ ROOMS_Z.forEach(([rz0,rz1,rc])=>{
   addBox(RH*2,0.25,RD,floorMat,0,-0.12,rc,false);
 });
 
-// ── South entrance wall (with corner fills, corridor gap in centre) ───────────
-wallX(-RH,-CW,0,[]);        // SW corner fill
-wallX( CW, RH,0,[]);        // SE corner fill
+// ── South entrance wall — fully closed (player spawns inside) ────────────────
+wallX(-RH,-CW,0,[]);   // SW section
+wallX(-CW,  CW,0,[]);  // centre section — CLOSED
+wallX( CW,  RH,0,[]);  // SE section
 
 // ── Corridor walls (Z-running walls at x=±CW) ─────────────────────────────────
 // Build continuous walls along full length, with breaks at each room
@@ -889,13 +890,13 @@ ROOMS_Z.forEach(([rz0,rz1,rc])=>{
   wallZ( RH,rz0,rz1,[]);           // E room wall (full)
 });
 
-// ── North end wall — solid addBox, guaranteed to close ────────────────────────
-addBox(RH*2, H, WT, wallMat, 0, H/2, END_Z);
-addBox(RH*2, 0.9, WT+0.05, moldMat, 0, 0.45, END_Z, false);
-addBox(RH*2, 0.9, WT+0.05, moldMat, 0, H-0.45, END_Z, false);
-// Outer walls for final corridor segment
-wallZ(-RH, ROOMS_Z[4][1], END_Z);
-wallZ( RH, ROOMS_Z[4][1], END_Z);
+// ── North end wall — mirrors south wall pattern + centre fill (no entrance) ───
+wallX(-RH,-CW,END_Z,[]);   // NW section (matches south pattern)
+wallX(-CW,  CW,END_Z,[]);  // CENTRE section (closed — no entrance here)
+wallX( CW, RH,END_Z,[]);   // NE section (matches south pattern)
+// Outer side walls for final corridor segment (z=1350..1530)
+wallZ(-RH,1350,1530,[]);
+wallZ( RH,1350,1530,[]);
 
 // ── Room floor detail: decorative pit ring in each room centre ────────────────
 ROOMS_Z.forEach(([rz0,rz1,rc])=>{
@@ -1214,7 +1215,7 @@ const WALK=0.28,RUN=0.72,PR=0.7;
 const rcaster=new THREE.Raycaster();
 function tryMove(dx,dz){
   const nx=Math.max(-(RH-1),Math.min(RH-1,camera.position.x+dx));
-  const nz=Math.max(1,Math.min(1529,camera.position.z+dz));
+  const nz=Math.max(2,Math.min(1529,camera.position.z+dz));
   const d=new THREE.Vector3(nx-camera.position.x,0,nz-camera.position.z).normalize();
   rcaster.set(new THREE.Vector3(camera.position.x,1.5,camera.position.z),d);
   const hits=rcaster.intersectObjects(colliders);

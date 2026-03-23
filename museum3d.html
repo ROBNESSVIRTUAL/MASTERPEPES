@@ -808,7 +808,8 @@ trashPositions.forEach(([tx,tz])=>{
     m.position.x=tx-centre.x*sc;
     m.position.y=-box.min.y*sc;
     m.position.z=tz-centre.z*sc;
-    m.rotation.y=Math.PI;&&gltf.animations.length){
+    m.rotation.y=Math.PI;
+    if(gltf.animations&&gltf.animations.length){
       const mx=new THREE.AnimationMixer(m);
       gltf.animations.forEach(c=>mx.clipAction(c).play());
       trashMixers.push(mx);

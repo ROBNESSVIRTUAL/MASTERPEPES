@@ -788,13 +788,15 @@ loadStatue('DSSL.glb', 0, 1305, 20, Math.PI, 'DSSL', null);
 // ── TRASHCANS — 1 per room, SE corner ────────────────────────────────────────
 // Rooms: z=180..270, 450..540, 720..810, 990..1080, 1260..1350
 // SE corner: x=+38 (just inside E wall at x=45), z = rz1-8 (just inside N wall)
+// ── TRASHCANS — north side of each room statue, with animation ────────────────
 const trashPositions=[
-  [42, 266],   // Room 1 SE corner
-  [42, 536],   // Room 2 SE corner
-  [42, 806],   // Room 3 SE corner
-  [42, 1076],  // Room 4 SE corner
-  [42, 1346],  // Room 5 SE corner
+  [12, 211],   // Room 1 — north of book (z=225)
+  [12, 481],   // Room 2 — north of Robness (z=495)
+  [12, 751],   // Room 3 — north of NuPepeDesu (z=765)
+  [12, 1021],  // Room 4 — north of KekStatue (z=1035)
+  [12, 1291],  // Room 5 — north of DSSL (z=1305)
 ];
+const trashMixers=[];
 trashPositions.forEach(([tx,tz])=>{
   new THREE.GLTFLoader().load('64GALLONTOTER3D.glb', gltf=>{
     const m=gltf.scene;
@@ -806,6 +808,11 @@ trashPositions.forEach(([tx,tz])=>{
     m.position.x=tx-centre.x*sc;
     m.position.y=-box.min.y*sc;
     m.position.z=tz-centre.z*sc;
+    if(gltf.animations&&gltf.animations.length){
+      const mx=new THREE.AnimationMixer(m);
+      gltf.animations.forEach(c=>mx.clipAction(c).play());
+      trashMixers.push(mx);
+    }
     scene.add(m);
   }, undefined, ()=>{});
 });
@@ -1540,6 +1547,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
       lordKek.rotation.y+=0.012;
     }
     if(lordKekMixer) lordKekMixer.update(delta);
+    if(trashMixers.length) trashMixers.forEach(mx=>mx.update(delta));
     // Book floats and rotates in Room 1
     if(floatingBook){
       floatingBook.rotation.y+=0.008;

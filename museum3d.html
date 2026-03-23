@@ -777,7 +777,7 @@ loadStatue('ROBNESS1.glb', 0, 495, 20, Math.PI, 'Robness', null);
 loadStatue('NUPEPEDESU.glb', 0, 765, 20, Math.PI, 'NuPepeDesu', null);
 
 // Room 4 (z=955): Kek Statue
-loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI/2-(15*Math.PI/180), 'KekStatue', null);
+loadStatue('kekstatue.glb', 0, 1035, 22, Math.PI/2-(30*Math.PI/180), 'KekStatue', null);
 
 // Room 5 (z=1205): DSSL
 loadStatue('DSSL.glb', 0, 1305, 20, Math.PI, 'DSSL', null);
@@ -886,8 +886,10 @@ ROOMS_Z.forEach(([rz0,rz1,rc])=>{
 
 // ── North end wall ─────────────────────────────────────────────────────────────
 wallX(-RH,RH,END_Z,[]);  // fully closed north end wall
-// Extra safety: fill any gap between corridor wall ends and room corners
-wallX(-RH,-CW,END_Z,[]); wallX(CW,RH,END_Z,[]); // redundant but explicit
+// Outer walls for final corridor segment (room5 exit → end wall)
+// Without these, x=-45..-12 and x=12..45 are open after last room
+wallZ(-RH,ROOMS_Z[4][1],END_Z);  // outer left wall: z=1350..1530
+wallZ( RH,ROOMS_Z[4][1],END_Z);  // outer right wall: z=1350..1530
 
 // ── Room floor detail: decorative pit ring in each room centre ────────────────
 ROOMS_Z.forEach(([rz0,rz1,rc])=>{

@@ -789,18 +789,18 @@ loadStatue('DSSL.glb', 0, 1305, 20, Math.PI, 'DSSL', null);
 // Rooms: z=180..270, 450..540, 720..810, 990..1080, 1260..1350
 // SE corner: x=+38 (just inside E wall at x=45), z = rz1-8 (just inside N wall)
 const trashPositions=[
-  [38, 262],   // Room 1 SE corner
-  [38, 532],   // Room 2 SE corner
-  [38, 802],   // Room 3 SE corner
-  [38, 1072],  // Room 4 SE corner
-  [38, 1342],  // Room 5 SE corner
+  [42, 266],   // Room 1 SE corner
+  [42, 536],   // Room 2 SE corner
+  [42, 806],   // Room 3 SE corner
+  [42, 1076],  // Room 4 SE corner
+  [42, 1346],  // Room 5 SE corner
 ];
 trashPositions.forEach(([tx,tz])=>{
   new THREE.GLTFLoader().load('64GALLONTOTER3D.glb', gltf=>{
     const m=gltf.scene;
     const box=new THREE.Box3().setFromObject(m);
     const size=box.getSize(new THREE.Vector3());
-    const sc=3.5/Math.max(size.x,size.y,size.z);
+    const sc=5.5/Math.max(size.x,size.y,size.z);
     m.scale.setScalar(sc);
     const centre=box.getCenter(new THREE.Vector3());
     m.position.x=tx-centre.x*sc;

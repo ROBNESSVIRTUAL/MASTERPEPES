@@ -336,7 +336,7 @@ scene.background=new THREE.Color(0xB8E898);
 scene.fog=new THREE.FogExp2(0xC0EAA0,0.0018);
 const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,0.1,800);
 camera.rotation.order='YXZ';
-camera.position.set(20,1.7,135);
+camera.position.set(20,1.7,165);
 window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();});
 
 // ── DYNAMIC SKY — day/sunset/night cycle with moving clouds + stars ───────────
@@ -617,35 +617,35 @@ loadStatue('LORDKEK.glb', 0, 0, 50, 0, 'LordKek', (m,mx)=>{
   lordKek.position.y=40; // start high
 });
 
-// ── ROOM STATUES (room centres: z=135,405,675,945,1215) ──────────────────────
-// Room 1 (z=135): Masterpepes Book — floating, rotating
+// ── ROOM STATUES (room centres: z=165,435,705,975,1245) ──────────────────────
+// Room 1 (z=165): Masterpepes Book — floating, rotating
 let floatingBook=null;
-loadStatue('masterpepes_book.glb', 0, 135, 14, 0, 'Book', (m)=>{
+loadStatue('masterpepes_book.glb', 0, 165, 14, 0, 'Book', (m)=>{
   floatingBook=m; floatingBook.position.y=9;
 });
 
-// Room 2 (z=405): Robness
-loadStatue('ROBNESS1.glb', 0, 405, 20, Math.PI, 'Robness', null);
+// Room 2 (z=435): Robness
+loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', null);
 
-// Room 3 (z=675): Nu Pepe Desu
-loadStatue('NUPEPEDESU.glb', 0, 675, 20, Math.PI, 'NuPepeDesu', null);
+// Room 3 (z=705): Nu Pepe Desu
+loadStatue('NUPEPEDESU.glb', 0, 705, 20, Math.PI, 'NuPepeDesu', null);
 
-// Room 4 (z=945): Kek Statue
-loadStatue('kekstatue.glb', 0, 945, 22, Math.PI+(20*Math.PI/180), 'KekStatue', (m)=>{
+// Room 4 (z=975): Kek Statue
+loadStatue('kekstatue.glb', 0, 975, 22, Math.PI+(20*Math.PI/180), 'KekStatue', (m)=>{
   m.position.x = 0;
-  m.position.z = 945;
+  m.position.z = 975;
 });
 
-// Room 5 (z=1215): DSSL
-loadStatue('DSSL.glb', 0, 1215, 20, Math.PI, 'DSSL', null);
+// Room 5 (z=1245): DSSL
+loadStatue('DSSL.glb', 0, 1245, 20, Math.PI, 'DSSL', null);
 
 // ── TRASHCANS — north side of each room statue, with animation ────────────────
 const trashPositions=[
-  [12, 121],   // Room 1 — north of book (z=135)
-  [12, 391],   // Room 2 — north of Robness (z=405)
-  [12, 661],   // Room 3 — north of NuPepeDesu (z=675)
-  [12, 931],   // Room 4 — north of KekStatue (z=945)
-  [12, 1201],  // Room 5 — north of DSSL (z=1215)
+  [12, 151],   // Room 1 — north of book (z=165)
+  [12, 421],   // Room 2 — north of Robness (z=435)
+  [12, 691],   // Room 3 — north of NuPepeDesu (z=705)
+  [12, 961],   // Room 4 — north of KekStatue (z=975)
+  [12, 1231],  // Room 5 — north of DSSL (z=1245)
 ];
 const trashMixers=[];
 trashPositions.forEach(([tx,tz])=>{
@@ -669,10 +669,10 @@ trashPositions.forEach(([tx,tz])=>{
   }, undefined, ()=>{});
 });
 // ── GRAND CORRIDOR — long hall with 5 break rooms ────────────────────────────
-// Corridor: x=-12..12 (24 wide), runs along Z axis z=0..1440
-// First corridor seg=90, then 4 more segs=180, 5 break rooms (90x90)
-// Rooms at z: 90..180, 360..450, 630..720, 900..990, 1170..1260
-// Final corridor: 1260..1440
+// Corridor: x=-12..12 (24 wide), runs along Z axis z=0..1470
+// First corridor seg=120 (5 art/side), then 4 more segs=180, 5 break rooms (90x90)
+// Rooms at z: 120..210, 390..480, 660..750, 930..1020, 1200..1290
+// Final corridor: 1290..1470
 // Lord Kek flies along corridor path
 // 5 GLB statues centred in each room + trashcans in corners
 
@@ -710,9 +710,9 @@ const CORRIDOR_GAP=[-(CW+2),CW+2];
 // remaining corridors stay at SEG=180. Layout: [90|Rm1|180|Rm2|180|Rm3|180|Rm4|180|Rm5|180]
 const ROOMS_Z=[];
 let _z=0;
-const _SEGS=[90,180,180,180,180];
+const _SEGS=[120,180,180,180,180];
 for(let i=0;i<5;i++){_z+=_SEGS[i];ROOMS_Z.push([_z,_z+RD,_z+RD/2]);_z+=RD;}
-const END_Z=_z+SEG; // 1440
+const END_Z=_z+SEG; // 1470
 
 // ── Floor ─────────────────────────────────────────────────────────────────────
 // Corridor floor strips
@@ -754,9 +754,9 @@ ROOMS_Z.forEach(([rz0,rz1,rc])=>{
 wallX(-RH,-CW,END_Z,[]);   // NW section (matches south pattern)
 wallX(-CW,  CW,END_Z,[]);  // CENTRE section (closed — no entrance here)
 wallX( CW, RH,END_Z,[]);   // NE section (matches south pattern)
-// Outer side walls for final corridor segment (z=1260..1440)
-wallZ(-RH,1260,1440,[]);
-wallZ( RH,1260,1440,[]);
+// Outer side walls for final corridor segment (z=1290..1470)
+wallZ(-RH,1290,1470,[]);
+wallZ( RH,1290,1470,[]);
 
 // ── Room floor detail: decorative pit ring in each room centre ────────────────
 ROOMS_Z.forEach(([rz0,rz1,rc])=>{
@@ -884,11 +884,6 @@ ROOMS_Z.forEach(([rz0,rz1,rc],i)=>{
   // Corridor segment (both walls)
   placeWallZ(works,wi,-CW,true, pz,rz0,[]);
   placeWallZ(works,wi, CW,false,pz,rz0,[]);
-  // i=0 only: south entrance wall carries 2 pieces (left + right halves, facing north)
-  if(i===0){
-    placeCentered(works,wi, NS_LEFT_MID,  AY, WT/2+0.12, 0);
-    placeCentered(works,wi, NS_RIGHT_MID, AY, WT/2+0.12, 0);
-  }
   // Room N/S walls: 1 piece centred in each half-segment
   const offS=(WT/2+0.12);   // S wall faces north (isMin=true)
   const offN=-(WT/2+0.12);  // N wall faces south (isMin=false)
@@ -1107,7 +1102,7 @@ const WALK=0.28,RUN=0.72,PR=0.7;
 const rcaster=new THREE.Raycaster();
 function tryMove(dx,dz){
   const nx=Math.max(-(RH-1),Math.min(RH-1,camera.position.x+dx));
-  const nz=Math.max(2,Math.min(1439,camera.position.z+dz));
+  const nz=Math.max(2,Math.min(1469,camera.position.z+dz));
   const d=new THREE.Vector3(nx-camera.position.x,0,nz-camera.position.z).normalize();
   rcaster.set(new THREE.Vector3(camera.position.x,1.5,camera.position.z),d);
   const hits=rcaster.intersectObjects(colliders);
@@ -1118,7 +1113,7 @@ function tryMove(dx,dz){
 // ── MINIMAP ───────────────────────────────────────────────────────────────────
 const mmC=document.getElementById('mm'),mmCtx=mmC.getContext('2d');
 const MW=mmC.width,MH=mmC.height;
-function w2m(x,z){return[(x+55)*MW/110,(z+10)*MH/1460];}
+function w2m(x,z){return[(x+55)*MW/110,(z+10)*MH/1490];}
 const RCOLS={hall:'#1A0505',r1:'#3A0A08',r2:'#4A0C0A',r3:'#3A0A08',r4:'#4A0C0A',r5:'#3A0A08'};
 function drawMap(){
   mmCtx.fillStyle='rgba(30,5,5,0.95)';mmCtx.fillRect(0,0,MW,MH);
@@ -1368,7 +1363,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     // Lord Kek flies down and up the corridor
     if(lordKek){
       const kt=Date.now()*0.00008;  // slow drift along corridor
-      lordKek.position.z=(Math.sin(kt)*0.5+0.5)*1440;
+      lordKek.position.z=(Math.sin(kt)*0.5+0.5)*1470;
       lordKek.position.y=35+Math.sin(kt*3)*10;
       lordKek.position.x=Math.sin(kt*2)*5;
       lordKek.rotation.y+=0.012;

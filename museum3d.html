@@ -137,6 +137,51 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 .rb-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(191,95,255,0.5);padding:6px 12px;border-bottom:0.5px solid rgba(191,95,255,0.2);flex-shrink:0}
 .rb-iframe{flex:1;width:100%;border:none;background:#000}
 .rb-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#BF5FFF;text-shadow:0 0 8px #BF5FFF;display:none;pointer-events:none;animation:rbFlicker 2s infinite}
+
+/* ── 64 GALLON TOTER / TRASHART PANEL — RGB ──────────────────────────────── */
+#trashPanel{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(720px,94vw);height:min(560px,90vh);
+  display:none;flex-direction:column;
+  background:rgba(2,2,2,0.94);
+  border:2px solid #FF0000;
+  border-radius:12px;
+  box-shadow:0 0 30px #FF000066,0 0 80px #FF000022;
+  z-index:400;
+  overflow:hidden;
+  animation:rgbBorder 3s linear infinite;
+}
+@keyframes rgbBorder{
+  0%   {border-color:#FF0000;box-shadow:0 0 30px #FF000077,0 0 80px #FF000033}
+  16%  {border-color:#FF8800;box-shadow:0 0 30px #FF880077,0 0 80px #FF880033}
+  33%  {border-color:#FFFF00;box-shadow:0 0 30px #FFFF0077,0 0 80px #FFFF0033}
+  50%  {border-color:#00FF00;box-shadow:0 0 30px #00FF0077,0 0 80px #00FF0033}
+  66%  {border-color:#0088FF;box-shadow:0 0 30px #0088FF77,0 0 80px #0088FF33}
+  83%  {border-color:#8800FF;box-shadow:0 0 30px #8800FF77,0 0 80px #8800FF33}
+  100% {border-color:#FF0000;box-shadow:0 0 30px #FF000077,0 0 80px #FF000033}
+}
+#trashPanel.open{display:flex}
+.tr-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,0.15);flex-shrink:0;background:rgba(255,255,255,0.04)}
+.tr-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#fff;animation:rgbText 3s linear infinite}
+@keyframes rgbText{
+  0%{color:#FF0000;text-shadow:0 0 8px #FF0000}
+  33%{color:#00FF00;text-shadow:0 0 8px #00FF00}
+  66%{color:#0088FF;text-shadow:0 0 8px #0088FF}
+  100%{color:#FF0000;text-shadow:0 0 8px #FF0000}
+}
+.tr-close{font-size:8px;letter-spacing:0.2em;color:rgba(255,255,255,0.6);border:0.5px solid rgba(255,255,255,0.3);padding:5px 14px;cursor:pointer;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;transition:all 0.2s}
+.tr-close:hover{border-color:#fff;color:#fff}
+.tr-body{flex:1;display:flex;overflow:hidden;min-height:0}
+.tr-left{flex:0 0 44%;padding:16px 18px;border-right:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.tr-left::-webkit-scrollbar{width:3px}.tr-left::-webkit-scrollbar-track{background:#0a0a0a}.tr-left::-webkit-scrollbar-thumb{background:#ffffff33}
+.tr-desc{font-size:9.5px;line-height:1.9;color:rgba(230,230,230,0.88);text-transform:none;letter-spacing:0.03em;font-family:Georgia,serif}
+.tr-links{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.tr-link{font-size:7px;letter-spacing:0.18em;color:rgba(255,255,255,0.75);border:0.5px solid rgba(255,255,255,0.25);padding:5px 10px;text-decoration:none;transition:all 0.2s;text-align:center;text-transform:uppercase}
+.tr-link:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,0.07)}
+.tr-right{flex:1;display:flex;flex-direction:column;min-height:0}
+.tr-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(255,255,255,0.35);padding:6px 12px;border-bottom:0.5px solid rgba(255,255,255,0.1);flex-shrink:0}
+.tr-iframe{flex:1;width:100%;border:none;background:#000}
+.tr-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#fff;display:none;pointer-events:none;animation:rgbText 3s linear infinite}
 </style>
 </head>
 <body>
@@ -285,6 +330,40 @@ HE IS THE CREATOR OF THE MASTERPEPES MUSEUM — THE PROJECT YOU ARE STANDING IN 
   </div>
 </div>
 <div class="rb-proximity" id="rbProximity">&#9654; CLICK TO VIEW ROBNESS DOSSIER</div>
+
+<!-- ── 64 GALLON TOTER / TRASHART PANEL ──────────────────────────────────── -->
+<div id="trashPanel">
+  <div class="tr-header">
+    <div class="tr-title">&#9670; 64 GALLON TOTER &mdash; THE #TRASHART ORIGIN &#9670;</div>
+    <button class="tr-close" onclick="closeTrashPanel()">&#10005; Close</button>
+  </div>
+  <div class="tr-body">
+    <div class="tr-left">
+      <div class="tr-desc">IN JANUARY 2020, ROBNESS MINTED A GLITCH-FILTERED GIF OF A 64-GALLON TRASH CAN — SOURCED FROM THE HOME DEPOT WEBSITE AND RUN THROUGH PHOTOMOSH — ONTO SUPERRARE. THE PLATFORM REMOVED IT ALMOST IMMEDIATELY, CITING COPYRIGHT CONCERNS AND CALLING IT NOT "ORIGINAL" ART. SUPERRARE CEO JOHN CRAIN TOLD COINTELEGRAPH IT WAS "A GIF OF A TRASH BIN FROM THE HOME DEPOT WEBSITE" — DISMISSING IT. THEY WERE SPECTACULARLY WRONG ABOUT ITS SIGNIFICANCE.
+
+THE REMOVAL DETONATED. ARTISTS FLOODED PLATFORMS WITH DELIBERATELY PROVOCATIVE, LOW-EFFORT TRASH-THEMED WORKS IN SOLIDARITY. THE #TRASHART HASHTAG — FIRST COINED BY ARTIST BARBARA TOSTI ON FEBRUARY 5, 2020, THEN CEMENTED BY J1MMY.ETH AND JAYDELAY.ETH IN MARCH — BECAME THE RALLYING POINT FOR WHAT WOULD BECOME THE FIRST CRYPTO-NATIVE ART MOVEMENT IN HISTORY. THE MOVEMENT DREW DIRECT COMPARISONS TO DUCHAMP'S FOUNTAIN AND THE DADA MOVEMENT — A COLLECTIVE "FUCK YOU" TO GATEKEEPING AND INSTITUTIONAL CONTROL OF ART.
+
+NOTABLE ARTISTS IN THE MOVEMENT INCLUDE MAX OSIRIS (ALSO BANNED FROM SUPERRARE AND FOUNDATION), CRYPTOYUNA, JAYDELAY, ERIC RHODES, COLLIN DYER (MAINTAINER OF TRASHART.IO), SECOND REALM, KAMISAMA, OOAKOSIMO, AND HUNDREDS OF OTHERS WORLDWIDE. THE MOVEMENT SPREAD TO TEZOS VIA THE #TEZTRASH PHENOMENON, LED BY ARTISTS INCLUDING EMPRESS TRASH AND MAX CAPACITY.
+
+THE LANDMARK SALE CAME IN OCTOBER 2021, WHEN ROBNESS'S "BRUTE TRASH CAN" — A SEPARATE WORK IN THE TRASHART SERIES — WAS PURCHASED BY PROMINENT COLLECTOR VINCENTVANDOUGH FOR 60 ETH ($252,000). HIS WORK "OILMELON" ALSO SOLD FOR $200,000 TO THE STARRYNIGHT COLLECTION. THE 64 GALLON TOTER ITSELF WAS REINSTATED BY SUPERRARE AFTER PUBLIC PRESSURE — MAKING IT THE ONLY PIECE IN CRYPTOART HISTORY TO BE REMOVED AND REINSTATED BY A PLATFORM.
+
+THE MOVEMENT WAS COVERED BY COINTELEGRAPH IN AN ARTICLE TITLED "IMMUTABLE TRASH: CRYPTOART REVISITS ARGUMENTS ON CENSORSHIP AND MEANING," AND HAS SINCE BEEN WRITTEN UP BY RIGHT CLICK SAVE, VERTICALCRYPTO ART, MUSEUM OF CRYPTO ART (MOCA), NFTS.WTF, CREATIVE BLOQ, AND ART CRITIC KENNY SCHACHTER. IT WAS AWARDED THE PEOPLE'S CHOICE AWARD AT THE 2020 NFT AWARDS.
+
+IN 2022, ROBNESS CURATED "#TRASHART: NFT GARBOLOGY" AT L'AVANT-GALERIE VOSSEN IN PARIS (58 RUE CHAPON, 75003), RUNNING MARCH 26 TO MAY 14 — THE WORLD'S FIRST DEDICATED TRASHART GALLERY EXHIBITION. ROBNESS AND TWO OF HIS WORKS ARE ALSO INCLUDED IN TASCHEN'S LANDMARK PUBLICATION "ON NFTS" BY ROBERT ALICE — THE FIRST MAJOR ART-HISTORICAL SURVEY OF THE NFT MEDIUM, PUBLISHED WORLDWIDE.</div>
+      <div class="tr-links">
+        <a class="tr-link" href="https://superrare.com/artwork/eth/0xb932a70A57673d89f4acfFBE830E8ed7f75Fb9e0/7323" target="_blank" rel="noopener">&#9654; 64 Gallon Toter on SuperRare</a>
+        <a class="tr-link" href="https://trashart.io" target="_blank" rel="noopener">&#9654; Trashart.io</a>
+        <a class="tr-link" href="https://www.rightclicksave.com/article/robness-and-the-trash-art-revolution" target="_blank" rel="noopener">&#9654; Right Click Save — Trash Art Revolution</a>
+        <a class="tr-link" href="https://verticalcrypto.art/the-depths-of-trash" target="_blank" rel="noopener">&#9654; VerticalCrypto — The Depths of Trash</a>
+      </div>
+    </div>
+    <div class="tr-right">
+      <div class="tr-iframe-label">&#9632; 64 GALLON TOTER &mdash; SUPERRARE</div>
+      <iframe class="tr-iframe" src="https://superrare.com/artwork/eth/0xb932a70A57673d89f4acfFBE830E8ed7f75Fb9e0/7323" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+<div class="tr-proximity" id="trProximity">&#9654; CLICK TO VIEW #TRASHART ORIGIN</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
@@ -813,6 +892,7 @@ const trashPositions=[
   [12, 1231],  // Room 5 — north of DSSL (z=1245)
 ];
 const trashMixers=[];
+const trashModels=[];
 trashPositions.forEach(([tx,tz])=>{
   new THREE.GLTFLoader().load('64GALLONTOTER3D.glb', gltf=>{
     const m=gltf.scene;
@@ -830,6 +910,7 @@ trashPositions.forEach(([tx,tz])=>{
       gltf.animations.forEach(c=>mx.clipAction(c).play());
       trashMixers.push(mx);
     }
+    trashModels.push(m);
     scene.add(m);
   }, undefined, ()=>{});
 });
@@ -1333,7 +1414,51 @@ function rippleLoad(startId){
   order.forEach((ring,i)=>setTimeout(()=>ring.forEach(loadRoomArtworks), i*800));
 }
 
-// ── ROBNESS DOSSIER PANEL ──────────────────────────────────────────────────────
+// ── TRASH ART PANEL ────────────────────────────────────────────────────────────
+const trashPanelEl=document.getElementById('trashPanel');
+const trProxEl=document.getElementById('trProximity');
+const trRaycaster=new THREE.Raycaster();
+let trPanelOpen=false;
+
+function openTrashPanel(){
+  trPanelOpen=true;
+  trashPanelEl.classList.add('open');
+  trProxEl.style.display='none';
+  try{document.exitPointerLock();}catch(e){}
+  locked=false;
+  Object.keys(keys).forEach(k=>keys[k]=false);
+}
+function closeTrashPanel(){
+  trPanelOpen=false;
+  trashPanelEl.classList.remove('open');
+  try{rc.requestPointerLock();}catch(e){}
+}
+
+function detectTrash(){
+  if(!trashModels.length||trPanelOpen)return;
+  let closest=Infinity;
+  trashModels.forEach(m=>{
+    const d=camera.position.distanceTo(m.position);
+    if(d<closest) closest=d;
+  });
+  trProxEl.style.display=closest<14?'block':'none';
+}
+
+function tryPickTrash(clientX,clientY){
+  if(!trashModels.length||trPanelOpen)return false;
+  const nx=(clientX/innerWidth)*2-1;
+  const ny=-(clientY/innerHeight)*2+1;
+  trRaycaster.setFromCamera({x:nx,y:ny},camera);
+  for(const m of trashModels){
+    const hits=trRaycaster.intersectObject(m,true);
+    if(hits.length){openTrashPanel();return true;}
+  }
+  return false;
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.code==='Escape'&&trPanelOpen){e.stopPropagation();closeTrashPanel();}
+});
 const rbPanelEl=document.getElementById('rbPanel');
 const rbProxEl=document.getElementById('rbProximity');
 const rbRaycaster=new THREE.Raycaster();
@@ -1574,8 +1699,10 @@ rc.addEventListener('click',e=>{
   if(document.getElementById('detailPanel').classList.contains('open'))return;
   if(nuPanelOpen)return;
   if(rbPanelOpen)return;
+  if(trPanelOpen)return;
   const x=locked?innerWidth/2:e.clientX;
   const y=locked?innerHeight/2:e.clientY;
+  if(tryPickTrash(x,y))return;
   if(tryPickRobness(x,y))return;
   if(tryPickNuPepeDesu(x,y))return;
   tryPickArt(x,y);
@@ -1591,6 +1718,7 @@ rc.addEventListener('touchend',e=>{
   if(e.changedTouches.length===1){
     const dx=e.changedTouches[0].clientX-tapX, dy=e.changedTouches[0].clientY-tapY;
     if(Date.now()-tapT<280 && dx*dx+dy*dy<144 && e.changedTouches[0].clientX>innerWidth*0.4){
+      if(tryPickTrash(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickRobness(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickNuPepeDesu(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       tryPickArt(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
@@ -1637,7 +1765,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(dpState.lt) mDir.x-=1;
     if(dpState.rt) mDir.x+=1;
     if(mDir.length()>0){const spd=keys['ShiftLeft']||keys['ShiftRight']||dpState.run?RUN:WALK;mDir.normalize().multiplyScalar(spd);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
-    camera.position.y=1.7;detectRoom();detectArt();detectNuPepeDesu();detectRobness();drawMap();
+    camera.position.y=1.7;detectRoom();detectArt();detectNuPepeDesu();detectRobness();detectTrash();drawMap();
   }
   skyMesh.position.x=camera.position.x;skyMesh.position.z=camera.position.z;
   renderer.render(scene,camera);

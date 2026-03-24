@@ -216,6 +216,33 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 .lk-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(200,144,26,0.5);padding:6px 12px;border-bottom:0.5px solid rgba(200,144,26,0.2);flex-shrink:0}
 .lk-iframe{flex:1;width:100%;border:none;background:#000}
 .lk-proximity{position:fixed;top:30%;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#FFD700;text-shadow:0 0 10px #C8901A;display:none;pointer-events:none;text-align:center;animation:lkFlicker 2s infinite}
+
+/* ── KEK STATUE / MEMETICS PANEL — GREEN ─────────────────────────────────── */
+#ksPanel{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(720px,94vw);height:min(560px,90vh);
+  display:none;flex-direction:column;
+  background:rgba(0,6,2,0.95);
+  border:1px solid #00CC44;
+  border-radius:12px;
+  box-shadow:0 0 30px #00CC4466,0 0 80px #00CC4422,inset 0 0 40px rgba(0,204,68,0.03);
+  z-index:400;
+  overflow:hidden;
+  animation:ksFlicker 7s infinite;
+}
+@keyframes ksFlicker{
+  0%,100%{box-shadow:0 0 30px #00CC4466,0 0 80px #00CC4422}
+  50%{box-shadow:0 0 45px #00FF5599,0 0 110px #00FF5533}
+}
+#ksPanel.open{display:flex}
+.ks-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(0,204,68,0.3);flex-shrink:0;background:rgba(0,204,68,0.05)}
+.ks-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#00FF55;text-shadow:0 0 10px #00CC44}
+.ks-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#00CC44;border:1.5px solid rgba(0,204,68,0.5);border-radius:50%;cursor:pointer;background:rgba(0,204,68,0.08);box-shadow:0 0 10px rgba(0,204,68,0.4),inset 0 0 8px rgba(0,204,68,0.06);transition:all 0.2s;line-height:1;flex-shrink:0}
+.ks-close:hover{background:rgba(0,204,68,0.2);box-shadow:0 0 20px rgba(0,255,85,0.7),inset 0 0 14px rgba(0,204,68,0.12);border-color:#00FF55;color:#00FF55;transform:scale(1.1)}
+.ks-body{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column}
+.ks-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(0,204,68,0.5);padding:6px 12px;border-bottom:0.5px solid rgba(0,204,68,0.2);flex-shrink:0}
+.ks-iframe{flex:1;width:100%;border:none;background:#fff}
+.ks-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#00FF55;text-shadow:0 0 8px #00CC44;display:none;pointer-events:none;animation:ksFlicker 2s infinite}
 </style>
 </head>
 <body>
@@ -428,6 +455,19 @@ KEK IS AN ANCIENT EGYPTIAN GOD OF PRIMORDIAL DARKNESS AND CHAOS, WORSHIPPED IN T
   </div>
 </div>
 <div class="lk-proximity" id="lkProximity">&#9670; LORDKEK APPROACHES &#9670;<br>CLICK TO COMMUNE WITH THE DEITY</div>
+
+<!-- ── KEK STATUE / MEMETICS PANEL ───────────────────────────────────────── -->
+<div id="ksPanel">
+  <div class="ks-header">
+    <div class="ks-title">&#9670; MEMETICS &#9670;</div>
+    <button class="ks-close" onclick="closeKsPanel()">&#10005;</button>
+  </div>
+  <div class="ks-body">
+    <div class="ks-iframe-label">&#9632; WIKIPEDIA &mdash; MEMETICS</div>
+    <iframe class="ks-iframe" src="https://en.wikipedia.org/wiki/Memetics" sandbox="allow-scripts allow-same-origin allow-popups" loading="lazy"></iframe>
+  </div>
+</div>
+<div class="ks-proximity" id="ksProximity">&#9654; CLICK TO EXPLORE MEMETICS</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
@@ -939,7 +979,9 @@ loadStatue('NUPEPEDESU.glb', 0, 705, 20, Math.PI, 'NuPepeDesu', (m)=>{
 });
 
 // Room 4 (z=975): Kek Statue
+let kekStatueModel=null;
 loadStatue('kekstatue.glb', 8, 975, 22, Math.PI, 'KekStatue', (m)=>{
+  kekStatueModel=m;
   m.position.x = 8;
   m.position.z = 975;
 });
@@ -1478,7 +1520,45 @@ function rippleLoad(startId){
   order.forEach((ring,i)=>setTimeout(()=>ring.forEach(loadRoomArtworks), i*800));
 }
 
-// ── LORD KEK DIVINE PANEL ──────────────────────────────────────────────────────
+// ── KEK STATUE / MEMETICS PANEL ───────────────────────────────────────────────
+const ksPanelEl=document.getElementById('ksPanel');
+const ksProxEl=document.getElementById('ksProximity');
+const ksRaycaster=new THREE.Raycaster();
+let ksPanelOpen=false;
+
+function openKsPanel(){
+  ksPanelOpen=true;
+  ksPanelEl.classList.add('open');
+  ksProxEl.style.display='none';
+  try{document.exitPointerLock();}catch(e){}
+  locked=false;
+  Object.keys(keys).forEach(k=>keys[k]=false);
+}
+function closeKsPanel(){
+  ksPanelOpen=false;
+  ksPanelEl.classList.remove('open');
+  try{rc.requestPointerLock();}catch(e){}
+}
+
+function detectKekStatue(){
+  if(!kekStatueModel||ksPanelOpen)return;
+  const dist=camera.position.distanceTo(new THREE.Vector3(8,camera.position.y,975));
+  ksProxEl.style.display=dist<22?'block':'none';
+}
+
+function tryPickKekStatue(clientX,clientY){
+  if(!kekStatueModel||ksPanelOpen)return false;
+  const nx=(clientX/innerWidth)*2-1;
+  const ny=-(clientY/innerHeight)*2+1;
+  ksRaycaster.setFromCamera({x:nx,y:ny},camera);
+  const hits=ksRaycaster.intersectObject(kekStatueModel,true);
+  if(hits.length){openKsPanel();return true;}
+  return false;
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.code==='Escape'&&ksPanelOpen){e.stopPropagation();closeKsPanel();}
+});
 const lkPanelEl=document.getElementById('lkPanel');
 const lkProxEl=document.getElementById('lkProximity');
 const lkRaycaster=new THREE.Raycaster();
@@ -1806,9 +1886,11 @@ rc.addEventListener('click',e=>{
   if(rbPanelOpen)return;
   if(trPanelOpen)return;
   if(lkPanelOpen)return;
+  if(ksPanelOpen)return;
   const x=locked?innerWidth/2:e.clientX;
   const y=locked?innerHeight/2:e.clientY;
   if(tryPickLordKek(x,y))return;
+  if(tryPickKekStatue(x,y))return;
   if(tryPickTrash(x,y))return;
   if(tryPickRobness(x,y))return;
   if(tryPickNuPepeDesu(x,y))return;
@@ -1826,6 +1908,7 @@ rc.addEventListener('touchend',e=>{
     const dx=e.changedTouches[0].clientX-tapX, dy=e.changedTouches[0].clientY-tapY;
     if(Date.now()-tapT<280 && dx*dx+dy*dy<144 && e.changedTouches[0].clientX>innerWidth*0.4){
       if(tryPickLordKek(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
+      if(tryPickKekStatue(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickTrash(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickRobness(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickNuPepeDesu(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
@@ -1873,7 +1956,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(dpState.lt) mDir.x-=1;
     if(dpState.rt) mDir.x+=1;
     if(mDir.length()>0){const spd=keys['ShiftLeft']||keys['ShiftRight']||dpState.run?RUN:WALK;mDir.normalize().multiplyScalar(spd);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
-    camera.position.y=1.7;detectRoom();detectArt();detectNuPepeDesu();detectRobness();detectTrash();detectLordKek();drawMap();
+    camera.position.y=1.7;detectRoom();detectArt();detectNuPepeDesu();detectRobness();detectTrash();detectLordKek();detectKekStatue();drawMap();
   }
   skyMesh.position.x=camera.position.x;skyMesh.position.z=camera.position.z;
   renderer.render(scene,camera);

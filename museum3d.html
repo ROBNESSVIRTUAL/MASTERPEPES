@@ -743,23 +743,31 @@ loadStatue('masterpepes_book.glb', 0, 165, 14, 0, 'Book', (m)=>{
 let robnessModel=null;
 loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
   robnessModel=m;
-  // Node names confirmed from GLB inspection:
-  // body, body-robness_material → bust
-  // shades-Mat.3 → orange frames
-  // shades-lenses → black lenses (was BLEND alpha=0)
-  // head gear, bolt, Bolt_1..Bolt_5 → black electrodes
   const MAT_BUST   = new THREE.MeshStandardMaterial({color:0x3D0066, roughness:0.6, metalness:0.25});
   const MAT_FRAMES = new THREE.MeshStandardMaterial({color:0xFF4400, roughness:0.2, metalness:0.7});
-  const MAT_LENS   = new THREE.MeshStandardMaterial({color:0x000000, roughness:0.0, metalness:0.0, transparent:false, opacity:1.0});
+  const MAT_LENS   = new THREE.MeshStandardMaterial({color:0x000000, roughness:0.0, metalness:0.0});
   const MAT_BOLTS  = new THREE.MeshStandardMaterial({color:0x080808, roughness:0.4, metalness:0.8});
 
   m.traverse(child=>{
     if(!child.isMesh) return;
-    const n=child.name;
-    if(n==='shades-lenses')          child.material=MAT_LENS;
-    else if(n==='shades-Mat.3')      child.material=MAT_FRAMES;
-    else if(n==='head gear'||n==='bolt'||n.startsWith('Bolt_')) child.material=MAT_BOLTS;
-    else                              child.material=MAT_BUST;
+    const mn = child.material ? child.material.name : '';
+    const nn = child.name || '';
+    // lenses material
+    if(mn==='lenses'){
+      child.material = MAT_LENS;
+    }
+    // Bolts material (Bolt_1..5)
+    else if(mn==='Bolts'){
+      child.material = MAT_BOLTS;
+    }
+    // Mat.3 is shared by 'shades-Mat.3' (frames) AND 'head gear' — split by node name
+    else if(mn==='Mat.3'){
+      child.material = (nn.indexOf('shade')!==-1) ? MAT_FRAMES : MAT_BOLTS;
+    }
+    // everything else → bust
+    else{
+      child.material = MAT_BUST;
+    }
   });
 });
 

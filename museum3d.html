@@ -266,7 +266,9 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 
 IN 2019, ROBNESS BROUGHT HIS PRACTICE TO SUPERRARE, KNOWORIGIN, AND OPENSEA. IN 2020 HE CREATED 64 GALLON TOTER — A GLITCHED GIF OF A TRASH CAN — WHICH SUPERRARE REMOVED FROM THE PLATFORM IN A COPYRIGHT DISPUTE, MAKING IT THE FIRST WORK EVER PULLED FROM A CRYPTOART COLLECTION. THE INCIDENT IGNITED THE GLOBAL #TRASHART MOVEMENT, INSPIRED THOUSANDS OF TRIBUTE WORKS WORLDWIDE, AND WON THE PEOPLE'S CHOICE AWARD AT THE 2020 NFT AWARDS. THE ACT IS WIDELY COMPARED TO DUCHAMP'S FOUNTAIN — A DIRECT CHALLENGE TO WHO DECIDES WHAT CONSTITUTES ART.
 
-ROBNESS HAS SINCE BURNED A CRYPTOPUNK (#2317) AND A BORED APE, EXHIBITED IN THE HERMITAGE MUSEUM'S DIGITAL COLLECTION, AND APPEARED IN A SOTHEBY'S SALE. DESCRIBED AS CONSISTENTLY INCONSISTENT, HIS STYLE HAS EVOLVED ACROSS VAPORWAVE, GLITCH, CYBERPOP, ABSTRACT DIGITAL PAINTING, 3D, AND PERFORMANCE — OFTEN OPERATING UNDER ANONYMOUS PERSONAS INCLUDING ZORRO AND DIGITAL ART BITCH TO EXPLORE IDENTITY AND INFLUENCE IN THE DIGITAL PUBLIC SQUARE.
+IN ONE OF THE MOST DISCUSSED ACTS IN NFT HISTORY, ROBNESS ACQUIRED AND BURNED CRYPTOPUNK #2317 — PERMANENTLY DESTROYING ONE OF THE MOST COVETED DIGITAL COLLECTIBLES IN EXISTENCE AS AN ARTISTIC AND IDEOLOGICAL STATEMENT. THE BURN WAS VISUALIZED THROUGH AN INCINERATOR VIDEO USING PHOTOMOSH, LEAVING A PERMANENT MARK ON BLOCKCHAIN HISTORY AND SPARKING WIDESPREAD DEBATE ABOUT VALUE, DESTRUCTION, AND OWNERSHIP IN THE DIGITAL AGE.
+
+ROBNESS WAS FEATURED IN THE DOCUMENTARY FILM "WHAT THE PUNK," WHICH CHRONICLED THE CULTURAL AND HISTORICAL SIGNIFICANCE OF THE CRYPTOPUNK COLLECTION AND THE ARTISTS AND COLLECTORS WHO SHAPED IT. HIS WORKS HAVE ALSO BEEN INCLUDED IN THE COLLECTION OF THE CENTRE POMPIDOU IN PARIS — ONE OF THE WORLD'S MOST PRESTIGIOUS INSTITUTIONS FOR MODERN AND CONTEMPORARY ART — CEMENTING HIS STATUS AS A CANONICAL FIGURE IN THE HISTORY OF DIGITAL ART.
 
 HE IS THE CREATOR OF THE MASTERPEPES MUSEUM — THE PROJECT YOU ARE STANDING IN RIGHT NOW — A 3D INTERACTIVE MONUMENT TO THE FULL ARC OF CRYPTOART HISTORY, FROM CAVE WALL TO BLOCKCHAIN.</div>
       <div class="rb-links">
@@ -741,31 +743,36 @@ loadStatue('masterpepes_book.glb', 0, 165, 14, 0, 'Book', (m)=>{
 let robnessModel=null;
 loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
   robnessModel=m;
-  // Recolour the bust: purple body, orange frames, black lenses
   m.traverse(child=>{
     if(!child.isMesh) return;
     const name=(child.name||'').toLowerCase();
     const matName=((child.material&&child.material.name)||'').toLowerCase();
-    // Log every mesh so we can see what's in the file
-    console.log('ROBNESS mesh:',child.name,'mat:',matName);
-    child.material=child.material.clone(); // don't mutate shared materials
-    // Lenses / glass — anything with "lens","glass","visor","eye" in name, or very dark existing color
-    if(/lens|glass|visor|eye/.test(name)||/lens|glass|visor|eye/.test(matName)){
+    console.log('ROBNESS mesh:',child.name,'| mat:',matName);
+    child.material=child.material.clone();
+    // ── LENSES / EYES — pure black, no reflections ──────────────────────────
+    if(/lens|glass|visor|eye|pupil|iris|cornea/.test(name)||/lens|glass|visor|eye|pupil/.test(matName)){
       child.material.color.set(0x000000);
-      child.material.roughness=0.05;
-      child.material.metalness=0.1;
+      child.material.roughness=0.0;
+      child.material.metalness=0.0;
+      if(child.material.transparent!==undefined) child.material.transparent=false;
     }
-    // Frames / shades — anything with "frame","shade","glass","sunglass","rim" in name
-    else if(/frame|shade|sunglass|rim|spec/.test(name)||/frame|shade|sunglass|rim|spec/.test(matName)){
-      child.material.color.set(0xFF6A00);
-      child.material.roughness=0.3;
-      child.material.metalness=0.6;
+    // ── ELECTRODES / HEAD TECH — black ─────────────────────────────────────
+    else if(/electrod|antenna|spike|probe|node|wire|port|jack|plug|bolt|stud|knob|pin/.test(name)||/electrod|antenna|spike|probe|node|wire|port/.test(matName)){
+      child.material.color.set(0x080808);
+      child.material.roughness=0.4;
+      child.material.metalness=0.7;
     }
-    // Everything else (bust/skin/base) → purple
+    // ── FRAMES / SHADES — vivid orange ──────────────────────────────────────
+    else if(/frame|shade|sunglass|rim|spec|brow|temple|bridge|hinge/.test(name)||/frame|shade|sunglass|rim|spec/.test(matName)){
+      child.material.color.set(0xFF5500);
+      child.material.roughness=0.2;
+      child.material.metalness=0.7;
+    }
+    // ── BUST / EVERYTHING ELSE — deep purple ────────────────────────────────
     else{
-      child.material.color.set(0x7B2FBE);
-      child.material.roughness=0.55;
-      child.material.metalness=0.3;
+      child.material.color.set(0x3D0066);
+      child.material.roughness=0.6;
+      child.material.metalness=0.25;
     }
     child.material.needsUpdate=true;
   });

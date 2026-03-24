@@ -44,8 +44,8 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 .dp-header{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 28px;border-bottom:0.5px solid #1A3A1A;flex-shrink:0}
 .dp-num{font-size:8px;letter-spacing:0.3em;color:#C8901A;margin-bottom:5px}
 .dp-name{font-size:18px;letter-spacing:0.04em;color:#E8F0D8;text-transform:uppercase;line-height:1.25;max-width:600px}
-.dp-close{font-size:10px;letter-spacing:0.2em;color:rgba(200,144,26,0.7);border:0.5px solid rgba(200,144,26,0.3);padding:8px 18px;cursor:pointer;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;flex-shrink:0;margin-left:20px;transition:all 0.2s}
-.dp-close:hover{border-color:#C8901A;color:#C8901A;background:rgba(200,144,26,0.08)}
+.dp-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#C8901A;border:1.5px solid rgba(200,144,26,0.5);border-radius:50%;cursor:pointer;background:rgba(200,144,26,0.08);box-shadow:0 0 10px rgba(200,144,26,0.35),inset 0 0 8px rgba(200,144,26,0.08);transition:all 0.2s;line-height:1;flex-shrink:0;margin-left:20px}
+.dp-close:hover{background:rgba(200,144,26,0.2);box-shadow:0 0 18px rgba(200,144,26,0.7),inset 0 0 14px rgba(200,144,26,0.15);border-color:#C8901A;transform:scale(1.1)}
 .dp-body{flex:1;display:flex;overflow:hidden}
 .dp-left{flex:0 0 40%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:24px;border-right:0.5px solid #1A3A1A;overflow-y:auto}
 .dp-img{max-width:100%;max-height:52vh;object-fit:contain;border:0.5px solid #1A3A1A}
@@ -94,8 +94,8 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 #nuPanel.open{display:flex}
 .nu-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(57,255,20,0.3);flex-shrink:0;background:rgba(57,255,20,0.06)}
 .nu-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#39FF14;text-shadow:0 0 10px #39FF14}
-.nu-close{font-size:8px;letter-spacing:0.2em;color:rgba(57,255,20,0.7);border:0.5px solid rgba(57,255,20,0.4);padding:5px 14px;cursor:pointer;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;transition:all 0.2s}
-.nu-close:hover{border-color:#39FF14;color:#39FF14;background:rgba(57,255,20,0.1)}
+.nu-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#39FF14;border:1.5px solid rgba(57,255,20,0.5);border-radius:50%;cursor:pointer;background:rgba(57,255,20,0.08);box-shadow:0 0 10px #39FF1455,inset 0 0 8px rgba(57,255,20,0.08);transition:all 0.2s;line-height:1;flex-shrink:0}
+.nu-close:hover{background:rgba(57,255,20,0.2);box-shadow:0 0 18px #39FF14AA,inset 0 0 14px rgba(57,255,20,0.15);border-color:#39FF14;transform:scale(1.1)}
 .nu-body{flex:1;display:flex;overflow:hidden;min-height:0}
 .nu-left{flex:0 0 42%;padding:16px;border-right:1px solid rgba(57,255,20,0.2);display:flex;flex-direction:column;gap:12px;overflow-y:auto}
 .nu-desc{font-size:9.5px;line-height:1.85;color:rgba(180,255,180,0.85);text-transform:none;letter-spacing:0.03em;font-family:Georgia,serif}
@@ -124,8 +124,8 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 #rbPanel.open{display:flex}
 .rb-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(191,95,255,0.3);flex-shrink:0;background:rgba(191,95,255,0.06)}
 .rb-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#BF5FFF;text-shadow:0 0 10px #BF5FFF}
-.rb-close{font-size:8px;letter-spacing:0.2em;color:rgba(191,95,255,0.7);border:0.5px solid rgba(191,95,255,0.4);padding:5px 14px;cursor:pointer;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;transition:all 0.2s}
-.rb-close:hover{border-color:#BF5FFF;color:#BF5FFF;background:rgba(191,95,255,0.1)}
+.rb-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#BF5FFF;border:1.5px solid rgba(191,95,255,0.5);border-radius:50%;cursor:pointer;background:rgba(191,95,255,0.08);box-shadow:0 0 10px #BF5FFF55,inset 0 0 8px rgba(191,95,255,0.08);transition:all 0.2s;line-height:1;flex-shrink:0}
+.rb-close:hover{background:rgba(191,95,255,0.2);box-shadow:0 0 18px #BF5FFFAA,inset 0 0 14px rgba(191,95,255,0.15);border-color:#BF5FFF;transform:scale(1.1)}
 .rb-body{flex:1;display:flex;overflow:hidden;min-height:0}
 .rb-left{flex:0 0 44%;padding:16px 18px;border-right:1px solid rgba(191,95,255,0.2);display:flex;flex-direction:column;gap:10px;overflow-y:auto}
 .rb-left::-webkit-scrollbar{width:3px}.rb-left::-webkit-scrollbar-track{background:#060D06}.rb-left::-webkit-scrollbar-thumb{background:#BF5FFF44}
@@ -169,8 +169,8 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
   66%{color:#0088FF;text-shadow:0 0 8px #0088FF}
   100%{color:#FF0000;text-shadow:0 0 8px #FF0000}
 }
-.tr-close{font-size:8px;letter-spacing:0.2em;color:rgba(255,255,255,0.6);border:0.5px solid rgba(255,255,255,0.3);padding:5px 14px;cursor:pointer;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;transition:all 0.2s}
-.tr-close:hover{border-color:#fff;color:#fff}
+.tr-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:rgba(255,255,255,0.85);border:1.5px solid rgba(255,255,255,0.4);border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.07);box-shadow:0 0 10px rgba(255,255,255,0.2),inset 0 0 8px rgba(255,255,255,0.05);transition:all 0.2s;line-height:1;flex-shrink:0}
+.tr-close:hover{background:rgba(255,255,255,0.18);box-shadow:0 0 18px rgba(255,255,255,0.5),inset 0 0 14px rgba(255,255,255,0.1);border-color:#fff;transform:scale(1.1)}
 .tr-body{flex:1;display:flex;overflow:hidden;min-height:0}
 .tr-left{flex:0 0 44%;padding:16px 18px;border-right:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;gap:10px;overflow-y:auto}
 .tr-left::-webkit-scrollbar{width:3px}.tr-left::-webkit-scrollbar-track{background:#0a0a0a}.tr-left::-webkit-scrollbar-thumb{background:#ffffff33}
@@ -223,7 +223,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
       <div class="dp-num" id="dpNum"></div>
       <div class="dp-name" id="dpName"></div>
     </div>
-    <button class="dp-close" onclick="closeDetail()">&#10005; Close</button>
+    <button class="dp-close" onclick="closeDetail()">&#10005;</button>
   </div>
   <div class="dp-body">
     <div class="dp-left">
@@ -281,7 +281,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 <div id="nuPanel">
   <div class="nu-header">
     <div class="nu-title">&#9670; NEWPEPEDESU &#9670;</div>
-    <button class="nu-close" onclick="closeNuPanel()">&#10005; Close</button>
+    <button class="nu-close" onclick="closeNuPanel()">&#10005;</button>
   </div>
   <div class="nu-body">
     <div class="nu-left">
@@ -303,7 +303,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 <div id="rbPanel">
   <div class="rb-header">
     <div class="rb-title">&#9670; ROBNESS &mdash; CRYPTOARTIST DOSSIER &#9670;</div>
-    <button class="rb-close" onclick="closeRbPanel()">&#10005; Close</button>
+    <button class="rb-close" onclick="closeRbPanel()">&#10005;</button>
   </div>
   <div class="rb-body">
     <div class="rb-left">
@@ -335,7 +335,7 @@ HE IS THE CREATOR OF THE MASTERPEPES MUSEUM — THE PROJECT YOU ARE STANDING IN 
 <div id="trashPanel">
   <div class="tr-header">
     <div class="tr-title">&#9670; 64 GALLON TOTER &mdash; THE #TRASHART ORIGIN &#9670;</div>
-    <button class="tr-close" onclick="closeTrashPanel()">&#10005; Close</button>
+    <button class="tr-close" onclick="closeTrashPanel()">&#10005;</button>
   </div>
   <div class="tr-body">
     <div class="tr-left">

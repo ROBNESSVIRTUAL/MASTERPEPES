@@ -745,30 +745,29 @@ loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
   robnessModel=m;
   m.traverse(child=>{
     if(!child.isMesh) return;
-    const name=(child.name||'').toLowerCase();
-    const matName=((child.material&&child.material.name)||'').toLowerCase();
-    console.log('ROBNESS mesh:',child.name,'| mat:',matName);
+    const n=child.name;
     child.material=child.material.clone();
-    // ── LENSES / EYES — pure black, no reflections ──────────────────────────
-    if(/lens|glass|visor|eye|pupil|iris|cornea/.test(name)||/lens|glass|visor|eye|pupil/.test(matName)){
+    // ── LENSES — opaque black ────────────────────────────────────────────────
+    if(n==='shades-lenses'){
       child.material.color.set(0x000000);
+      child.material.transparent=false;
+      child.material.opacity=1.0;
       child.material.roughness=0.0;
       child.material.metalness=0.0;
-      if(child.material.transparent!==undefined) child.material.transparent=false;
     }
-    // ── ELECTRODES / HEAD TECH — black ─────────────────────────────────────
-    else if(/electrod|antenna|spike|probe|node|wire|port|jack|plug|bolt|stud|knob|pin/.test(name)||/electrod|antenna|spike|probe|node|wire|port/.test(matName)){
-      child.material.color.set(0x080808);
-      child.material.roughness=0.4;
-      child.material.metalness=0.7;
-    }
-    // ── FRAMES / SHADES — vivid orange ──────────────────────────────────────
-    else if(/frame|shade|sunglass|rim|spec|brow|temple|bridge|hinge/.test(name)||/frame|shade|sunglass|rim|spec/.test(matName)){
-      child.material.color.set(0xFF5500);
+    // ── SHADE FRAMES — vivid orange ──────────────────────────────────────────
+    else if(n==='shades-Mat.3'){
+      child.material.color.set(0xFF4400);
       child.material.roughness=0.2;
       child.material.metalness=0.7;
     }
-    // ── BUST / EVERYTHING ELSE — deep purple ────────────────────────────────
+    // ── HEAD GEAR + BOLTS — black electrodes ────────────────────────────────
+    else if(n==='head gear'||n==='bolt'||n.startsWith('Bolt_')){
+      child.material.color.set(0x080808);
+      child.material.roughness=0.4;
+      child.material.metalness=0.8;
+    }
+    // ── BODY — deep purple bust ──────────────────────────────────────────────
     else{
       child.material.color.set(0x3D0066);
       child.material.roughness=0.6;

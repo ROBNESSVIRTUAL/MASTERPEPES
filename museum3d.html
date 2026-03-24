@@ -775,6 +775,24 @@ loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
 let nuPepeDesuModel=null;
 loadStatue('NUPEPEDESU.glb', 0, 705, 20, Math.PI, 'NuPepeDesu', (m)=>{
   nuPepeDesuModel=m;
+  // Material map from GLB inspection:
+  // 'White Glossy' → off-white / Japanese characters (metal=1 → dark without emissive)
+  // 'Mat'          → Pepe green
+  // 'Mat.1'        → dark red-brown accent
+  // 'Mat.2'        → blue (metal=1 → dark without emissive)
+  // 'Mat.3'        → black outlines
+  const matMap={
+    'White Glossy': new THREE.MeshStandardMaterial({color:0xF5F0E8, emissive:0xCCBFA8, emissiveIntensity:0.55, roughness:0.15, metalness:0.2}),
+    'Mat':          new THREE.MeshStandardMaterial({color:0x3DB81A, emissive:0x1A6606, emissiveIntensity:0.5,  roughness:0.35, metalness:0.2}),
+    'Mat.1':        new THREE.MeshStandardMaterial({color:0xA02010, emissive:0x500808, emissiveIntensity:0.4,  roughness:0.35, metalness:0.2}),
+    'Mat.2':        new THREE.MeshStandardMaterial({color:0x2060CC, emissive:0x0A2A88, emissiveIntensity:0.5,  roughness:0.15, metalness:0.2}),
+    'Mat.3':        new THREE.MeshStandardMaterial({color:0x080808, emissive:0x000000, emissiveIntensity:0.0,  roughness:0.7,  metalness:0.0}),
+  };
+  m.traverse(child=>{
+    if(!child.isMesh) return;
+    const mn=child.material?child.material.name:'';
+    if(matMap[mn]) child.material=matMap[mn];
+  });
 });
 
 // Room 4 (z=975): Kek Statue

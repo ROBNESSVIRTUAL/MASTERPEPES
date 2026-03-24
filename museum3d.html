@@ -106,6 +106,37 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 .nu-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(57,255,20,0.5);padding:6px 12px;border-bottom:0.5px solid rgba(57,255,20,0.2);flex-shrink:0}
 .nu-iframe{flex:1;width:100%;border:none;background:#000}
 .nu-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#39FF14;text-shadow:0 0 8px #39FF14;display:none;pointer-events:none;animation:holoFlicker 2s infinite}
+
+/* ── ROBNESS HOLOGRAPHIC PANEL ────────────────────────────────────────────── */
+#rbPanel{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(720px,94vw);height:min(560px,90vh);
+  display:none;flex-direction:column;
+  background:rgba(4,0,12,0.93);
+  border:1px solid #BF5FFF;
+  border-radius:12px;
+  box-shadow:0 0 30px #BF5FFF66,0 0 80px #BF5FFF22,inset 0 0 40px rgba(191,95,255,0.04);
+  z-index:400;
+  overflow:hidden;
+  animation:rbFlicker 8s infinite;
+}
+@keyframes rbFlicker{0%,100%{box-shadow:0 0 30px #BF5FFF66,0 0 80px #BF5FFF22,inset 0 0 40px rgba(191,95,255,0.04)}50%{box-shadow:0 0 44px #BF5FFF99,0 0 110px #BF5FFF33,inset 0 0 55px rgba(191,95,255,0.08)}}
+#rbPanel.open{display:flex}
+.rb-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(191,95,255,0.3);flex-shrink:0;background:rgba(191,95,255,0.06)}
+.rb-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#BF5FFF;text-shadow:0 0 10px #BF5FFF}
+.rb-close{font-size:8px;letter-spacing:0.2em;color:rgba(191,95,255,0.7);border:0.5px solid rgba(191,95,255,0.4);padding:5px 14px;cursor:pointer;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;transition:all 0.2s}
+.rb-close:hover{border-color:#BF5FFF;color:#BF5FFF;background:rgba(191,95,255,0.1)}
+.rb-body{flex:1;display:flex;overflow:hidden;min-height:0}
+.rb-left{flex:0 0 44%;padding:16px 18px;border-right:1px solid rgba(191,95,255,0.2);display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.rb-left::-webkit-scrollbar{width:3px}.rb-left::-webkit-scrollbar-track{background:#060D06}.rb-left::-webkit-scrollbar-thumb{background:#BF5FFF44}
+.rb-desc{font-size:9.5px;line-height:1.9;color:rgba(220,190,255,0.85);text-transform:none;letter-spacing:0.03em;font-family:Georgia,serif}
+.rb-links{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.rb-link{font-size:7px;letter-spacing:0.18em;color:rgba(191,95,255,0.85);border:0.5px solid rgba(191,95,255,0.35);padding:5px 10px;text-decoration:none;transition:all 0.2s;text-align:center;text-transform:uppercase}
+.rb-link:hover{border-color:#BF5FFF;color:#BF5FFF;background:rgba(191,95,255,0.08)}
+.rb-right{flex:1;display:flex;flex-direction:column;min-height:0}
+.rb-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(191,95,255,0.5);padding:6px 12px;border-bottom:0.5px solid rgba(191,95,255,0.2);flex-shrink:0}
+.rb-iframe{flex:1;width:100%;border:none;background:#000}
+.rb-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#BF5FFF;text-shadow:0 0 8px #BF5FFF;display:none;pointer-events:none;animation:rbFlicker 2s infinite}
 </style>
 </head>
 <body>
@@ -222,6 +253,36 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
   </div>
 </div>
 <div class="nu-proximity" id="nuProximity">&#9654; CLICK TO INSPECT NEWPEPEDESU</div>
+
+<!-- ── ROBNESS DOSSIER PANEL ──────────────────────────────────────────────── -->
+<div id="rbPanel">
+  <div class="rb-header">
+    <div class="rb-title">&#9670; ROBNESS &mdash; CRYPTOARTIST DOSSIER &#9670;</div>
+    <button class="rb-close" onclick="closeRbPanel()">&#10005; Close</button>
+  </div>
+  <div class="rb-body">
+    <div class="rb-left">
+      <div class="rb-desc">ROBNESS IS ONE OF THE MOST SIGNIFICANT PIONEERING FIGURES IN THE HISTORY OF CRYPTOART. HIS INVOLVEMENT IN THE SPACE DATES TO ITS EARLIEST INCEPTION — AMONG THE FIRST ARTISTS TO MINT ON BITCOIN'S COUNTERPARTY PROTOCOL, HE BECAME A FOUNDING CONTRIBUTOR TO THE RARE PEPE TRADING CARD COLLECTION BEGINNING IN 2016, HELPING GROW WHAT WOULD BECOME THE FIRST TRULY DECENTRALIZED CRYPTOART COMMUNITY AND AN EARLY PROOF-OF-CONCEPT FOR WHAT THE WORLD WOULD LATER CALL NON-FUNGIBLE TOKENS. HIS DEBUT WORK, PEPEBEEFTAXI, WAS MINTED ON THE BITCOIN BLOCKCHAIN THAT SAME YEAR.
+
+IN 2019, ROBNESS BROUGHT HIS PRACTICE TO SUPERRARE, KNOWORIGIN, AND OPENSEA. IN 2020 HE CREATED 64 GALLON TOTER — A GLITCHED GIF OF A TRASH CAN — WHICH SUPERRARE REMOVED FROM THE PLATFORM IN A COPYRIGHT DISPUTE, MAKING IT THE FIRST WORK EVER PULLED FROM A CRYPTOART COLLECTION. THE INCIDENT IGNITED THE GLOBAL #TRASHART MOVEMENT, INSPIRED THOUSANDS OF TRIBUTE WORKS WORLDWIDE, AND WON THE PEOPLE'S CHOICE AWARD AT THE 2020 NFT AWARDS. THE ACT IS WIDELY COMPARED TO DUCHAMP'S FOUNTAIN — A DIRECT CHALLENGE TO WHO DECIDES WHAT CONSTITUTES ART.
+
+ROBNESS HAS SINCE BURNED A CRYPTOPUNK (#2317) AND A BORED APE, EXHIBITED IN THE HERMITAGE MUSEUM'S DIGITAL COLLECTION, AND APPEARED IN A SOTHEBY'S SALE. DESCRIBED AS CONSISTENTLY INCONSISTENT, HIS STYLE HAS EVOLVED ACROSS VAPORWAVE, GLITCH, CYBERPOP, ABSTRACT DIGITAL PAINTING, 3D, AND PERFORMANCE — OFTEN OPERATING UNDER ANONYMOUS PERSONAS INCLUDING ZORRO AND DIGITAL ART BITCH TO EXPLORE IDENTITY AND INFLUENCE IN THE DIGITAL PUBLIC SQUARE.
+
+HE IS THE CREATOR OF THE MASTERPEPES MUSEUM — THE PROJECT YOU ARE STANDING IN RIGHT NOW — A 3D INTERACTIVE MONUMENT TO THE FULL ARC OF CRYPTOART HISTORY, FROM CAVE WALL TO BLOCKCHAIN.</div>
+      <div class="rb-links">
+        <a class="rb-link" href="https://robness.io" target="_blank" rel="noopener">&#9654; Robness.io</a>
+        <a class="rb-link" href="https://superrare.com/robness" target="_blank" rel="noopener">&#9654; SuperRare</a>
+        <a class="rb-link" href="https://opensea.io/cyberpopgallery" target="_blank" rel="noopener">&#9654; OpenSea</a>
+        <a class="rb-link" href="https://twitter.com/robnessofficial" target="_blank" rel="noopener">&#9654; Twitter / X</a>
+      </div>
+    </div>
+    <div class="rb-right">
+      <div class="rb-iframe-label">&#9632; ROBNESS.IO</div>
+      <iframe class="rb-iframe" src="https://robness.io" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+<div class="rb-proximity" id="rbProximity">&#9654; CLICK TO VIEW ROBNESS DOSSIER</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
@@ -677,7 +738,10 @@ loadStatue('masterpepes_book.glb', 0, 165, 14, 0, 'Book', (m)=>{
 });
 
 // Room 2 (z=435): Robness
-loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', null);
+let robnessModel=null;
+loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
+  robnessModel=m;
+});
 
 // Room 3 (z=705): Nu Pepe Desu
 let nuPepeDesuModel=null;
@@ -1223,7 +1287,45 @@ function rippleLoad(startId){
   order.forEach((ring,i)=>setTimeout(()=>ring.forEach(loadRoomArtworks), i*800));
 }
 
-// ── NUPEPEDESU HOLOGRAPHIC PANEL ──────────────────────────────────────────────
+// ── ROBNESS DOSSIER PANEL ──────────────────────────────────────────────────────
+const rbPanelEl=document.getElementById('rbPanel');
+const rbProxEl=document.getElementById('rbProximity');
+const rbRaycaster=new THREE.Raycaster();
+let rbPanelOpen=false;
+
+function openRbPanel(){
+  rbPanelOpen=true;
+  rbPanelEl.classList.add('open');
+  rbProxEl.style.display='none';
+  try{document.exitPointerLock();}catch(e){}
+  locked=false;
+  Object.keys(keys).forEach(k=>keys[k]=false);
+}
+function closeRbPanel(){
+  rbPanelOpen=false;
+  rbPanelEl.classList.remove('open');
+  try{rc.requestPointerLock();}catch(e){}
+}
+
+function detectRobness(){
+  if(!robnessModel||rbPanelOpen)return;
+  const dist=camera.position.distanceTo(new THREE.Vector3(0,camera.position.y,435));
+  rbProxEl.style.display=dist<22?'block':'none';
+}
+
+function tryPickRobness(clientX,clientY){
+  if(!robnessModel||rbPanelOpen)return false;
+  const nx=(clientX/innerWidth)*2-1;
+  const ny=-(clientY/innerHeight)*2+1;
+  rbRaycaster.setFromCamera({x:nx,y:ny},camera);
+  const hits=rbRaycaster.intersectObject(robnessModel,true);
+  if(hits.length){openRbPanel();return true;}
+  return false;
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.code==='Escape'&&rbPanelOpen){e.stopPropagation();closeRbPanel();}
+});
 const nuPanelEl=document.getElementById('nuPanel');
 const nuProxEl=document.getElementById('nuProximity');
 const nuRaycaster=new THREE.Raycaster();
@@ -1425,8 +1527,10 @@ rc.addEventListener('click',e=>{
   if(!entered)return;
   if(document.getElementById('detailPanel').classList.contains('open'))return;
   if(nuPanelOpen)return;
+  if(rbPanelOpen)return;
   const x=locked?innerWidth/2:e.clientX;
   const y=locked?innerHeight/2:e.clientY;
+  if(tryPickRobness(x,y))return;
   if(tryPickNuPepeDesu(x,y))return;
   tryPickArt(x,y);
 });
@@ -1441,6 +1545,7 @@ rc.addEventListener('touchend',e=>{
   if(e.changedTouches.length===1){
     const dx=e.changedTouches[0].clientX-tapX, dy=e.changedTouches[0].clientY-tapY;
     if(Date.now()-tapT<280 && dx*dx+dy*dy<144 && e.changedTouches[0].clientX>innerWidth*0.4){
+      if(tryPickRobness(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickNuPepeDesu(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       tryPickArt(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
     }
@@ -1486,7 +1591,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(dpState.lt) mDir.x-=1;
     if(dpState.rt) mDir.x+=1;
     if(mDir.length()>0){const spd=keys['ShiftLeft']||keys['ShiftRight']||dpState.run?RUN:WALK;mDir.normalize().multiplyScalar(spd);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
-    camera.position.y=1.7;detectRoom();detectArt();detectNuPepeDesu();drawMap();
+    camera.position.y=1.7;detectRoom();detectArt();detectNuPepeDesu();detectRobness();drawMap();
   }
   skyMesh.position.x=camera.position.x;skyMesh.position.z=camera.position.z;
   renderer.render(scene,camera);

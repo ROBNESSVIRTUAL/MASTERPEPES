@@ -84,14 +84,16 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
   display:none;flex-direction:column;
   background:rgba(0,8,0,0.92);
   border:1px solid #39FF14;
+  border-radius:12px;
   box-shadow:0 0 30px #39FF1466,0 0 80px #39FF1422,inset 0 0 40px rgba(57,255,20,0.04);
   z-index:400;
+  overflow:hidden;
   animation:holoFlicker 8s infinite;
 }
 @keyframes holoFlicker{0%,100%{box-shadow:0 0 30px #39FF1466,0 0 80px #39FF1422,inset 0 0 40px rgba(57,255,20,0.04)}50%{box-shadow:0 0 40px #39FF1499,0 0 100px #39FF1433,inset 0 0 50px rgba(57,255,20,0.07)}}
 #nuPanel.open{display:flex}
 .nu-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(57,255,20,0.3);flex-shrink:0;background:rgba(57,255,20,0.06)}
-.nu-title{font-family:'Cinzel Decorative',serif;font-size:10px;letter-spacing:0.35em;color:#39FF14;text-shadow:0 0 10px #39FF14}
+.nu-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#39FF14;text-shadow:0 0 10px #39FF14}
 .nu-close{font-size:8px;letter-spacing:0.2em;color:rgba(57,255,20,0.7);border:0.5px solid rgba(57,255,20,0.4);padding:5px 14px;cursor:pointer;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;transition:all 0.2s}
 .nu-close:hover{border-color:#39FF14;color:#39FF14;background:rgba(57,255,20,0.1)}
 .nu-body{flex:1;display:flex;overflow:hidden;min-height:0}
@@ -102,7 +104,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 .nu-link:hover{border-color:#39FF14;color:#39FF14;background:rgba(57,255,20,0.08)}
 .nu-right{flex:1;display:flex;flex-direction:column;min-height:0}
 .nu-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(57,255,20,0.5);padding:6px 12px;border-bottom:0.5px solid rgba(57,255,20,0.2);flex-shrink:0}
-.nu-iframe{flex:1;width:100%;border:none;background:#000;filter:hue-rotate(90deg) saturate(0.6) brightness(0.9)}
+.nu-iframe{flex:1;width:100%;border:none;background:#000}
 .nu-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#39FF14;text-shadow:0 0 8px #39FF14;display:none;pointer-events:none;animation:holoFlicker 2s infinite}
 </style>
 </head>

@@ -756,11 +756,11 @@ loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
     if(mn==='lenses'){
       child.material = MAT_LENS;
     }
-    // Bolts material (Bolt_1..5)
-    else if(mn==='Bolts'){
+    // Bolts material (Bolt_1..5) + unnamed 'bolt' node
+    else if(mn==='Bolts' || nn==='bolt' || nn==='head gear'){
       child.material = MAT_BOLTS;
     }
-    // Mat.3 is shared by 'shades-Mat.3' (frames) AND 'head gear' — split by node name
+    // Mat.3 shared by shades-Mat.3 (frames) and head gear — split by node name
     else if(mn==='Mat.3'){
       child.material = (nn.indexOf('shade')!==-1) ? MAT_FRAMES : MAT_BOLTS;
     }

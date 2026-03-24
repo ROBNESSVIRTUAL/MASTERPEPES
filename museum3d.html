@@ -76,6 +76,34 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 
 #back{position:fixed;top:20px;left:20px;font-size:9px;letter-spacing:0.22em;color:rgba(200,144,26,0.75);border:0.5px solid rgba(200,144,26,0.25);padding:7px 16px;cursor:pointer;background:rgba(3,6,3,0.75);text-decoration:none;display:none;transition:all 0.2s}
 #back:hover{border-color:#C8901A;background:rgba(200,144,26,0.1)}
+
+/* ── NUPEPEDESU HOLOGRAPHIC PANEL ─────────────────────────────────────────── */
+#nuPanel{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(680px,92vw);height:min(520px,88vh);
+  display:none;flex-direction:column;
+  background:rgba(0,8,0,0.92);
+  border:1px solid #39FF14;
+  box-shadow:0 0 30px #39FF1466,0 0 80px #39FF1422,inset 0 0 40px rgba(57,255,20,0.04);
+  z-index:400;
+  animation:holoFlicker 8s infinite;
+}
+@keyframes holoFlicker{0%,100%{box-shadow:0 0 30px #39FF1466,0 0 80px #39FF1422,inset 0 0 40px rgba(57,255,20,0.04)}50%{box-shadow:0 0 40px #39FF1499,0 0 100px #39FF1433,inset 0 0 50px rgba(57,255,20,0.07)}}
+#nuPanel.open{display:flex}
+.nu-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(57,255,20,0.3);flex-shrink:0;background:rgba(57,255,20,0.06)}
+.nu-title{font-family:'Cinzel Decorative',serif;font-size:10px;letter-spacing:0.35em;color:#39FF14;text-shadow:0 0 10px #39FF14}
+.nu-close{font-size:8px;letter-spacing:0.2em;color:rgba(57,255,20,0.7);border:0.5px solid rgba(57,255,20,0.4);padding:5px 14px;cursor:pointer;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;transition:all 0.2s}
+.nu-close:hover{border-color:#39FF14;color:#39FF14;background:rgba(57,255,20,0.1)}
+.nu-body{flex:1;display:flex;overflow:hidden;min-height:0}
+.nu-left{flex:0 0 42%;padding:16px;border-right:1px solid rgba(57,255,20,0.2);display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+.nu-desc{font-size:9.5px;line-height:1.85;color:rgba(180,255,180,0.85);text-transform:none;letter-spacing:0.03em;font-family:Georgia,serif}
+.nu-links{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.nu-link{font-size:7px;letter-spacing:0.18em;color:rgba(57,255,20,0.8);border:0.5px solid rgba(57,255,20,0.3);padding:5px 10px;text-decoration:none;transition:all 0.2s;text-align:center;text-transform:uppercase}
+.nu-link:hover{border-color:#39FF14;color:#39FF14;background:rgba(57,255,20,0.08)}
+.nu-right{flex:1;display:flex;flex-direction:column;min-height:0}
+.nu-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(57,255,20,0.5);padding:6px 12px;border-bottom:0.5px solid rgba(57,255,20,0.2);flex-shrink:0}
+.nu-iframe{flex:1;width:100%;border:none;background:#000;filter:hue-rotate(90deg) saturate(0.6) brightness(0.9)}
+.nu-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#39FF14;text-shadow:0 0 8px #39FF14;display:none;pointer-events:none;animation:holoFlicker 2s infinite}
 </style>
 </head>
 <body>
@@ -170,6 +198,28 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 </div>
 <div id="look-hint">DRAG RIGHT SIDE<br>TO LOOK AROUND<br>TAP &#9679; TO RUN</div>
 <a href="index.html" id="back">&#8592; Exit Museum</a>
+
+<!-- ── NUPEPEDESU HOLOGRAPHIC PANEL ──────────────────────────────────────── -->
+<div id="nuPanel">
+  <div class="nu-header">
+    <div class="nu-title">&#9670; NEWPEPEDESU &#9670;</div>
+    <button class="nu-close" onclick="closeNuPanel()">&#10005; Close</button>
+  </div>
+  <div class="nu-body">
+    <div class="nu-left">
+      <div class="nu-desc">NEWPEPEDESU IS A PEPE THAT WAS MADE AS A COLLABORATION BETWEEN PEEPS AND ROBNESS FOR THE FAKERARE PROJECT CREATED BY FELLOW RAREPEPE LEGEND RARESCRILLA. THIS ASSET WAS MADE PRIOR TO THIS PROJECT IN THE YEAR 2022. FOR MORE INFORMATION ON ALL THINGS RAREPEPE PLEASE VISIT PEPE.WTF, IT IS ONE OF THE MOST THOROUGHLY RESEARCHED WEBSITES CONCERNING THE WORLD OF PEPES ON THE BLOCKCHAIN.</div>
+      <div class="nu-links">
+        <a class="nu-link" href="https://tokenscan.io/asset/NEWPEPEDESU" target="_blank" rel="noopener">&#9654; View on TokenScan</a>
+        <a class="nu-link" href="https://pepe.wtf" target="_blank" rel="noopener">&#9654; Pepe.wtf</a>
+      </div>
+    </div>
+    <div class="nu-right">
+      <div class="nu-iframe-label">&#9632; LIVE TOKEN DATA</div>
+      <iframe class="nu-iframe" src="https://tokenscan.io/asset/NEWPEPEDESU" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+<div class="nu-proximity" id="nuProximity">&#9654; CLICK TO INSPECT NEWPEPEDESU</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
@@ -628,7 +678,10 @@ loadStatue('masterpepes_book.glb', 0, 165, 14, 0, 'Book', (m)=>{
 loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', null);
 
 // Room 3 (z=705): Nu Pepe Desu
-loadStatue('NUPEPEDESU.glb', 0, 705, 20, Math.PI, 'NuPepeDesu', null);
+let nuPepeDesuModel=null;
+loadStatue('NUPEPEDESU.glb', 0, 705, 20, Math.PI, 'NuPepeDesu', (m)=>{
+  nuPepeDesuModel=m;
+});
 
 // Room 4 (z=975): Kek Statue
 loadStatue('kekstatue.glb', 8, 975, 22, Math.PI, 'KekStatue', (m)=>{
@@ -1168,6 +1221,47 @@ function rippleLoad(startId){
   order.forEach((ring,i)=>setTimeout(()=>ring.forEach(loadRoomArtworks), i*800));
 }
 
+// ── NUPEPEDESU HOLOGRAPHIC PANEL ──────────────────────────────────────────────
+const nuPanelEl=document.getElementById('nuPanel');
+const nuProxEl=document.getElementById('nuProximity');
+const nuRaycaster=new THREE.Raycaster();
+let nuPanelOpen=false;
+
+function openNuPanel(){
+  nuPanelOpen=true;
+  nuPanelEl.classList.add('open');
+  nuProxEl.style.display='none';
+  try{document.exitPointerLock();}catch(e){}
+  locked=false;
+  Object.keys(keys).forEach(k=>keys[k]=false);
+}
+function closeNuPanel(){
+  nuPanelOpen=false;
+  nuPanelEl.classList.remove('open');
+  try{rc.requestPointerLock();}catch(e){}
+}
+
+function detectNuPepeDesu(){
+  if(!nuPepeDesuModel||nuPanelOpen)return;
+  const dist=camera.position.distanceTo(new THREE.Vector3(0,camera.position.y,705));
+  nuProxEl.style.display=dist<22?'block':'none';
+}
+
+function tryPickNuPepeDesu(clientX,clientY){
+  if(!nuPepeDesuModel||nuPanelOpen)return false;
+  const nx=(clientX/innerWidth)*2-1;
+  const ny=-(clientY/innerHeight)*2+1;
+  nuRaycaster.setFromCamera({x:nx,y:ny},camera);
+  const hits=nuRaycaster.intersectObject(nuPepeDesuModel,true);
+  if(hits.length){openNuPanel();return true;}
+  return false;
+}
+
+// ESC closes nu panel too
+document.addEventListener('keydown',e=>{
+  if(e.code==='Escape'&&nuPanelOpen){e.stopPropagation();closeNuPanel();}
+});
+
 // ── DETECTION ─────────────────────────────────────────────────────────────────
 let curRoom=null,lastArt=null;
 const ainfoEl=document.getElementById('ainfo');
@@ -1328,8 +1422,10 @@ function tryPickArt(clientX, clientY){
 rc.addEventListener('click',e=>{
   if(!entered)return;
   if(document.getElementById('detailPanel').classList.contains('open'))return;
+  if(nuPanelOpen)return;
   const x=locked?innerWidth/2:e.clientX;
   const y=locked?innerHeight/2:e.clientY;
+  if(tryPickNuPepeDesu(x,y))return;
   tryPickArt(x,y);
 });
 
@@ -1343,6 +1439,7 @@ rc.addEventListener('touchend',e=>{
   if(e.changedTouches.length===1){
     const dx=e.changedTouches[0].clientX-tapX, dy=e.changedTouches[0].clientY-tapY;
     if(Date.now()-tapT<280 && dx*dx+dy*dy<144 && e.changedTouches[0].clientX>innerWidth*0.4){
+      if(tryPickNuPepeDesu(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       tryPickArt(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
     }
   }
@@ -1387,7 +1484,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(dpState.lt) mDir.x-=1;
     if(dpState.rt) mDir.x+=1;
     if(mDir.length()>0){const spd=keys['ShiftLeft']||keys['ShiftRight']||dpState.run?RUN:WALK;mDir.normalize().multiplyScalar(spd);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
-    camera.position.y=1.7;detectRoom();detectArt();drawMap();
+    camera.position.y=1.7;detectRoom();detectArt();detectNuPepeDesu();drawMap();
   }
   skyMesh.position.x=camera.position.x;skyMesh.position.z=camera.position.z;
   renderer.render(scene,camera);

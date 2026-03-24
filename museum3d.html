@@ -741,6 +741,34 @@ loadStatue('masterpepes_book.glb', 0, 165, 14, 0, 'Book', (m)=>{
 let robnessModel=null;
 loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
   robnessModel=m;
+  // Recolour the bust: purple body, orange frames, black lenses
+  m.traverse(child=>{
+    if(!child.isMesh) return;
+    const name=(child.name||'').toLowerCase();
+    const matName=((child.material&&child.material.name)||'').toLowerCase();
+    // Log every mesh so we can see what's in the file
+    console.log('ROBNESS mesh:',child.name,'mat:',matName);
+    child.material=child.material.clone(); // don't mutate shared materials
+    // Lenses / glass — anything with "lens","glass","visor","eye" in name, or very dark existing color
+    if(/lens|glass|visor|eye/.test(name)||/lens|glass|visor|eye/.test(matName)){
+      child.material.color.set(0x000000);
+      child.material.roughness=0.05;
+      child.material.metalness=0.1;
+    }
+    // Frames / shades — anything with "frame","shade","glass","sunglass","rim" in name
+    else if(/frame|shade|sunglass|rim|spec/.test(name)||/frame|shade|sunglass|rim|spec/.test(matName)){
+      child.material.color.set(0xFF6A00);
+      child.material.roughness=0.3;
+      child.material.metalness=0.6;
+    }
+    // Everything else (bust/skin/base) → purple
+    else{
+      child.material.color.set(0x7B2FBE);
+      child.material.roughness=0.55;
+      child.material.metalness=0.3;
+    }
+    child.material.needsUpdate=true;
+  });
 });
 
 // Room 3 (z=705): Nu Pepe Desu

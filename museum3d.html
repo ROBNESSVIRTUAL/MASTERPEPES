@@ -182,6 +182,40 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 .tr-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(255,255,255,0.35);padding:6px 12px;border-bottom:0.5px solid rgba(255,255,255,0.1);flex-shrink:0}
 .tr-iframe{flex:1;width:100%;border:none;background:#000}
 .tr-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#fff;display:none;pointer-events:none;animation:rgbText 3s linear infinite}
+
+/* ── LORD KEK DIVINE PANEL ───────────────────────────────────────────────── */
+#lkPanel{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(720px,94vw);height:min(560px,90vh);
+  display:none;flex-direction:column;
+  background:rgba(6,4,0,0.95);
+  border:1px solid #C8901A;
+  border-radius:12px;
+  box-shadow:0 0 35px #C8901A66,0 0 90px #C8901A22,inset 0 0 50px rgba(200,144,26,0.04);
+  z-index:400;
+  overflow:hidden;
+  animation:lkFlicker 6s infinite;
+}
+@keyframes lkFlicker{
+  0%,100%{box-shadow:0 0 35px #C8901A66,0 0 90px #C8901A22,inset 0 0 50px rgba(200,144,26,0.04)}
+  50%{box-shadow:0 0 50px #FFD70099,0 0 120px #FFD70033,inset 0 0 60px rgba(255,215,0,0.07)}
+}
+#lkPanel.open{display:flex}
+.lk-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(200,144,26,0.3);flex-shrink:0;background:rgba(200,144,26,0.06)}
+.lk-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#FFD700;text-shadow:0 0 12px #C8901A}
+.lk-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#C8901A;border:1.5px solid rgba(200,144,26,0.5);border-radius:50%;cursor:pointer;background:rgba(200,144,26,0.08);box-shadow:0 0 10px rgba(200,144,26,0.4),inset 0 0 8px rgba(200,144,26,0.08);transition:all 0.2s;line-height:1;flex-shrink:0}
+.lk-close:hover{background:rgba(200,144,26,0.22);box-shadow:0 0 20px rgba(200,144,26,0.8),inset 0 0 14px rgba(200,144,26,0.15);border-color:#FFD700;color:#FFD700;transform:scale(1.1)}
+.lk-body{flex:1;display:flex;overflow:hidden;min-height:0}
+.lk-left{flex:0 0 44%;padding:16px 18px;border-right:1px solid rgba(200,144,26,0.2);display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.lk-left::-webkit-scrollbar{width:3px}.lk-left::-webkit-scrollbar-track{background:#060400}.lk-left::-webkit-scrollbar-thumb{background:#C8901A44}
+.lk-desc{font-size:9.5px;line-height:1.9;color:rgba(255,240,190,0.88);text-transform:none;letter-spacing:0.03em;font-family:Georgia,serif}
+.lk-links{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.lk-link{font-size:7px;letter-spacing:0.18em;color:rgba(200,144,26,0.85);border:0.5px solid rgba(200,144,26,0.35);padding:5px 10px;text-decoration:none;transition:all 0.2s;text-align:center;text-transform:uppercase}
+.lk-link:hover{border-color:#FFD700;color:#FFD700;background:rgba(200,144,26,0.1)}
+.lk-right{flex:1;display:flex;flex-direction:column;min-height:0}
+.lk-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(200,144,26,0.5);padding:6px 12px;border-bottom:0.5px solid rgba(200,144,26,0.2);flex-shrink:0}
+.lk-iframe{flex:1;width:100%;border:none;background:#000}
+.lk-proximity{position:fixed;top:30%;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#FFD700;text-shadow:0 0 10px #C8901A;display:none;pointer-events:none;text-align:center;animation:lkFlicker 2s infinite}
 </style>
 </head>
 <body>
@@ -363,6 +397,37 @@ IN 2022, ROBNESS CURATED "#TRASHART: NFT GARBOLOGY" AT L'AVANT-GALERIE VOSSEN IN
   </div>
 </div>
 <div class="tr-proximity" id="trProximity">&#9654; CLICK TO VIEW #TRASHART ORIGIN</div>
+
+<!-- ── LORD KEK DIVINE PANEL ─────────────────────────────────────────────── -->
+<div id="lkPanel">
+  <div class="lk-header">
+    <div class="lk-title">&#9670; LORDKEK &mdash; DEITY OF THE RARE PEPES &#9670;</div>
+    <button class="lk-close" onclick="closeLkPanel()">&#10005;</button>
+  </div>
+  <div class="lk-body">
+    <div class="lk-left">
+      <div class="lk-desc">LORDKEK IS SERIES 1, CARD 34 OF THE RARE PEPE COLLECTION — ONE OF THE MOST LEGENDARY AND MYTHOLOGIZED ASSETS IN ALL OF BLOCKCHAIN ART HISTORY. IT IS CONSIDERED THE PRESIDING DEITY OF THE RARE PEPE UNIVERSE, A DIVINE FIGURE WHOSE CREATION STORY IS AS EXTRAORDINARY AS THE CARD ITSELF.
+
+THE CARD WAS MINTED ONTO THE BITCOIN BLOCKCHAIN VIA THE COUNTERPARTY PROTOCOL IN 2016 BY ROBNESS — THE SAME ARTIST BEHIND THIS VERY MUSEUM. THE ARTWORK WAS CREATED BY A SECOND ARTIST, @NEEDMONEY90. THE ORIGINAL ISSUANCE WAS 10 CARDS. HOWEVER, WHEN MINTING, ROBNESS ACCIDENTALLY MADE THE CARD INFINITELY DIVISIBLE — A CRITICAL MISTAKE THAT WOULD BECOME CENTRAL TO THE CARD'S MYTHOLOGY. AS COLLECTORS BEGAN TRADING FRACTIONAL AMOUNTS, THE CARD SHATTERED INTO COUNTLESS PARTICLES, KNOWN THROUGHOUT THE COMMUNITY AS "DUST."
+
+TODAY, ONLY 7 KNOWN ADDRESSES HOLD A COMPLETE LORDKEK CARD, AND THOSE HOLDERS ARE CONSIDERED EXTREMELY UNLIKELY TO SELL. THE ONLY DISPENSERS OFFERING LORDKEK ON THE OPEN MARKET SELL FRACTIONS AS SMALL AS .00001 — MAKING A WHOLE CARD PRACTICALLY UNATTAINABLE FOR ANY SINGLE COLLECTOR. THIS ACCIDENTAL FRAGMENTATION HAS MADE LORDKEK ONE OF THE RAREST AND MOST COVETED OBJECTS IN THE ENTIRE HISTORY OF CRYPTO COLLECTIBLES.
+
+WHEN ROBNESS AND NEEDMONEY90 WERE ASKED ABOUT THE DIVISIBILITY ACCIDENT, BOTH CONCLUDED INDEPENDENTLY THAT THE FORCES AT WORK WERE TOO POWERFUL TO BE MERE HUMAN ERROR. THEY AGREED: IT MUST HAVE BEEN KEK HIMSELF RESPONSIBLE FOR THE CREATION OF THE LORDKEK CARD. THE CARD IS WIDELY SPOKEN OF AS POSSESSING MYSTICAL PROPERTIES AND IS THEREFORE CONSIDERED MAGICAL BY THE RARE PEPE COMMUNITY. THE BOOK OF KEK — THE DEFINITIVE ENCYCLOPAEDIA OF THE RARE PEPE UNIVERSE MAINTAINED AT WIKI.PEPE.WTF — DESCRIBES IT SIMPLY AS "A DEITY OF THE RARE PEPES."
+
+KEK IS AN ANCIENT EGYPTIAN GOD OF PRIMORDIAL DARKNESS AND CHAOS, WORSHIPPED IN THE CITY OF HERMOPOLIS. IN INTERNET CULTURE, KEK BECAME SYNONYMOUS WITH LUCK, CHAOS, AND MEMETIC POWER — THE DIVINE FORCE BEHIND THE PROPAGATION OF RARE PEPES ACROSS THE BLOCKCHAIN. TO HOLD A GRAIN OF LORDKEK DUST IS, BY COMMUNITY BELIEF, TO HOLD A FRAGMENT OF THAT DIVINE ENERGY. LORD KEK PATROLS THIS MUSEUM FROM ABOVE — A PERPETUAL GUARDIAN OF THE 150 WORKS BELOW.</div>
+      <div class="lk-links">
+        <a class="lk-link" href="https://tokenscan.io/asset/LORDKEK" target="_blank" rel="noopener">&#9654; LORDKEK on TokenScan</a>
+        <a class="lk-link" href="https://wiki.pepe.wtf/chapter-2-the-rare-pepe-project/the-rare-pepe-blockchain-project/famous-rare-pepe-cards" target="_blank" rel="noopener">&#9654; Book of Kek — Famous Cards</a>
+        <a class="lk-link" href="https://pepe.wtf/asset/LORDKEK" target="_blank" rel="noopener">&#9654; Pepe.wtf — LORDKEK</a>
+      </div>
+    </div>
+    <div class="lk-right">
+      <div class="lk-iframe-label">&#9632; LORDKEK &mdash; TOKENSCAN</div>
+      <iframe class="lk-iframe" src="https://tokenscan.io/asset/LORDKEK" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+<div class="lk-proximity" id="lkProximity">&#9670; LORDKEK APPROACHES &#9670;<br>CLICK TO COMMUNE WITH THE DEITY</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
@@ -1413,7 +1478,48 @@ function rippleLoad(startId){
   order.forEach((ring,i)=>setTimeout(()=>ring.forEach(loadRoomArtworks), i*800));
 }
 
-// ── TRASH ART PANEL ────────────────────────────────────────────────────────────
+// ── LORD KEK DIVINE PANEL ──────────────────────────────────────────────────────
+const lkPanelEl=document.getElementById('lkPanel');
+const lkProxEl=document.getElementById('lkProximity');
+const lkRaycaster=new THREE.Raycaster();
+let lkPanelOpen=false;
+
+function openLkPanel(){
+  lkPanelOpen=true;
+  lkPanelEl.classList.add('open');
+  lkProxEl.style.display='none';
+  try{document.exitPointerLock();}catch(e){}
+  locked=false;
+  Object.keys(keys).forEach(k=>keys[k]=false);
+}
+function closeLkPanel(){
+  lkPanelOpen=false;
+  lkPanelEl.classList.remove('open');
+  try{rc.requestPointerLock();}catch(e){}
+}
+
+function detectLordKek(){
+  if(!lordKek||lkPanelOpen)return;
+  // Lord Kek flies overhead — detect horizontal proximity only (ignore Y)
+  const dx=camera.position.x-lordKek.position.x;
+  const dz=camera.position.z-lordKek.position.z;
+  const dist=Math.sqrt(dx*dx+dz*dz);
+  lkProxEl.style.display=dist<30?'block':'none';
+}
+
+function tryPickLordKek(clientX,clientY){
+  if(!lordKek||lkPanelOpen)return false;
+  const nx=(clientX/innerWidth)*2-1;
+  const ny=-(clientY/innerHeight)*2+1;
+  lkRaycaster.setFromCamera({x:nx,y:ny},camera);
+  const hits=lkRaycaster.intersectObject(lordKek,true);
+  if(hits.length){openLkPanel();return true;}
+  return false;
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.code==='Escape'&&lkPanelOpen){e.stopPropagation();closeLkPanel();}
+});
 const trashPanelEl=document.getElementById('trashPanel');
 const trProxEl=document.getElementById('trProximity');
 const trRaycaster=new THREE.Raycaster();
@@ -1699,8 +1805,10 @@ rc.addEventListener('click',e=>{
   if(nuPanelOpen)return;
   if(rbPanelOpen)return;
   if(trPanelOpen)return;
+  if(lkPanelOpen)return;
   const x=locked?innerWidth/2:e.clientX;
   const y=locked?innerHeight/2:e.clientY;
+  if(tryPickLordKek(x,y))return;
   if(tryPickTrash(x,y))return;
   if(tryPickRobness(x,y))return;
   if(tryPickNuPepeDesu(x,y))return;
@@ -1717,6 +1825,7 @@ rc.addEventListener('touchend',e=>{
   if(e.changedTouches.length===1){
     const dx=e.changedTouches[0].clientX-tapX, dy=e.changedTouches[0].clientY-tapY;
     if(Date.now()-tapT<280 && dx*dx+dy*dy<144 && e.changedTouches[0].clientX>innerWidth*0.4){
+      if(tryPickLordKek(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickTrash(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickRobness(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickNuPepeDesu(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
@@ -1764,7 +1873,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(dpState.lt) mDir.x-=1;
     if(dpState.rt) mDir.x+=1;
     if(mDir.length()>0){const spd=keys['ShiftLeft']||keys['ShiftRight']||dpState.run?RUN:WALK;mDir.normalize().multiplyScalar(spd);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
-    camera.position.y=1.7;detectRoom();detectArt();detectNuPepeDesu();detectRobness();detectTrash();drawMap();
+    camera.position.y=1.7;detectRoom();detectArt();detectNuPepeDesu();detectRobness();detectTrash();detectLordKek();drawMap();
   }
   skyMesh.position.x=camera.position.x;skyMesh.position.z=camera.position.z;
   renderer.render(scene,camera);

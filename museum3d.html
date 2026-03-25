@@ -1521,7 +1521,7 @@ rc.addEventListener('touchend',e=>{e.preventDefault();if(e.touches.length===0)lo
 // ── MOVEMENT ──────────────────────────────────────────────────────────────────
 const mDir=new THREE.Vector3(),tmpE=new THREE.Euler(0,0,0,'YXZ');
 const WALK=0.28,RUN=0.72,PR=0.7;
-const WALK_HEIGHT=2.2; // player eye height
+const WALK_HEIGHT=4.4; // player eye height
 let flyMode=false, flyY=WALK_HEIGHT;
 const rcaster=new THREE.Raycaster();
 function tryMove(dx,dz){
@@ -2074,15 +2074,27 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(dpState.dn) mDir.z+=1;
     if(dpState.lt) mDir.x-=1;
     if(dpState.rt) mDir.x+=1;
-    if(mDir.length()>0){const spd=keys['ShiftLeft']||keys['ShiftRight']||dpState.run?RUN:WALK;mDir.normalize().multiplyScalar(spd);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
-    // Fly mode: E=up, Q=down (or Space/Ctrl)
+
     if(flyMode){
-      const spd=keys['ShiftLeft']||keys['ShiftRight']?RUN:WALK;
-      if(keys['KeyE']||keys['Space'])    flyY+=spd;
-      if(keys['KeyQ']||keys['ControlLeft']||keys['ControlRight']) flyY-=spd;
-      flyY=Math.max(WALK_HEIGHT,Math.min(200,flyY));
-      camera.position.y=flyY;
+      // Full 6DOF — forward/back moves along the camera's actual look vector (including pitch)
+      const spd=keys['ShiftLeft']||keys['ShiftRight']||dpState.run?RUN:WALK;
+      if(mDir.length()>0){
+        // Build forward vector from full camera orientation (yaw + pitch)
+        const fwd=new THREE.Vector3(0,0,-1).applyEuler(new THREE.Euler(pitch,yaw,0,'YXZ'));
+        const right=new THREE.Vector3(1,0,0).applyEuler(new THREE.Euler(0,yaw,0,'YXZ'));
+        const move=new THREE.Vector3();
+        move.addScaledVector(fwd,-mDir.z); // W=-z=forward
+        move.addScaledVector(right,mDir.x);
+        move.normalize().multiplyScalar(spd);
+        camera.position.add(move);
+        flyY=camera.position.y;
+      }
+      // Manual up/down still available with E/Q
+      if(keys['KeyE']||keys['Space'])    camera.position.y+=spd;
+      if(keys['KeyQ']||keys['ControlLeft']||keys['ControlRight']) camera.position.y-=spd;
+      flyY=camera.position.y=Math.max(WALK_HEIGHT,Math.min(200,camera.position.y));
     } else {
+      if(mDir.length()>0){const spd=keys['ShiftLeft']||keys['ShiftRight']||dpState.run?RUN:WALK;mDir.normalize().multiplyScalar(spd);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
       camera.position.y=WALK_HEIGHT;
     }
     detectRoom();detectArt();updateProximityPrompts();drawMap();

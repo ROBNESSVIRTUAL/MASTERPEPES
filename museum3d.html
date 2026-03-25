@@ -348,7 +348,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
     </div>
   </div>
 </div>
-<div id="ctrl">W A S D &middot; MOVE<br>SHIFT &middot; RUN<br>MOUSE DRAG &middot; LOOK<br>ESC &middot; RELEASE</div>
+<div id="ctrl">W A S D &middot; MOVE<br>SHIFT &middot; RUN<br>F &middot; FLY MODE<br>E / Q &middot; UP / DOWN<br>MOUSE DRAG &middot; LOOK<br>ESC &middot; RELEASE</div>
 <div id="mmap"><canvas id="mm" width="175" height="175"></canvas></div>
 <div id="dpad">
   <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" touch-action="none">
@@ -1355,7 +1355,14 @@ let entered=false,locked=false,yaw=0,pitch=0;
 yaw=0;camera.rotation.y=0;camera.rotation.x=0; // apply immediately so spawn direction is correct
 let dragging=false,lastMX=0,lastMY=0;
 const keys={};
-document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')e.preventDefault();});
+document.addEventListener('keydown',e=>{
+  keys[e.code]=true;
+  if(e.code==='Space') e.preventDefault();
+  if(e.code==='KeyF' && entered){
+    flyMode=!flyMode;
+    if(!flyMode) flyY=WALK_HEIGHT; // snap back to walk height on exit
+  }
+});
 document.addEventListener('keyup',  e=>keys[e.code]=false);
 const HUD=['cross','rlabel','ctrl','mmap','back'];
 
@@ -1514,6 +1521,8 @@ rc.addEventListener('touchend',e=>{e.preventDefault();if(e.touches.length===0)lo
 // ── MOVEMENT ──────────────────────────────────────────────────────────────────
 const mDir=new THREE.Vector3(),tmpE=new THREE.Euler(0,0,0,'YXZ');
 const WALK=0.28,RUN=0.72,PR=0.7;
+const WALK_HEIGHT=2.2; // player eye height
+let flyMode=false, flyY=WALK_HEIGHT;
 const rcaster=new THREE.Raycaster();
 function tryMove(dx,dz){
   const nx=Math.max(-(RH-1),Math.min(RH-1,camera.position.x+dx));
@@ -2066,7 +2075,17 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(dpState.lt) mDir.x-=1;
     if(dpState.rt) mDir.x+=1;
     if(mDir.length()>0){const spd=keys['ShiftLeft']||keys['ShiftRight']||dpState.run?RUN:WALK;mDir.normalize().multiplyScalar(spd);tmpE.set(0,yaw,0);mDir.applyEuler(tmpE);tryMove(mDir.x,0);tryMove(0,mDir.z);}
-    camera.position.y=1.7;detectRoom();detectArt();updateProximityPrompts();drawMap();
+    // Fly mode: E=up, Q=down (or Space/Ctrl)
+    if(flyMode){
+      const spd=keys['ShiftLeft']||keys['ShiftRight']?RUN:WALK;
+      if(keys['KeyE']||keys['Space'])    flyY+=spd;
+      if(keys['KeyQ']||keys['ControlLeft']||keys['ControlRight']) flyY-=spd;
+      flyY=Math.max(WALK_HEIGHT,Math.min(200,flyY));
+      camera.position.y=flyY;
+    } else {
+      camera.position.y=WALK_HEIGHT;
+    }
+    detectRoom();detectArt();updateProximityPrompts();drawMap();
   }
   skyMesh.position.x=camera.position.x;skyMesh.position.z=camera.position.z;
   renderer.render(scene,camera);

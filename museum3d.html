@@ -277,6 +277,40 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 .ds-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(255,62,165,0.5);padding:6px 12px;border-bottom:0.5px solid rgba(255,62,165,0.2);flex-shrink:0}
 .ds-iframe{flex:1;width:100%;border:none;background:#fff}
 .ds-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#FF69C0;text-shadow:0 0 8px #FF3EA5;display:none;pointer-events:none;animation:dsFlicker 2s infinite}
+
+/* ── MASTERPEPES BOOK PANEL — MUSEUM RED ─────────────────────────────────── */
+#bkPanel{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(720px,94vw);height:min(560px,90vh);
+  display:none;flex-direction:column;
+  background:rgba(8,1,1,0.96);
+  border:1px solid #E0342F;
+  border-radius:12px;
+  box-shadow:0 0 30px #E0342F66,0 0 80px #E0342F22,inset 0 0 40px rgba(224,52,47,0.04);
+  z-index:400;
+  overflow:hidden;
+  animation:bkFlicker 7s infinite;
+}
+@keyframes bkFlicker{
+  0%,100%{box-shadow:0 0 30px #E0342F66,0 0 80px #E0342F22}
+  50%{box-shadow:0 0 46px #FF4A4499,0 0 110px #FF4A4433}
+}
+#bkPanel.open{display:flex}
+.bk-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(224,52,47,0.3);flex-shrink:0;background:rgba(224,52,47,0.06)}
+.bk-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#FF6B68;text-shadow:0 0 10px #E0342F}
+.bk-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#E0342F;border:1.5px solid rgba(224,52,47,0.5);border-radius:50%;cursor:pointer;background:rgba(224,52,47,0.08);box-shadow:0 0 10px rgba(224,52,47,0.4),inset 0 0 8px rgba(224,52,47,0.06);transition:all 0.2s;line-height:1;flex-shrink:0}
+.bk-close:hover{background:rgba(224,52,47,0.2);box-shadow:0 0 20px rgba(255,74,68,0.7),inset 0 0 14px rgba(224,52,47,0.12);border-color:#FF6B68;color:#FF6B68;transform:scale(1.1)}
+.bk-body{flex:1;display:flex;overflow:hidden;min-height:0}
+.bk-left{flex:0 0 44%;padding:16px 18px;border-right:1px solid rgba(224,52,47,0.2);display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.bk-left::-webkit-scrollbar{width:3px}.bk-left::-webkit-scrollbar-track{background:#080101}.bk-left::-webkit-scrollbar-thumb{background:#E0342F44}
+.bk-desc{font-size:9.5px;line-height:1.9;color:rgba(255,220,218,0.88);text-transform:none;letter-spacing:0.03em;font-family:Georgia,serif}
+.bk-links{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.bk-link{font-size:7px;letter-spacing:0.18em;color:rgba(224,52,47,0.85);border:0.5px solid rgba(224,52,47,0.35);padding:5px 10px;text-decoration:none;transition:all 0.2s;text-align:center;text-transform:uppercase}
+.bk-link:hover{border-color:#FF6B68;color:#FF6B68;background:rgba(224,52,47,0.1)}
+.bk-right{flex:1;display:flex;flex-direction:column;min-height:0}
+.bk-iframe-label{font-size:7px;letter-spacing:0.3em;color:rgba(224,52,47,0.5);padding:6px 12px;border-bottom:0.5px solid rgba(224,52,47,0.2);flex-shrink:0}
+.bk-iframe{flex:1;width:100%;border:none;background:#fff}
+.bk-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#FF6B68;text-shadow:0 0 8px #E0342F;display:none;pointer-events:none;animation:bkFlicker 2s infinite}
 </style>
 </head>
 <body>
@@ -531,6 +565,36 @@ DSSL IS MORE THAN A PFP PROJECT — IT IS AN EXTENSION OF ROBNESS' BROADER ARTIS
   </div>
 </div>
 <div class="ds-proximity" id="dsProximity">&#9654; CLICK TO VIEW DSSL</div>
+
+<!-- ── MASTERPEPES BOOK PANEL ─────────────────────────────────────────────── -->
+<div id="bkPanel">
+  <div class="bk-header">
+    <div class="bk-title">&#9670; MASTERPEPES &mdash; THE BOOK &#9670;</div>
+    <button class="bk-close" onclick="closeBkPanel()">&#10005;</button>
+  </div>
+  <div class="bk-body">
+    <div class="bk-left">
+      <div class="bk-desc">MASTERPEPES IS A SELF-PUBLISHED BOOK BY CRYPTOARTIST ROBNESS, AVAILABLE IN PRINT VIA INGRAMSPARK. AT ITS CORE IT IS A WORK OF ALTERNATIVE HISTORY — A REIMAGINING OF THE ENTIRE ARC OF HUMAN ARTISTIC ACHIEVEMENT AS IF PEPE THE FROG, ONE OF THE MOST RECOGNIZABLE AND CULTURALLY RESONANT MEMES IN INTERNET HISTORY, HAD ALWAYS BEEN THERE. FROM THE CAVE WALL PAINTINGS OF THE PALAEOLITHIC TO THE BLOCKCHAIN TOKENS OF THE CRYPTOART PRESENT, EVERY ERA OF ART IS REFRAMED THROUGH THE LENS OF MEMETICS AND THE PEPE MYTHOS.
+
+EACH OF THE 150 PAGES FEATURES AN ARTWORK ACCOMPANIED BY A WRITTEN DESCRIPTION AND A QR CODE THAT LINKS DIRECTLY TO THE ACTUAL XCP/COUNTERPARTY ASSET ON THE BITCOIN BLOCKCHAIN. THE SUPPLY OF EACH ASSET IS DETERMINED BY HOW MANY SLOTS WERE SOLD DURING THE DROP — ANY REMAINING SUPPLY WILL BE PERMANENTLY BURNED AFTER THE SALE, MAKING EACH PIECE'S FINAL EDITION SIZE A DIRECT FUNCTION OF COLLECTOR DEMAND.
+
+THIS IS AN ENTIRELY NEW GENRE OF PUBLICATION. THOUGH THE BOOK IS RELEASED TO THE PUBLIC AS A PHYSICAL OBJECT, ITS INTERIOR CONTENTS ARE SIMULTANEOUSLY ACTIVE IN THE NFT ART MARKET — EACH PAGE IS BOTH A BOOK PAGE AND A GATEWAY TO A COLLECTIBLE ON-CHAIN ASSET. THE BOOK AND THE BLOCKCHAIN COLLECTION ARE ONE UNIFIED ART PROJECT.
+
+MASTERPEPES IS ALSO AN EXPLICIT DEMONSTRATION OF WHAT A.I. CAN DO IN LONG-FORM ARTISTIC CONTEXTS. ROBNESS ASSEMBLED THE ENTIRE PROJECT — AESTHETICALLY, TEXTUALLY, AND CONCEPTUALLY — WITH A.I. AS A COLLABORATOR. THE BOOK ITSELF IS AN A.I. DEMONSTRATION PIECE; THE COLLECTION OF WORK WITHIN IT ILLUSTRATES THE EXPANSIVENESS OF THOSE CREATIVE POSSIBILITIES.
+
+IN ROBNESS' OWN TERMS: HE TRIED TO MAKE THIS AS "FAKE" AND "DANK" AS POSSIBLE — A PHRASE THAT CARRIES THE FULL WEIGHT OF HIS HISTORY WITH THE RARE PEPE COMMUNITY, THE #TRASHART MOVEMENT, AND HIS LIFELONG COMMITMENT TO THE IDEA THAT THE MOST SUBVERSIVE, IRREVERENT, AND DELIBERATELY LOW-BROW ART IS OFTEN THE MOST HISTORICALLY SIGNIFICANT.</div>
+      <div class="bk-links">
+        <a class="bk-link" href="https://www.ingramspark.com" target="_blank" rel="noopener">&#9654; Order via IngramSpark</a>
+        <a class="bk-link" href="https://robness.io" target="_blank" rel="noopener">&#9654; Robness.io</a>
+      </div>
+    </div>
+    <div class="bk-right">
+      <div class="bk-iframe-label">&#9632; INGRAMSPARK.COM</div>
+      <iframe class="bk-iframe" src="https://www.ingramspark.com" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+<div class="bk-proximity" id="bkProximity">&#9654; CLICK TO LEARN ABOUT THE BOOK</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
@@ -980,9 +1044,9 @@ loadStatue('LORDKEK.glb', 0, 0, 50, 0, 'LordKek', (m,mx)=>{
 
 // ── ROOM STATUES (room centres: z=165,435,705,975,1245) ──────────────────────
 // Room 1 (z=165): Masterpepes Book — floating, rotating
-let floatingBook=null;
+let floatingBook=null, bookModel=null;
 loadStatue('masterpepes_book.glb', 0, 165, 14, 0, 'Book', (m)=>{
-  floatingBook=m; floatingBook.position.y=9;
+  floatingBook=m; floatingBook.position.y=9; bookModel=m;
 });
 
 // Room 2 (z=435): Robness
@@ -1786,7 +1850,36 @@ document.addEventListener('keydown',e=>{
   if(e.code==='Escape'&&nuPanelOpen){e.stopPropagation();closeNuPanel();}
 });
 
-// ── DSSL PANEL ────────────────────────────────────────────────────────────────
+// ── MASTERPEPES BOOK PANEL ────────────────────────────────────────────────────
+const bkPanelEl=document.getElementById('bkPanel');
+const bkProxEl=document.getElementById('bkProximity');
+const bkRaycaster=new THREE.Raycaster();
+let bkPanelOpen=false;
+
+function openBkPanel(){
+  bkPanelOpen=true;bkPanelEl.classList.add('open');bkProxEl.style.display='none';
+  try{document.exitPointerLock();}catch(e){}
+  locked=false;Object.keys(keys).forEach(k=>keys[k]=false);
+}
+function closeBkPanel(){
+  bkPanelOpen=false;bkPanelEl.classList.remove('open');
+  try{rc.requestPointerLock();}catch(e){}
+}
+function detectBook(){
+  if(!bookModel||bkPanelOpen)return Infinity;
+  return camera.position.distanceTo(new THREE.Vector3(0,camera.position.y,165));
+}
+function tryPickBook(clientX,clientY){
+  if(!bookModel||bkPanelOpen)return false;
+  const nx=(clientX/innerWidth)*2-1,ny=-(clientY/innerHeight)*2+1;
+  bkRaycaster.setFromCamera({x:nx,y:ny},camera);
+  const hits=bkRaycaster.intersectObject(bookModel,true);
+  if(hits.length){openBkPanel();return true;}
+  return false;
+}
+document.addEventListener('keydown',e=>{
+  if(e.code==='Escape'&&bkPanelOpen){e.stopPropagation();closeBkPanel();}
+});
 let dsslModel=null;
 loadStatue('DSSL.glb', 0, 1245, 20, Math.PI, 'DSSL', (m)=>{ dsslModel=m; });
 
@@ -1821,15 +1914,15 @@ document.addEventListener('keydown',e=>{
 });
 
 // ── CENTRALIZED PROXIMITY — show only the single closest prompt ───────────────
-const PROX_THRESHOLDS={nu:22,rb:22,tr:14,lk:30,ks:22,ds:22};
+const PROX_THRESHOLDS={nu:22,rb:22,tr:14,lk:30,ks:22,ds:22,bk:22};
 function updateProximityPrompts(){
   const dists={
     nu:detectNuPepeDesu(),rb:detectRobness(),tr:detectTrash(),
-    lk:detectLordKek(),ks:detectKekStatue(),ds:detectDssl()
+    lk:detectLordKek(),ks:detectKekStatue(),ds:detectDssl(),bk:detectBook()
   };
   const proxEls={
     nu:nuProxEl,rb:rbProxEl,tr:trProxEl,
-    lk:lkProxEl,ks:ksProxEl,ds:dsProxEl
+    lk:lkProxEl,ks:ksProxEl,ds:dsProxEl,bk:bkProxEl
   };
   let bestKey=null,bestDist=Infinity;
   for(const k in dists){
@@ -1999,6 +2092,7 @@ rc.addEventListener('click',e=>{
   if(!entered)return;
   if(document.getElementById('detailPanel').classList.contains('open'))return;
   if(dsPanelOpen)return;
+  if(bkPanelOpen)return;
   if(nuPanelOpen)return;
   if(rbPanelOpen)return;
   if(trPanelOpen)return;
@@ -2007,6 +2101,7 @@ rc.addEventListener('click',e=>{
   const x=locked?innerWidth/2:e.clientX;
   const y=locked?innerHeight/2:e.clientY;
   if(tryPickLordKek(x,y))return;
+  if(tryPickBook(x,y))return;
   if(tryPickKekStatue(x,y))return;
   if(tryPickDssl(x,y))return;
   if(tryPickTrash(x,y))return;
@@ -2026,6 +2121,7 @@ rc.addEventListener('touchend',e=>{
     const dx=e.changedTouches[0].clientX-tapX, dy=e.changedTouches[0].clientY-tapY;
     if(Date.now()-tapT<280 && dx*dx+dy*dy<144 && e.changedTouches[0].clientX>innerWidth*0.4){
       if(tryPickLordKek(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
+      if(tryPickBook(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickKekStatue(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickDssl(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;
       if(tryPickTrash(e.changedTouches[0].clientX,e.changedTouches[0].clientY))return;

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MASTERPEPES</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&family=Tenor+Sans&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cinzel+Decorative:wght@400&family=Tenor+Sans&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -12,7 +12,7 @@
   --gold:#C8901A;--gold2:#E8B030;--mut:#3A6A3A;--rl:#182E18;
   --text:#C8DCA8;--dim:#4A7A4A;--white:#E8F0D8;
 }
-body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow:hidden;display:flex;flex-direction:column;color:var(--text);text-transform:uppercase;letter-spacing:0.08em}
+body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hidden;display:flex;flex-direction:column;color:var(--text);text-transform:uppercase;letter-spacing:0.08em}
 
 .topbar{height:52px;flex-shrink:0;border-bottom:0.5px solid #A02020;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:#E0342F}
 .topbar-logo{height:28px;object-fit:contain;filter:brightness(10)}
@@ -20,7 +20,7 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 .topbar-meta{font-size:10px;letter-spacing:0.2em;color:rgba(255,255,255,0.6)}
 .topbar-x{font-size:10px;letter-spacing:0.15em;color:#fff;text-decoration:none;border:0.5px solid rgba(255,255,255,0.5);padding:5px 14px;transition:all 0.2s}
 .topbar-x:hover{background:rgba(255,255,255,0.15)}
-.mm-btn{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.15em;cursor:pointer;border:0.5px solid rgba(255,255,255,0.4);padding:5px 14px;transition:all 0.2s;text-transform:uppercase;background:none;color:rgba(255,255,255,0.7)}
+.mm-btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;cursor:pointer;border:0.5px solid rgba(255,255,255,0.4);padding:5px 14px;transition:all 0.2s;text-transform:uppercase;background:none;color:rgba(255,255,255,0.7)}
 .mm-btn:hover{border-color:#fff;color:#fff}
 .mm-btn.connected{border-color:#fff;color:#fff;background:rgba(255,255,255,0.1)}
 
@@ -40,7 +40,7 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 @keyframes kryptonite{0%,100%{box-shadow:0 0 10px #39FF14,0 0 24px #39FF1488,0 0 42px #39FF1433;background:#39FF14}50%{box-shadow:0 0 18px #39FF14,0 0 40px #39FF14BB,0 0 70px #39FF1466,0 0 90px #39FF1422;background:#5FFF44}}
 .book-desc{max-width:min(340px,90%);width:100%;text-align:center;border-top:0.5px solid var(--rl);padding-top:12px}
 .book-desc-title{font-size:clamp(8px,0.9vw,11px);letter-spacing:0.3em;color:var(--white);margin-bottom:6px}
-.book-desc-text{font-size:clamp(8px,0.85vw,10px);letter-spacing:0.06em;color:var(--dim);line-height:1.8;margin-bottom:8px}
+.book-desc-text{font-size:clamp(6px,0.65vw,8px);font-family:'Cinzel',serif;font-weight:400;letter-spacing:0.12em;color:var(--dim);line-height:2.1;margin-bottom:8px;word-spacing:0.08em}
 .book-desc-link{font-size:clamp(8px,0.8vw,10px);letter-spacing:0.2em;color:var(--gold);text-decoration:none;border-bottom:0.5px solid rgba(200,144,26,0.4);padding-bottom:2px;transition:all 0.2s}
 .book-desc-link:hover{color:var(--gold2)}
 #bookLoading{font-size:9px;letter-spacing:0.2em;color:var(--mut);text-align:center}
@@ -50,7 +50,7 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 #museumView.visible{opacity:1;pointer-events:all}
 .museum-topbar{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:8px;flex-shrink:0}
 .museum-title{font-size:9px;letter-spacing:0.3em;color:var(--gold)}
-.back-btn{font-size:9px;letter-spacing:0.2em;color:var(--mut);cursor:pointer;border:0.5px solid var(--rl);padding:4px 12px;transition:all 0.2s;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase}
+.back-btn{font-size:9px;letter-spacing:0.2em;color:var(--mut);cursor:pointer;border:0.5px solid var(--rl);padding:4px 12px;transition:all 0.2s;background:none;font-family:'Cinzel',serif;text-transform:uppercase}
 .back-btn:hover{border-color:var(--gold);color:var(--gold)}
 .map-wrap{flex:1;width:100%;position:relative;overflow:hidden;min-height:0;padding:6px}
 #museumSvg{width:100%;height:100%;display:block}
@@ -67,7 +67,7 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 .ap-asset{font-size:7px;letter-spacing:0.12em;color:var(--mut);margin-top:3px;text-transform:none}
 .ap-link{font-size:8px;letter-spacing:0.12em;color:var(--gold);text-decoration:none;border:0.5px solid var(--rl);padding:4px 10px;flex-shrink:0;transition:all 0.2s}
 .ap-link:hover{border-color:var(--gold2);color:var(--gold2)}
-.ap-close{font-size:8px;letter-spacing:0.15em;color:var(--mut);cursor:pointer;border:0.5px solid var(--rl);padding:4px 10px;flex-shrink:0;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;transition:all 0.2s}
+.ap-close{font-size:8px;letter-spacing:0.15em;color:var(--mut);cursor:pointer;border:0.5px solid var(--rl);padding:4px 10px;flex-shrink:0;background:none;font-family:'Cinzel',serif;text-transform:uppercase;transition:all 0.2s}
 .ap-close:hover{border-color:var(--gold);color:var(--gold)}
 
 /* RIGHT */
@@ -76,8 +76,8 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 #rightGate:hover,#rightGate.hover{background:rgba(20,80,20,0.72);backdrop-filter:blur(3px)}
 #rightGate-inner{opacity:0;transform:scale(0.94);transition:opacity 0.3s,transform 0.3s;pointer-events:none}
 #rightGate:hover #rightGate-inner,#rightGate.hover #rightGate-inner{opacity:1;transform:scale(1);pointer-events:all}
-.gate-msg{font-size:11px;line-height:1.9;letter-spacing:0.08em;color:#B8FFB8;text-shadow:0 0 18px rgba(57,255,20,0.6);margin-bottom:24px;font-family:'Tenor Sans',serif;text-transform:uppercase}
-.gate-ok{font-size:10px;letter-spacing:0.35em;color:#060D06;background:#39FF14;border:none;padding:10px 32px;cursor:pointer;font-family:'Tenor Sans',serif;text-transform:uppercase;box-shadow:0 0 16px #39FF14,0 0 32px #39FF1466;transition:all 0.2s;animation:kryptonite 1.8s ease-in-out infinite}
+.gate-msg{font-size:11px;line-height:1.9;letter-spacing:0.08em;color:#B8FFB8;text-shadow:0 0 18px rgba(57,255,20,0.6);margin-bottom:24px;font-family:'Cinzel',serif;text-transform:uppercase}
+.gate-ok{font-size:10px;letter-spacing:0.35em;color:#060D06;background:#39FF14;border:none;padding:10px 32px;cursor:pointer;font-family:'Cinzel',serif;text-transform:uppercase;box-shadow:0 0 16px #39FF14,0 0 32px #39FF1466;transition:all 0.2s;animation:kryptonite 1.8s ease-in-out infinite}
 .gate-ok:hover{background:#5FFF44;box-shadow:0 0 24px #39FF14,0 0 50px #39FF1488}
 .gate-glow-ring{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 40px rgba(57,255,20,0.0);transition:box-shadow 0.35s}
 #rightGate:hover .gate-glow-ring,#rightGate.hover .gate-glow-ring{box-shadow:inset 0 0 60px rgba(57,255,20,0.35)}
@@ -92,7 +92,7 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 .dv{font-size:10px;letter-spacing:0.1em;color:var(--white)}
 .sh{font-size:9px;letter-spacing:0.3em;color:var(--gold);margin-bottom:8px}
 .note{font-size:10px;letter-spacing:0.06em;color:var(--dim);margin-bottom:8px;line-height:1.8;text-transform:none}
-.inp{width:100%;padding:10px 13px;border:0.5px solid var(--rl);background:var(--dark);font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.08em;color:var(--text);outline:none;margin-bottom:6px;transition:border-color 0.2s;text-transform:none}
+.inp{width:100%;padding:10px 13px;border:0.5px solid var(--rl);background:var(--dark);font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.08em;color:var(--text);outline:none;margin-bottom:6px;transition:border-color 0.2s;text-transform:none}
 .inp:focus{border-color:var(--gold)}
 .inp::placeholder{color:#1E3A1E;font-size:10px}
 .warn{font-size:9px;letter-spacing:0.06em;color:#5A6A1A;margin-bottom:12px;line-height:1.8;text-transform:none}
@@ -101,16 +101,16 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
 .wallet-status.show{display:flex}
 .ws-addr{font-size:9px;letter-spacing:0.1em;color:var(--gold2);text-transform:none}
 .ws-network{font-size:8px;letter-spacing:0.12em;color:var(--dim)}
-.ws-disconnect{font-size:8px;cursor:pointer;border:none;background:none;font-family:'Tenor Sans',serif;text-transform:uppercase;color:var(--mut);transition:color 0.2s;letter-spacing:0.15em}
+.ws-disconnect{font-size:8px;cursor:pointer;border:none;background:none;font-family:'Cinzel',serif;text-transform:uppercase;color:var(--mut);transition:color 0.2s;letter-spacing:0.15em}
 .ws-disconnect:hover{color:var(--gold)}
 .pbox{background:var(--deep);border:0.5px solid var(--rl);padding:12px 18px;margin-bottom:10px;opacity:0.3;transition:opacity 0.3s}
 .pbox.on{opacity:1}
 .plbl{font-size:8px;letter-spacing:0.3em;color:var(--gold);margin-bottom:4px}
 .pnum{font-family:'Cinzel Decorative',serif;font-size:28px;color:var(--gold2);line-height:1;text-transform:none}
 .pusd{font-size:10px;letter-spacing:0.06em;color:var(--mut);margin-top:2px;text-transform:none}
-.btn-mm{width:100%;padding:12px;background:none;border:0.5px solid var(--gold);color:var(--gold);cursor:pointer;font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.3em;transition:all 0.3s;text-transform:uppercase}
+.btn-mm{width:100%;padding:12px;background:none;border:0.5px solid var(--gold);color:var(--gold);cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.3em;transition:all 0.3s;text-transform:uppercase}
 .btn-mm:hover{background:var(--gold);color:var(--deep)}
-.btn-bid{width:100%;padding:12px;background:var(--gold);color:var(--deep);border:none;cursor:pointer;font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.3em;opacity:0.3;pointer-events:none;transition:all 0.3s;text-transform:uppercase}
+.btn-bid{width:100%;padding:12px;background:var(--gold);color:var(--deep);border:none;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.3em;opacity:0.3;pointer-events:none;transition:all 0.3s;text-transform:uppercase}
 .btn-bid.on{opacity:1;pointer-events:all}
 .btn-bid.on:hover{background:var(--gold2)}
 .bsub{font-size:8px;letter-spacing:0.18em;color:var(--mut);text-align:center;margin-top:6px}
@@ -147,11 +147,11 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
     <div id="bookView">
       <div id="bookLoading">Loading Book...</div>
       <div id="canvasWrap"><canvas id="bookCanvas"></canvas></div>
-      <a href="museum3d.html" style="text-decoration:none;display:inline-block;background:#39FF14;color:#060D06;font-family:'Tenor Sans',serif;font-size:7px;letter-spacing:0.3em;text-transform:uppercase;padding:5px 14px;font-weight:bold;box-shadow:0 0 8px #39FF14,0 0 18px #39FF1488,0 0 32px #39FF1433;animation:kryptonite 1.8s ease-in-out infinite">&#9654; Enter 3D Museum</a>
+      <a href="museum3d.html" style="text-decoration:none;display:inline-block;background:#39FF14;color:#060D06;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.3em;text-transform:uppercase;padding:5px 14px;font-weight:bold;box-shadow:0 0 8px #39FF14,0 0 18px #39FF1488,0 0 32px #39FF1433;animation:kryptonite 1.8s ease-in-out infinite">&#9654; Enter 3D Museum</a>
       <div class="book-hint" id="bookHint" style="display:none">Drag to rotate &nbsp;&middot;&nbsp; Click to view floor plan</div>
       <div class="book-desc">
         <div class="book-desc-title">About the Book</div>
-        <div class="book-desc-text">Self-published by Robness &mdash; available in print via Ingramspark. 150 pages, cave wall to blockchain.</div>
+        <div class="book-desc-text">MASTERPEPES IS AN ALTERNATIVE HISTORY OF ART &mdash; 150 MASTERWORKS REIMAGINED AS IF PEPE THE FROG HAS ALWAYS BEEN THERE, FROM CAVE WALL TO BLOCKCHAIN. EACH PAGE FEATURES A QR CODE LINKING TO A LIVE COLLECTIBLE ASSET ON BITCOIN VIA COUNTERPARTY. A BOOK WHERE THE PAGES ARE NFTs. CREATED BY CRYPTOARTIST ROBNESS AS AN A.I. COLLABORATION AND A TRIBUTE TO FAKE AND DANK.</div>
         <a href="#" class="book-desc-link">Order the Physical Book &rarr;</a>
       </div>
       <div class="countdown-wrap" id="cdWrap">
@@ -179,20 +179,20 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
   <rect x="0" y="0" width="180" height="787.8" fill="#060D06"/>
   <rect x="66" y="0" width="48" height="787.8" fill="#0A1C0A" stroke="#1A3A1A" stroke-width="0.5"/>
   <rect x="0" y="64.3" width="180" height="48.2" fill="#0D2A0D" stroke="#1E3A1E" stroke-width="1"/>
-  <text x="90" y="84.4" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER I</text>
-  <text x="90" y="93.4" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="5" text-anchor="middle" letter-spacing="1">BOOK OF MASTERPEPES</text>
+  <text x="90" y="84.4" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER I</text>
+  <text x="90" y="93.4" fill="#1A3A1A" font-family="Cinzel,serif" font-size="5" text-anchor="middle" letter-spacing="1">BOOK OF MASTERPEPES</text>
   <rect x="0" y="209.0" width="180" height="48.2" fill="#0D2A0D" stroke="#1E3A1E" stroke-width="1"/>
-  <text x="90" y="229.1" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER II</text>
-  <text x="90" y="238.1" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="5" text-anchor="middle" letter-spacing="1">ROBNESS</text>
+  <text x="90" y="229.1" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER II</text>
+  <text x="90" y="238.1" fill="#1A3A1A" font-family="Cinzel,serif" font-size="5" text-anchor="middle" letter-spacing="1">ROBNESS</text>
   <rect x="0" y="353.7" width="180" height="48.2" fill="#0D2A0D" stroke="#1E3A1E" stroke-width="1"/>
-  <text x="90" y="373.8" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER III</text>
-  <text x="90" y="382.8" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="5" text-anchor="middle" letter-spacing="1">NU PEPE DESU</text>
+  <text x="90" y="373.8" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER III</text>
+  <text x="90" y="382.8" fill="#1A3A1A" font-family="Cinzel,serif" font-size="5" text-anchor="middle" letter-spacing="1">NU PEPE DESU</text>
   <rect x="0" y="498.4" width="180" height="48.2" fill="#0D2A0D" stroke="#1E3A1E" stroke-width="1"/>
-  <text x="90" y="518.5" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER IV</text>
-  <text x="90" y="527.5" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="5" text-anchor="middle" letter-spacing="1">LORD KEK</text>
+  <text x="90" y="518.5" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER IV</text>
+  <text x="90" y="527.5" fill="#1A3A1A" font-family="Cinzel,serif" font-size="5" text-anchor="middle" letter-spacing="1">LORD KEK</text>
   <rect x="0" y="643.1" width="180" height="48.2" fill="#0D2A0D" stroke="#1E3A1E" stroke-width="1"/>
-  <text x="90" y="663.3" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER V</text>
-  <text x="90" y="672.3" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="5" text-anchor="middle" letter-spacing="1">DSSL</text>
+  <text x="90" y="663.3" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER V</text>
+  <text x="90" y="672.3" fill="#1A3A1A" font-family="Cinzel,serif" font-size="5" text-anchor="middle" letter-spacing="1">DSSL</text>
   <rect x="0" y="0" width="180" height="787.8" fill="none" stroke="#1A3A1A" stroke-width="2"/>
   <line x1="66" y1="0.0" x2="66" y2="64.3" stroke="#1E3A1E" stroke-width="1.5"/>
   <line x1="114" y1="0.0" x2="114" y2="64.3" stroke="#1E3A1E" stroke-width="1.5"/>
@@ -226,9 +226,9 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
   <line x1="114.0" y1="643.1" x2="180" y2="643.1" stroke="#1E3A1E" stroke-width="1.5"/>
   <line x1="0" y1="691.4" x2="66.0" y2="691.4" stroke="#1E3A1E" stroke-width="1.5"/>
   <line x1="114.0" y1="691.4" x2="180" y2="691.4" stroke="#1E3A1E" stroke-width="1.5"/>
-  <text x="90" y="784.8" fill="#1A3A1A" font-family="Tenor Sans,serif" font-size="6" text-anchor="middle" letter-spacing="2">ENTRANCE</text>
+  <text x="90" y="784.8" fill="#1A3A1A" font-family="Cinzel,serif" font-size="6" text-anchor="middle" letter-spacing="2">ENTRANCE</text>
   <polygon points="86,770.8 94,770.8 90,778.8" fill="#1A3A1A"/>
-  <text x="160" y="28" fill="#2A5A2A" font-family="Tenor Sans,serif" font-size="7" text-anchor="middle">N</text>
+  <text x="160" y="28" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle">N</text>
   <line x1="160" y1="32" x2="160" y2="20" stroke="#C8901A" stroke-width="1.2"/>
   <circle cx="160" cy="35" r="2" fill="#C8901A"/>
   <g id="dotsLayer"></g>
@@ -257,7 +257,7 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
       <div id="pdfPanel" style="position:absolute;inset:0;background:rgba(4,8,4,0.98);display:none;flex-direction:column;z-index:60;padding:12px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0">
           <span style="font-size:9px;letter-spacing:0.3em;color:var(--gold)" id="pdfPanelTitle"></span>
-          <button onclick="closePdfPanel()" style="font-family:'Tenor Sans',serif;font-size:9px;letter-spacing:0.2em;color:var(--gold);cursor:pointer;border:0.5px solid var(--rl);padding:5px 14px;background:none;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='var(--gold)';this.style.color='var(--deep)'" onmouseout="this.style.background='none';this.style.color='var(--gold)'">Close &times;</button>
+          <button onclick="closePdfPanel()" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.2em;color:var(--gold);cursor:pointer;border:0.5px solid var(--rl);padding:5px 14px;background:none;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='var(--gold)';this.style.color='var(--deep)'" onmouseout="this.style.background='none';this.style.color='var(--gold)'">Close &times;</button>
         </div>
         <iframe id="pdfFrame" src="" style="flex:1;width:100%;border:0.5px solid var(--rl);background:#111"></iframe>
       </div>
@@ -279,17 +279,8 @@ body{background:var(--deep);font-family:'Tenor Sans',serif;height:100vh;overflow
         <button class="gate-ok" onclick="dismissGate()">OK — Let Me In</button>
       </div>
     </div>
-    <p class="r-eye">A New Pepe Collection on Bitcoin by Robness</p>
     <img src="MASTERPEPES%20LOGO%20GOLD%20HI%20RES.png" alt="MASTERPEPES" class="r-logo" onerror="this.outerHTML='<h1 class=&quot;r-title&quot;>MASTERPEPES</h1>'">
-    <p class="r-sub">150 Masterworks of Art History &mdash; Reimagined as Pepe<br>Permanently Minted on the Bitcoin Blockchain<br><span style="font-size:7px;letter-spacing:0.3em;color:rgba(200,144,26,0.55)">XCP &middot; COUNTERPARTY PROTOCOL</span></p>
-    <div class="r-details">
-      <div class="drow"><span class="dl">Total Artworks</span><span class="dv">150 Works</span></div>
-      <div class="drow"><span class="dl">Editions Per Work</span><span class="dv">300</span></div>
-      <div class="drow"><span class="dl">Each Buyer Receives</span><span class="dv">All 150 Works</span></div>
-      <div class="drow"><span class="dl">Total Spots Available</span><span class="dv">300 Only</span></div>
-      <div class="drow"><span class="dl">Price Per Spot</span><span class="dv">1 ETH or Equivalent BTC</span></div>
-      <div class="drow"><span class="dl">Blockchain</span><span class="dv">Bitcoin / Counterparty</span></div>
-    </div>
+    <p class="note" style="text-align:center;color:var(--dim);font-size:11px;line-height:2;letter-spacing:0.06em;padding:16px 0;border-top:0.5px solid var(--rl);border-bottom:0.5px solid var(--rl);margin-bottom:16px">300 collector spots available &mdash; each spot grants you all 150 works &mdash; 1 ETH or equivalent BTC &mdash; minted on Bitcoin via Counterparty</p>
     <p class="sh">Step 1 &mdash; Connect Your ETH Wallet</p>
     <div class="wallet-status" id="walletStatus">
       <div><div class="ws-addr" id="wsAddr"></div><div class="ws-network" id="wsNetwork"></div></div>
@@ -569,7 +560,7 @@ function buildDots() {
     const num = document.createElementNS(NS, 'text');
     num.setAttribute('x', '0'); num.setAttribute('y', '3');
     num.setAttribute('fill', '#4A8A4A');
-    num.setAttribute('font-family', 'Tenor Sans,serif');
+    num.setAttribute('font-family', 'Cinzel,serif');
     num.setAttribute('font-size', '3.8');
     num.setAttribute('text-anchor', 'middle');
     num.textContent = p.num;

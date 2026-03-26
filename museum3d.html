@@ -766,28 +766,28 @@ window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);c
 
 // ── DYNAMIC SKY — day/sunset/night cycle with moving clouds + stars ───────────
 const SKY_CANVAS = document.createElement('canvas');
-SKY_CANVAS.width = 2048; SKY_CANVAS.height = 1024;
+SKY_CANVAS.width = 2048; SKY_CANVAS.height = 2048;
 const SKY_CTX = SKY_CANVAS.getContext('2d');
 
 // Pre-generate stable cloud and star positions (don't change per frame)
 const CLOUD_DEFS = [
-  {bx:180, by:90, puffs:8, sz:95, dr:0.018},
-  {bx:600, by:70, puffs:6, sz:115,dr:0.012},
-  {bx:1050,by:140,puffs:9, sz:100,dr:0.022},
-  {bx:1480,by:85, puffs:5, sz:125,dr:0.014},
-  {bx:1870,by:180,puffs:7, sz:88, dr:0.019},
-  {bx:80,  by:260,puffs:5, sz:72, dr:0.016},
-  {bx:420, by:300,puffs:8, sz:105,dr:0.010},
-  {bx:870, by:240,puffs:6, sz:118,dr:0.021},
-  {bx:1280,by:290,puffs:7, sz:92, dr:0.013},
-  {bx:1680,by:255,puffs:5, sz:78, dr:0.017},
-  {bx:320, by:400,puffs:6, sz:68, dr:0.009},
-  {bx:740, by:380,puffs:5, sz:82, dr:0.015},
-  {bx:1120,by:370,puffs:8, sz:75, dr:0.020},
-  {bx:1520,by:420,puffs:4, sz:95, dr:0.011},
-  {bx:480, by:42, puffs:4, sz:52, dr:0.025},
-  {bx:980, by:25, puffs:3, sz:60, dr:0.018},
-  {bx:1550,by:50, puffs:5, sz:55, dr:0.014},
+  {bx:180,  by:200,  puffs:8, sz:95,  dr:0.018},
+  {bx:600,  by:350,  puffs:6, sz:115, dr:0.012},
+  {bx:1050, by:500,  puffs:9, sz:100, dr:0.022},
+  {bx:1480, by:280,  puffs:5, sz:125, dr:0.014},
+  {bx:1870, by:650,  puffs:7, sz:88,  dr:0.019},
+  {bx:80,   by:800,  puffs:5, sz:72,  dr:0.016},
+  {bx:420,  by:950,  puffs:8, sz:105, dr:0.010},
+  {bx:870,  by:750,  puffs:6, sz:118, dr:0.021},
+  {bx:1280, by:1100, puffs:7, sz:92,  dr:0.013},
+  {bx:1680, by:900,  puffs:5, sz:78,  dr:0.017},
+  {bx:320,  by:1300, puffs:6, sz:68,  dr:0.009},
+  {bx:740,  by:1200, puffs:5, sz:82,  dr:0.015},
+  {bx:1120, by:1450, puffs:8, sz:75,  dr:0.020},
+  {bx:1520, by:1600, puffs:4, sz:95,  dr:0.011},
+  {bx:480,  by:1750, puffs:4, sz:52,  dr:0.025},
+  {bx:980,  by:1850, puffs:3, sz:60,  dr:0.018},
+  {bx:1550, by:1650, puffs:5, sz:55,  dr:0.014},
 ].map(c=>({
   ...c,
   offset: Math.random()*2048, // starting horizontal offset
@@ -800,10 +800,10 @@ const CLOUD_DEFS = [
 }));
 
 // Stars: 1800 tiny random positions across full sky hemisphere
-const STARS = Array.from({length:1800},()=>({
+const STARS = Array.from({length:3000},()=>({
   x: Math.random()*2048,
-  y: Math.random()*560,       // upper portion of sky texture
-  r: 0.15+Math.random()*0.85, // tiny — max 1px radius
+  y: Math.random()*2048,
+  r: 0.15+Math.random()*0.85,
   twinkle: Math.random()*Math.PI*2
 }));
 
@@ -866,7 +866,7 @@ function lerpHex(h1,h2,t){
 }
 
 function drawSky(t, cloudShift, starShift=0){
-  const ctx=SKY_CTX, W=2048, H=1024;
+  const ctx=SKY_CTX, W=2048, H=2048;
   const ph = skyPhase(t);
 
   // Background gradient
@@ -906,8 +906,8 @@ function drawSky(t, cloudShift, starShift=0){
     }
   }
 
-  // Clouds — drift + swirl/melt via per-puff sinusoidal offsets
-  const now = Date.now() * 0.0004; // slow time base for swirling
+  // Clouds — gentle drift only, no swirl (swirl causes pole vortex on sphere)
+  const now = Date.now() * 0.0003;
   CLOUD_DEFS.forEach((cloud, ci)=>{
     const cx = ((cloud.bx + cloudShift * cloud.dr * 2048) % 2048 + 2048) % 2048;
     const cy = cloud.by;
@@ -915,13 +915,8 @@ function drawSky(t, cloudShift, starShift=0){
     [-2048,0].forEach(wrap=>{
       // Glow pass
       cloud.puffList.forEach(([dx,dy,ew,eh], pi)=>{
-        // Swirl: each puff orbits slowly around its rest position
-        const phase = ci*1.3 + pi*0.7;
-        const swirlX = Math.sin(now + phase) * ew * 0.18;
-        const swirlY = Math.cos(now * 0.7 + phase) * eh * 0.22;
-        // Melt: size breathes in/out
-        const breathe = 1 + 0.12 * Math.sin(now * 1.1 + phase * 0.5);
-        const px=cx+dx+swirlX+wrap, py=cy+dy+swirlY;
+        const breathe = 1 + 0.08 * Math.sin(now + ci*1.1 + pi*0.6);
+        const px=cx+dx+wrap, py=cy+dy;
         if(px<-300||px>W+300) return;
         const cg2=ctx.createRadialGradient(px,py,0,px,py,ew*1.2*breathe);
         cg2.addColorStop(0,`rgba(${r},${gv},${b},${al*0.85})`);
@@ -932,14 +927,11 @@ function drawSky(t, cloudShift, starShift=0){
       });
       // Crisp core pass
       cloud.puffList.forEach(([dx,dy,ew,eh], pi)=>{
-        const phase = ci*1.3 + pi*0.7;
-        const swirlX = Math.sin(now + phase) * ew * 0.18;
-        const swirlY = Math.cos(now * 0.7 + phase) * eh * 0.22;
-        const breathe = 1 + 0.12 * Math.sin(now * 1.1 + phase * 0.5);
-        const px=cx+dx+swirlX+wrap, py=cy+dy+swirlY;
+        const breathe = 1 + 0.08 * Math.sin(now + ci*1.1 + pi*0.6);
+        const px=cx+dx+wrap, py=cy+dy;
         if(px<-300||px>W+300) return;
         ctx.fillStyle=`rgba(${r},${gv},${b},${al*0.75})`;
-        ctx.beginPath();ctx.ellipse(px,py,ew*breathe,eh*breathe,0.06,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.ellipse(px,py,ew*breathe,eh*breathe,0,0,Math.PI*2);ctx.fill();
       });
     });
   });
@@ -949,8 +941,8 @@ function drawSky(t, cloudShift, starShift=0){
 drawSky(0, 0);
 const skyTex = new THREE.CanvasTexture(SKY_CANVAS);
 skyTex.needsUpdate = true;
-// Open-ended sphere slice — skip the top and bottom 15% to avoid pole pinching
-const skyGeo = new THREE.SphereGeometry(580, 64, 32, 0, Math.PI*2, Math.PI*0.08, Math.PI*0.84);
+// Full sphere — stars everywhere
+const skyGeo = new THREE.SphereGeometry(580, 64, 64);
 const skyMat = new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,depthWrite:false,fog:false});
 const skyMesh=new THREE.Mesh(skyGeo,skyMat);scene.add(skyMesh);
 
@@ -1301,11 +1293,48 @@ ROOMS_Z.forEach(([rz0,rz1,rc])=>{
   addBox(20,0.26,20,moldMat,0,-0.10,rc,false);
 });
 
-// ── Decorative corner pilasters at room corners ───────────────────────────────
+// ── COLUMNS ───────────────────────────────────────────────────────────────────
+const colShaftMat = new THREE.MeshStandardMaterial({color:0xC0281F,roughness:0.55,metalness:0.15});
+const colCapMat   = new THREE.MeshStandardMaterial({color:0xFFD700,roughness:0.35,metalness:0.55});
+
+function addColumn(x, z){
+  const CR=1.1; // shaft radius
+  // Base plinth
+  const base=new THREE.Mesh(new THREE.BoxGeometry(CR*3.2,1.0,CR*3.2),colCapMat);
+  base.position.set(x,0.5,z);scene.add(base);
+  // Shaft — slight taper (entasis)
+  const shaft=new THREE.Mesh(new THREE.CylinderGeometry(CR*0.82,CR,H-2.5,16,1),colShaftMat);
+  shaft.position.set(x,1.0+(H-2.5)/2,z);scene.add(shaft);
+  // Capital echinus (flared disc)
+  const echinus=new THREE.Mesh(new THREE.CylinderGeometry(CR*1.6,CR*0.85,1.2,16,1),colCapMat);
+  echinus.position.set(x,H-1.4,z);scene.add(echinus);
+  // Capital abacus (flat slab)
+  const abacus=new THREE.Mesh(new THREE.BoxGeometry(CR*3.6,0.7,CR*3.6),colCapMat);
+  abacus.position.set(x,H-0.35,z);scene.add(abacus);
+}
+
+// Room corners — 4 columns per room (where room walls meet at ±RH)
 ROOMS_Z.forEach(([rz0,rz1])=>{
-  [[-RH,rz0],[ RH,rz0],[-RH,rz1],[ RH,rz1]].forEach(([px,pz])=>{
-    addBox(3,H,3,moldMat,px,H/2,pz,false);
-  });
+  addColumn(-RH, rz0);
+  addColumn( RH, rz0);
+  addColumn(-RH, rz1);
+  addColumn( RH, rz1);
+});
+
+// Corridor junctions — where corridor walls (x=±CW) meet room openings
+ROOMS_Z.forEach(([rz0,rz1])=>{
+  addColumn(-CW, rz0);
+  addColumn( CW, rz0);
+  addColumn(-CW, rz1);
+  addColumn( CW, rz1);
+});
+
+// Entrance and end wall corners
+[0, END_Z].forEach(z=>{
+  addColumn(-RH, z);
+  addColumn( RH, z);
+  addColumn(-CW, z);
+  addColumn( CW, z);
 });
 
 // ── ARTWORK PLACEMENT ─────────────────────────────────────────────────────────

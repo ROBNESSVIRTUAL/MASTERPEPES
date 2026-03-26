@@ -807,46 +807,51 @@ const STARS = Array.from({length:1800},()=>({
   twinkle: Math.random()*Math.PI*2
 }));
 
-// Sky colour stops per phase: [day, sunset, dusk, night]
-// t=0 day, t=0.33 sunset, t=0.5 dusk, t=0.66 night, t=1 back to day
+// Sky colour cycle: bright green → deep forest → dark space → vaporwave → back
 function skyPhase(t){
-  // t goes 0→1 over the full cycle
-  // Returns {top, mid, horizon, sunX, sunY, sunR, sunCol, cloudR, cloudG, cloudB, cloudA, starsAlpha, fogCol}
   const phases=[
-    // day
-    {top:'#CCF5AA',mid:'#B8EC98',hor:'#C0EAA0',
-     sunX:1380,sunY:120,sunR:280,sunC:'rgba(235,255,190,0.55)',
-     cr:109,cg:184,cb:72,ca:0.70,sa:0,fog:'#C0EAA0'},
-    // golden hour / sunset
-    {top:'#E8A060',mid:'#F0784A',hor:'#F4C060',
-     sunX:200,sunY:500,sunR:350,sunC:'rgba(255,200,80,0.75)',
-     cr:220,cg:120,cb:60,ca:0.65,sa:0,fog:'#F0906A'},
-    // deep dusk
-    {top:'#1A0830',mid:'#3A1040',hor:'#8A3020',
-     sunX:100,sunY:780,sunR:200,sunC:'rgba(180,60,20,0.45)',
-     cr:100,cg:40,cb:80,ca:0.55,sa:0.6,fog:'#2A0A20'},
-    // night
-    {top:'#020408',mid:'#080C14',hor:'#101828',
-     sunX:-200,sunY:900,sunR:80,sunC:'rgba(20,20,60,0.2)',
-     cr:30,cg:40,cb:80,ca:0.35,sa:1.0,fog:'#060C14'},
-    // back to day (same as phase 0 for smooth loop)
-    {top:'#CCF5AA',mid:'#B8EC98',hor:'#C0EAA0',
-     sunX:1380,sunY:120,sunR:280,sunC:'rgba(235,255,190,0.55)',
-     cr:109,cg:184,cb:72,ca:0.70,sa:0,fog:'#C0EAA0'},
+    // Phase 0 — bright lime green day
+    {top:'#A8E870',mid:'#7ACC44',hor:'#B8F080',
+     sunX:1380,sunY:110,sunR:300,sunC:'rgba(200,255,140,0.55)',
+     cr:130,cg:200,cb:80,ca:0.75,sa:0,fog:'#90D050'},
+    // Phase 1 — deep forest green
+    {top:'#1A5C1A',mid:'#0E3A0E',hor:'#2A7A2A',
+     sunX:800,sunY:300,sunR:220,sunC:'rgba(60,160,60,0.40)',
+     cr:30,cg:90,cb:30,ca:0.65,sa:0.2,fog:'#0E3A0E'},
+    // Phase 2 — dark green into space
+    {top:'#030D03',mid:'#060F06',hor:'#0A180A',
+     sunX:400,sunY:600,sunR:120,sunC:'rgba(10,40,10,0.25)',
+     cr:10,cg:30,cb:10,ca:0.25,sa:0.85,fog:'#040A04'},
+    // Phase 3 — deep space / night
+    {top:'#020408',mid:'#050510',hor:'#080C18',
+     sunX:-200,sunY:900,sunR:80,sunC:'rgba(20,10,60,0.2)',
+     cr:20,cg:20,cb:60,ca:0.2,sa:1.0,fog:'#040610'},
+    // Phase 4 — vaporwave: magenta/purple sky
+    {top:'#2A0440',mid:'#6A0A80',hor:'#C030A0',
+     sunX:1024,sunY:400,sunR:350,sunC:'rgba(255,80,200,0.55)',
+     cr:200,cg:40,cb:180,ca:0.70,sa:0.6,fog:'#8A1060'},
+    // Phase 5 — vaporwave peak: hot pink + cyan horizon
+    {top:'#180228',mid:'#C020A0',hor:'#00FFCC',
+     sunX:600,sunY:200,sunR:280,sunC:'rgba(255,100,220,0.65)',
+     cr:240,cg:60,cb:220,ca:0.80,sa:0.4,fog:'#602080'},
+    // Phase 6 — vaporwave fading back into green
+    {top:'#0A2010',mid:'#302840',hor:'#508840',
+     sunX:1200,sunY:150,sunR:260,sunC:'rgba(140,255,160,0.40)',
+     cr:80,cg:160,cb:100,ca:0.60,sa:0.1,fog:'#204020'},
+    // Phase 7 — back to bright green (loop)
+    {top:'#A8E870',mid:'#7ACC44',hor:'#B8F080',
+     sunX:1380,sunY:110,sunR:300,sunC:'rgba(200,255,140,0.55)',
+     cr:130,cg:200,cb:80,ca:0.75,sa:0,fog:'#90D050'},
   ];
   const seg = t * (phases.length-1);
   const i = Math.min(Math.floor(seg), phases.length-2);
   const f = seg - i;
   const a=phases[i], b=phases[i+1];
   function lerp(a,b){return a+(b-a)*f;}
-  function lerpCol(ac,bc){
-    // Parse hex or rgba, lerp
-    return [lerp(ac[0],bc[0]),lerp(ac[1],bc[1]),lerp(ac[2],bc[2])];
-  }
   return {
     top:lerpHex(a.top,b.top,f), mid:lerpHex(a.mid,b.mid,f), hor:lerpHex(a.hor,b.hor,f),
     sunX:lerp(a.sunX,b.sunX), sunY:lerp(a.sunY,b.sunY), sunR:lerp(a.sunR,b.sunR),
-    sunC:a.sunC,  // just use phase A's sun color
+    sunC:a.sunC,
     cr:lerp(a.cr,b.cr),cg:lerp(a.cg,b.cg),cb:lerp(a.cb,b.cb),
     ca:lerp(a.ca,b.ca), sa:lerp(a.sa,b.sa),
     fog:lerpHex(a.fog,b.fog,f)
@@ -949,8 +954,57 @@ const skyGeo = new THREE.SphereGeometry(580, 64, 32, 0, Math.PI*2, Math.PI*0.08,
 const skyMat = new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,depthWrite:false,fog:false});
 const skyMesh=new THREE.Mesh(skyGeo,skyMat);scene.add(skyMesh);
 
+// ── UNDERGROUND STAR FIELD — mirrors sky below floor ──────────────────────────
+const GROUND_CANVAS=document.createElement('canvas');
+GROUND_CANVAS.width=4096;GROUND_CANVAS.height=4096;
+const GND_CTX=GROUND_CANVAS.getContext('2d');
+
+// Dense separate star array — 8000 tiny sharp stars
+const GROUND_STARS=Array.from({length:10000},()=>({
+  x:Math.random()*4096,
+  y:Math.random()*4096,
+  r:0.4+Math.random()*0.9,
+  twinkle:Math.random()*Math.PI*2,
+  bright:Math.random()
+}));
+
+function drawGroundStars(starShift=0){
+  const W=4096,H=4096;
+  GND_CTX.fillStyle='#000008';GND_CTX.fillRect(0,0,W,H);
+  // Faint dark green nebula tint
+  const ng=GND_CTX.createRadialGradient(2048,2048,0,2048,2048,2000);
+  ng.addColorStop(0,'rgba(5,25,5,0.4)');ng.addColorStop(1,'rgba(0,0,0,0)');
+  GND_CTX.fillStyle=ng;GND_CTX.fillRect(0,0,W,H);
+  // Draw stars — crisp single pixels for most, tiny circles for brighter ones
+  GROUND_STARS.forEach(s=>{
+    const sx=((s.x+starShift*2)%W+W)%W;
+    const twink=0.3+0.7*Math.sin(Date.now()*0.00006+s.twinkle);
+    const alpha=twink*(s.bright>0.85?1.0:s.bright>0.6?0.75:0.45);
+    GND_CTX.fillStyle=`rgba(255,255,255,${alpha})`;
+    if(s.r<0.7){
+      // Pure pixel — sharpest possible
+      GND_CTX.fillRect(Math.round(sx),Math.round(s.y),1,1);
+    } else {
+      GND_CTX.beginPath();GND_CTX.arc(sx,s.y,s.r,0,Math.PI*2);GND_CTX.fill();
+    }
+    // Wrap
+    if(sx<10){GND_CTX.fillRect(Math.round(sx+W),Math.round(s.y),1,1);}
+  });
+}
+drawGroundStars(0);
+const gndTex=new THREE.CanvasTexture(GROUND_CANVAS);
+gndTex.needsUpdate=true;
+gndTex.anisotropy=4;
+const gndGeo=new THREE.SphereGeometry(570,64,64,0,Math.PI*2,0,Math.PI);
+const gndMat=new THREE.MeshBasicMaterial({map:gndTex,side:THREE.BackSide,depthWrite:false,fog:false});
+const gndMesh=new THREE.Mesh(gndGeo,gndMat);
+gndMesh.scale.y=-1;
+gndMesh.renderOrder=-2;
+skyMesh.renderOrder=-1;
+scene.add(gndMesh);
+
 // Sky update state
-const SKY_CYCLE = 120000; // full day/night cycle = 120 seconds
+const SKY_CYCLE = 60000; // full cycle = 60 seconds
 let skyCloudShift = 0;
 let skyStarShift = 0;
 function updateSky(){
@@ -958,6 +1012,8 @@ function updateSky(){
   skyCloudShift += 0.014;  // slightly faster than before, still very subtle
   skyStarShift  += 0.15;   // stars drift at a good pace
   drawSky(t, skyCloudShift, skyStarShift);
+  drawGroundStars(skyStarShift * 0.7); // drift slightly slower than sky
+  gndTex.needsUpdate=true;
   skyTex.needsUpdate = true;
   // Also shift fog colour to match
   const ph = skyPhase(t);
@@ -982,17 +1038,16 @@ scene.add(new THREE.HemisphereLight(0xAAE880,0xE0342F,0.6));
 });
 
 // ── MATERIALS ─────────────────────────────────────────────────────────────────
-function makeRedFloor(){
+function makeGreenFloor(repX, repZ){
   const C=document.createElement('canvas');C.width=C.height=512;const ctx=C.getContext('2d');
-  ctx.fillStyle='#E0342F';ctx.fillRect(0,0,512,512);
-  ctx.strokeStyle='rgba(180,20,15,0.3)';ctx.lineWidth=1.5;
-  for(let i=0;i<=512;i+=64){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,512);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(512,i);ctx.stroke();}
-  for(let tx=0;tx<8;tx++)for(let ty=0;ty<8;ty++){
-    const grd=ctx.createRadialGradient(tx*64+20,ty*64+16,0,tx*64+32,ty*64+32,36);
-    grd.addColorStop(0,'rgba(255,120,100,0.18)');grd.addColorStop(1,'rgba(255,120,100,0)');
-    ctx.fillStyle=grd;ctx.fillRect(tx*64,ty*64,64,64);
+  ctx.fillStyle='#1A3B1A';ctx.fillRect(0,0,512,512);
+  // Very subtle noise grain for depth
+  ctx.globalAlpha=0.04;
+  for(let n=0;n<2000;n++){
+    ctx.fillStyle=Math.random()>0.5?'#FFFFFF':'#000000';
+    ctx.fillRect(Math.random()*512,Math.random()*512,2,2);
   }
-  const t=new THREE.CanvasTexture(C);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(45,50);return t;
+  const t=new THREE.CanvasTexture(C);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(repX,repZ);return t;
 }
 function makePlaceholder(work){
   const C=document.createElement('canvas');C.width=512;C.height=512;const ctx=C.getContext('2d');
@@ -1003,7 +1058,10 @@ function makePlaceholder(work){
   words.forEach(w=>{const test=line+w+' ';if(ctx.measureText(test).width>460&&line){ctx.fillText(line.trim(),256,y);line=w+' ';y+=22;}else line=test;});
   ctx.fillText(line.trim(),256,y);return new THREE.CanvasTexture(C);
 }
-const floorMat=new THREE.MeshLambertMaterial({map:makeRedFloor()});
+// Corridor: 24 wide × 1470 long — tile size ~8 world units → repeat = dim/(8*4)
+const floorMat      =new THREE.MeshStandardMaterial({color:0x0D2B0D,transparent:true,opacity:0.22,roughness:0.5,metalness:0.1,depthWrite:false});
+// Chambers: 90 × 90 — same tile size
+const floorMatRoom  =new THREE.MeshStandardMaterial({color:0x0D2B0D,transparent:true,opacity:0.22,roughness:0.5,metalness:0.1,depthWrite:false});
 
 const wallMat =new THREE.MeshLambertMaterial({color:0xE0342F,side:THREE.DoubleSide});
 const moldMat =new THREE.MeshLambertMaterial({color:0xC02018});
@@ -1194,11 +1252,11 @@ for(let i=0;i<5;i++){_z+=_SEGS[i];ROOMS_Z.push([_z,_z+RD,_z+RD/2]);_z+=RD;}
 const END_Z=_z+SEG; // 1470
 
 // ── Floor ─────────────────────────────────────────────────────────────────────
-// Corridor floor strips
+// Corridor floor
 addBox(CW*2,0.25,END_Z,floorMat,0,-0.12,END_Z/2,false);
-// Room floor squares (wider)
+// Room floor squares — raised 0.005 above corridor to prevent Z-fighting
 ROOMS_Z.forEach(([rz0,rz1,rc])=>{
-  addBox(RH*2,0.25,RD,floorMat,0,-0.12,rc,false);
+  addBox(RH*2,0.25,RD,floorMatRoom,0,-0.115,rc,false);
 });
 
 // ── South entrance wall — fully closed (player spawns inside) ────────────────
@@ -2196,6 +2254,7 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     detectRoom();detectArt();updateProximityPrompts();drawMap();
   }
   skyMesh.position.x=camera.position.x;skyMesh.position.z=camera.position.z;
+  gndMesh.position.x=camera.position.x;gndMesh.position.y=camera.position.y;gndMesh.position.z=camera.position.z;
   renderer.render(scene,camera);
   // Update sky every 4 frames
   if(++skyFrame%4===0) updateSky();

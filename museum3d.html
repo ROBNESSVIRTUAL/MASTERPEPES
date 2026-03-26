@@ -1251,41 +1251,31 @@ ROOMS_Z.forEach(([rz0,rz1,rc])=>{
   addBox(RH*2,0.25,RD,floorMatRoom,0,-0.115,rc,false);
 });
 
-// ── South entrance wall — fully closed (player spawns inside) ────────────────
-wallX(-RH,-CW,0,[]);   // SW section
-wallX(-CW,  CW,0,[]);  // centre section — CLOSED
-wallX( CW,  RH,0,[]);  // SE section
+// ── South entrance wall — centre only (no outer stubs — open view) ───────────
+wallX(-CW,  CW,0,[]);  // centre section — CLOSED only
 
 // ── Corridor walls (Z-running walls at x=±CW) ─────────────────────────────────
-// Build continuous walls along full length, with breaks at each room
 let wz=0;
 ROOMS_Z.forEach(([rz0,rz1])=>{
-  wallZ(-CW,wz,rz0);  // left wall segment up to room
-  wallZ( CW,wz,rz0);  // right wall segment up to room
+  wallZ(-CW,wz,rz0);
+  wallZ( CW,wz,rz0);
   wz=rz1;
 });
-wallZ(-CW,wz,END_Z);  // final segment
+wallZ(-CW,wz,END_Z);
 wallZ( CW,wz,END_Z);
 
 // ── Room walls + corner fills ────────────────────────────────────────────────
 ROOMS_Z.forEach(([rz0,rz1,rc])=>{
-  // S wall: corridor gap in centre, but corners filled solid
   wallX(-RH,-CW,rz0,[]);           // SW corner fill
   wallX( CW, RH,rz0,[]);           // SE corner fill
-  // N wall: same
   wallX(-RH,-CW,rz1,[]);           // NW corner fill
   wallX( CW, RH,rz1,[]);           // NE corner fill
   wallZ(-RH,rz0,rz1,[]);           // W room wall (full)
   wallZ( RH,rz0,rz1,[]);           // E room wall (full)
 });
 
-// ── North end wall — mirrors south wall pattern + centre fill (no entrance) ───
-wallX(-RH,-CW,END_Z,[]);   // NW section (matches south pattern)
-wallX(-CW,  CW,END_Z,[]);  // CENTRE section (closed — no entrance here)
-wallX( CW, RH,END_Z,[]);   // NE section (matches south pattern)
-// Outer side walls for final corridor segment (z=1290..1470)
-wallZ(-RH,1290,1470,[]);
-wallZ( RH,1290,1470,[]);
+// ── North end wall — centre only (no outer stubs) ─────────────────────────────
+wallX(-CW,  CW,END_Z,[]);  // centre closed only
 
 // ── Room floor detail: decorative pit ring in each room centre ────────────────
 ROOMS_Z.forEach(([rz0,rz1,rc])=>{
@@ -1329,10 +1319,8 @@ ROOMS_Z.forEach(([rz0,rz1])=>{
   addColumn( CW, rz1);
 });
 
-// Entrance and end wall corners
+// Entrance and end wall — only corridor-width columns (±CW), no outer ones
 [0, END_Z].forEach(z=>{
-  addColumn(-RH, z);
-  addColumn( RH, z);
   addColumn(-CW, z);
   addColumn( CW, z);
 });

@@ -65,7 +65,47 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 .dp-token-val{font-size:13px;letter-spacing:0.04em;color:#E8F0D8;text-transform:none}
 .dp-token-val.loading{color:#2A5A2A;font-size:9px;letter-spacing:0.15em}
 .dp-token-val.err{color:#4A1A1A;font-size:9px}
-#ctrl{position:fixed;bottom:20px;right:20px;font-size:7px;letter-spacing:0.2em;color:#1E3A1E;line-height:2.4;text-align:right;display:none;pointer-events:none}
+#ctrl{
+  position:fixed;bottom:20px;right:20px;
+  font-size:7px;letter-spacing:0.18em;color:#39FF14;line-height:2.4;
+  text-align:right;display:none;pointer-events:none;
+  padding:12px 16px 10px;
+  border:1px solid rgba(57,255,20,0.55);
+  border-radius:4px;
+  background:rgba(0,8,0,0.72);
+  box-shadow:0 0 12px rgba(57,255,20,0.35),0 0 30px rgba(57,255,20,0.12),inset 0 0 18px rgba(57,255,20,0.06);
+  animation:ctrlHolo 3s ease-in-out infinite;
+}
+@keyframes ctrlHolo{
+  0%,100%{box-shadow:0 0 12px rgba(57,255,20,0.35),0 0 30px rgba(57,255,20,0.12),inset 0 0 18px rgba(57,255,20,0.06);}
+  50%{box-shadow:0 0 18px rgba(57,255,20,0.6),0 0 45px rgba(57,255,20,0.2),inset 0 0 24px rgba(57,255,20,0.1);}
+}
+#ctrl::before{
+  content:'';position:absolute;inset:0;border-radius:4px;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(57,255,20,0.03) 3px,rgba(57,255,20,0.03) 4px);
+  pointer-events:none;
+}
+#ctrl-load{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  font-size:6.5px;letter-spacing:0.15em;color:#39FF14;
+  padding:5px 18px;
+  border:1px solid rgba(57,255,20,0.45);
+  border-radius:3px;
+  background:rgba(0,8,0,0.82);
+  box-shadow:0 0 10px rgba(57,255,20,0.25),inset 0 0 10px rgba(57,255,20,0.05);
+  white-space:nowrap;
+  display:none;
+  animation:drawerIn 0.5s ease forwards, loadPulse 2.5s ease-in-out 0.5s infinite;
+  pointer-events:none;
+  z-index:200;
+}
+@keyframes drawerIn{
+  from{opacity:0;transform:translateX(-50%) translateY(10px);}
+  to{opacity:1;transform:translateX(-50%) translateY(0);}
+}
+@keyframes loadPulse{
+  0%,100%{opacity:0.65;} 50%{opacity:1;}
+}
 #mmap{position:fixed;bottom:20px;left:20px;display:none}
 #dpad{position:fixed;bottom:24px;left:24px;display:none;z-index:80;width:160px;height:160px;user-select:none;-webkit-user-select:none}
 #dpad svg{width:100%;height:100%;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5))}
@@ -383,6 +423,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
   </div>
 </div>
 <div id="ctrl">W A S D &middot; MOVE<br>SHIFT &middot; RUN<br>F &middot; FLY MODE<br>E / Q &middot; UP / DOWN<br>MOUSE DRAG &middot; LOOK<br>ESC &middot; RELEASE</div>
+<div id="ctrl-load">&#9670; PLEASE WAIT — MASTERPEPES ARTWORK IS LOADING &#9670;</div>
 <div id="mmap"><canvas id="mm" width="175" height="175"></canvas></div>
 <div id="dpad">
   <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" touch-action="none">
@@ -1279,6 +1320,17 @@ const artSpots=[];
 const LOAD_QUEUE=[];
 let activeLoads=0;
 const MAX_CONCURRENT=4;
+let totalLoaded=0;
+const TOTAL_ARTWORKS=150;
+
+function hideLoadMsg(){
+  const cl=document.getElementById('ctrl-load');
+  if(cl&&cl.style.display!=='none'){
+    cl.style.transition='opacity 1.5s';
+    cl.style.opacity='0';
+    setTimeout(()=>{cl.style.display='none';},1500);
+  }
+}
 
 function applyTexture(img,artMat,art,frameLines,anchorY){
   try{
@@ -1312,7 +1364,12 @@ function processQueue(){
     const{artMat,art,frameLines,anchorY,url,txid}=LOAD_QUEUE.shift();
     activeLoads++;
     const fallback=txid?'https://arweave.net/'+txid:'';
-    loadImg(url,fallback,artMat,art,frameLines,anchorY,()=>{activeLoads--;processQueue();});
+    loadImg(url,fallback,artMat,art,frameLines,anchorY,()=>{
+      activeLoads--;
+      totalLoaded++;
+      if(totalLoaded>=TOTAL_ARTWORKS) hideLoadMsg();
+      processQueue();
+    });
   }
 }
 
@@ -1464,9 +1521,10 @@ function enterMuseum(){
     document.getElementById('ctrl').style.display='none';
     document.getElementById('mmap').style.display='none';
   }
-  // Apply correct camera direction immediately (no waiting for first mouse move)
+  // Show loading message at bottom center
+  const cl=document.getElementById('ctrl-load');
+  if(cl) cl.style.display='block';
   yaw=0;camera.rotation.y=0;camera.rotation.x=0;
-  // Load entrance room first, then ripple outward room by room
   rippleLoad('hall');
   try{rc.requestPointerLock();}catch(e){}
 }

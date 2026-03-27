@@ -1107,6 +1107,7 @@ loadStatue('masterpepes_book.glb', 0, 165, 14, 0, 'Book', (m)=>{
 
 // Room 2 (z=435): Robness
 let robnessModel=null;
+const robnessCables=[];
 loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
   robnessModel=m;
   const MAT_BUST   = new THREE.MeshStandardMaterial({color:0x3D0066, roughness:0.6, metalness:0.25});
@@ -1118,22 +1119,54 @@ loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
     if(!child.isMesh) return;
     const mn = child.material ? child.material.name : '';
     const nn = child.name || '';
-    // lenses material
     if(mn==='lenses'){
       child.material = MAT_LENS;
     }
-    // Bolts material (Bolt_1..5) + unnamed 'bolt' node
     else if(mn==='Bolts' || nn==='bolt' || nn==='head gear'){
       child.material = MAT_BOLTS;
     }
-    // Mat.3 shared by shades-Mat.3 (frames) and head gear — split by node name
     else if(mn==='Mat.3'){
       child.material = (nn.indexOf('shade')!==-1) ? MAT_FRAMES : MAT_BOLTS;
     }
-    // everything else → bust
     else{
       child.material = MAT_BUST;
     }
+  });
+
+  // ── ELECTRODE CABLES ────────────────────────────────────────────────────────
+  // Approximate bolt/electrode positions on top of head (local space → world)
+  // Robness is at x=0, z=435, scale ~20 units tall
+  const electrodeOffsets=[
+    {x:-1.2, y:18.5, z:-0.8},   // bolt L-front
+    {x: 1.2, y:18.5, z:-0.8},   // bolt R-front
+    {x:-0.6, y:19.2, z: 0.6},   // bolt L-rear
+    {x: 0.6, y:19.2, z: 0.6},   // bolt R-rear
+  ];
+  const cableColors=[0xFF00FF, 0x00FFFF, 0xFFFF00, 0xFF4400];
+
+  electrodeOffsets.forEach((off, ci)=>{
+    // Build a CatmullRom curve with control points from electrode → slack → up to sky
+    const pts=[
+      new THREE.Vector3(off.x,   off.y,       435+off.z),
+      new THREE.Vector3(off.x*3, off.y+8,     435+off.z*2),
+      new THREE.Vector3(off.x*5, off.y+20,    435+off.z*3),
+      new THREE.Vector3(off.x*4, off.y+50,    435+off.z*2),
+      new THREE.Vector3(off.x*2, off.y+100,   435),
+      new THREE.Vector3(off.x,   off.y+160,   435),
+    ];
+    const curve=new THREE.CatmullRomCurve3(pts);
+    const geo=new THREE.TubeGeometry(curve,40,0.12,6,false);
+    const mat=new THREE.MeshStandardMaterial({
+      color:cableColors[ci],
+      emissive:cableColors[ci],
+      emissiveIntensity:0.6,
+      roughness:0.3,
+      metalness:0.7
+    });
+    const tube=new THREE.Mesh(geo,mat);
+    tube.renderOrder=1;
+    scene.add(tube);
+    robnessCables.push({tube,mat,curve,baseOffsets:[...pts],ci,phase:ci*1.5});
   });
 });
 
@@ -2258,6 +2291,28 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     if(floatingBook){
       floatingBook.rotation.y+=0.008;
       floatingBook.position.y=8+Math.sin(Date.now()*0.0008)*0.6;
+    }
+    // Robness electrode cables — dance + color cycle
+    if(robnessCables.length){
+      const t=Date.now()*0.001;
+      robnessCables.forEach(({tube,mat,curve,baseOffsets,ci,phase})=>{
+        // Rebuild curve with animated mid-points
+        const pts=baseOffsets.map((p,i)=>{
+          if(i===0||i===baseOffsets.length-1) return new THREE.Vector3(p.x,p.y,p.z);
+          const wiggle=Math.sin(t*0.8+phase+i*0.9)*(i*0.8);
+          const wiggleZ=Math.cos(t*0.6+phase+i*1.1)*(i*0.5);
+          return new THREE.Vector3(p.x+wiggle,p.y+Math.sin(t*0.5+i)*1.5,p.z+wiggleZ);
+        });
+        const newCurve=new THREE.CatmullRomCurve3(pts);
+        tube.geometry.dispose();
+        tube.geometry=new THREE.TubeGeometry(newCurve,40,0.12,6,false);
+        // Color cycle through hue
+        const hue=(t*0.15+ci*0.25)%1;
+        const col=new THREE.Color().setHSL(hue,1.0,0.55);
+        mat.color.set(col);
+        mat.emissive.set(col);
+        mat.emissiveIntensity=0.5+0.3*Math.sin(t*2+phase);
+      });
     }
     mDir.set(0,0,0);
     // Keyboard

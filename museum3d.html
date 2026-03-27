@@ -1133,40 +1133,46 @@ loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
     }
   });
 
-  // ── ELECTRODE CABLES ────────────────────────────────────────────────────────
-  // Approximate bolt/electrode positions on top of head (local space → world)
-  // Robness is at x=0, z=435, scale ~20 units tall
-  const electrodeOffsets=[
-    {x:-1.2, y:18.5, z:-0.8},   // bolt L-front
-    {x: 1.2, y:18.5, z:-0.8},   // bolt R-front
-    {x:-0.6, y:19.2, z: 0.6},   // bolt L-rear
-    {x: 0.6, y:19.2, z: 0.6},   // bolt R-rear
-  ];
-  const cableColors=[0xFF00FF, 0x00FFFF, 0xFFFF00, 0xFF4400];
-
-  electrodeOffsets.forEach((off, ci)=>{
-    // Build a CatmullRom curve with control points from electrode → slack → up to sky
+  // ── ELECTRODE CABLES — anchored to actual bolt positions ────────────────────
+  const boltPositions=[];
+  m.traverse(child=>{
+    if(!child.isMesh) return;
+    const nn=child.name||'';
+    const mn=child.material?child.material.name:'';
+    if(mn==='Bolts'||nn==='bolt'||nn.toLowerCase().includes('bolt')){
+      const wp=new THREE.Vector3();
+      child.getWorldPosition(wp);
+      boltPositions.push(wp.clone());
+    }
+  });
+  // Fallback positions if bolts not found by name
+  if(boltPositions.length===0){
+    [[-1.2,18.5,-0.8],[1.2,18.5,-0.8],[-0.6,19.2,0.6],[0.6,19.2,0.6]].forEach(([x,y,z])=>{
+      boltPositions.push(new THREE.Vector3(x,y,435+z));
+    });
+  }
+  // Use up to 4 bolts
+  const cableColors=[0xFF00FF,0x00FFFF,0xFFFF00,0xFF4400];
+  boltPositions.slice(0,4).forEach((boltWP,ci)=>{
+    const bx=boltWP.x,by=boltWP.y,bz=boltWP.z;
     const pts=[
-      new THREE.Vector3(off.x,   off.y,       435+off.z),
-      new THREE.Vector3(off.x*3, off.y+8,     435+off.z*2),
-      new THREE.Vector3(off.x*5, off.y+20,    435+off.z*3),
-      new THREE.Vector3(off.x*4, off.y+50,    435+off.z*2),
-      new THREE.Vector3(off.x*2, off.y+100,   435),
-      new THREE.Vector3(off.x,   off.y+160,   435),
+      new THREE.Vector3(bx,by,bz),
+      new THREE.Vector3(bx+(ci%2===0?-3:3),by+8,bz+2),
+      new THREE.Vector3(bx+(ci%2===0?-5:5),by+20,bz+3),
+      new THREE.Vector3(bx+(ci%2===0?-4:4),by+50,bz+2),
+      new THREE.Vector3(bx+(ci%2===0?-2:2),by+100,bz),
+      new THREE.Vector3(bx,by+160,bz),
     ];
     const curve=new THREE.CatmullRomCurve3(pts);
     const geo=new THREE.TubeGeometry(curve,40,0.12,6,false);
     const mat=new THREE.MeshStandardMaterial({
-      color:cableColors[ci],
-      emissive:cableColors[ci],
-      emissiveIntensity:0.6,
-      roughness:0.3,
-      metalness:0.7
+      color:cableColors[ci],emissive:cableColors[ci],
+      emissiveIntensity:0.6,roughness:0.3,metalness:0.7
     });
     const tube=new THREE.Mesh(geo,mat);
     tube.renderOrder=1;
     scene.add(tube);
-    robnessCables.push({tube,mat,curve,baseOffsets:[...pts],ci,phase:ci*1.5});
+    robnessCables.push({tube,mat,baseOffsets:[...pts],ci,phase:ci*1.5});
   });
 });
 

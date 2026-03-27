@@ -2164,21 +2164,20 @@ function closeDetail(){
 }
 
 async function fetchTokenInfo(asset){
-  // Try Counterparty API (free, no auth)
   const apis = [
-    `https://api.counterparty.io/v2/assets/${asset}`,
-    `https://xchain.io/api/asset/${asset}`
+    `https://api.counterparty.io:4000/v2/assets/${asset}`,
+    `https://app.xcp.io/api/v1/assets/${asset}`,
   ];
 
   let data = null;
   for(const url of apis){
     try{
-      const r = await fetch(url, {signal: AbortSignal.timeout(6000)});
+      const r = await fetch(url, {signal: AbortSignal.timeout(8000)});
       if(r.ok){ data = await r.json(); break; }
     }catch(e){}
   }
 
-  function set(id, val, raw){
+  function set(id, val){
     const el=document.getElementById(id); if(!el)return;
     el.textContent = val; el.className='dp-token-val';
   }
@@ -2191,12 +2190,11 @@ async function fetchTokenInfo(asset){
     return;
   }
 
-  // Counterparty API v2 shape
   const a = data.result || data;
   set('dpIssuer',  a.issuer || a.owner || '—');
   const supply = a.supply !== undefined ? Number(a.supply).toLocaleString() : (a.quantity !== undefined ? Number(a.quantity).toLocaleString() : '—');
   set('dpSupply',  supply);
-  set('dpHolders', a.holders_count !== undefined ? Number(a.holders_count).toLocaleString() : (a.holder_count || '—'));
+  set('dpHolders', a.holders_count !== undefined ? Number(a.holders_count).toLocaleString() : (a.holder_count !== undefined ? Number(a.holder_count).toLocaleString() : '—'));
   set('dpDiv',     a.divisible !== undefined ? (a.divisible ? 'Yes' : 'No') : '—');
   set('dpLocked',  a.locked !== undefined ? (a.locked ? 'Yes' : 'No') : '—');
 }

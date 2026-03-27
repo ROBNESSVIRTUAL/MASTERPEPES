@@ -1137,14 +1137,16 @@ loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
   const boltPositions=[];
   m.traverse(child=>{
     if(!child.isMesh) return;
-    const nn=child.name||'';
-    const mn=child.material?child.material.name:'';
-    if(mn==='Bolts'||nn==='bolt'||nn.toLowerCase().includes('bolt')){
+    const nn=(child.name||'').toLowerCase();
+    const mn=child.material?(child.material.name||'').toLowerCase():'';
+    if(mn==='bolts'||nn.includes('bolt')||nn.includes('electrode')||nn.includes('stud')||nn.includes('screw')||nn.includes('rivet')||nn==='head gear'){
       const wp=new THREE.Vector3();
       child.getWorldPosition(wp);
-      boltPositions.push(wp.clone());
+      // Only include if above shoulder height (y > 12)
+      if(wp.y>12) boltPositions.push(wp.clone());
     }
   });
+  console.log('Bolt positions found:', boltPositions.length, boltPositions.map(p=>`(${p.x.toFixed(1)},${p.y.toFixed(1)},${p.z.toFixed(1)})`));
   // Fallback positions if bolts not found by name
   if(boltPositions.length===0){
     [[-1.2,18.5,-0.8],[1.2,18.5,-0.8],[-0.6,19.2,0.6],[0.6,19.2,0.6]].forEach(([x,y,z])=>{

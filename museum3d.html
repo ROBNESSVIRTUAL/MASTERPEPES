@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MASTERPEPES MUSEUM</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&family=Tenor+Sans&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cinzel+Decorative:wght@400&family=Tenor+Sans&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-transform:uppercase;letter-spacing:0.08em;color:#E8F0D8}
+body{background:#B8E898;overflow:hidden;font-family:'Cinzel',serif;text-transform:uppercase;letter-spacing:0.08em;color:#E8F0D8}
 #c{display:block;width:100vw;height:100vh}
 #loading{position:fixed;inset:0;background:#060D06;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 1.2s}
 #loading.fade{opacity:0;pointer-events:none}
@@ -87,24 +87,37 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 }
 #ctrl-load{
   position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  font-size:6.5px;letter-spacing:0.15em;color:#39FF14;
-  padding:5px 18px;
+  font-size:6.5px;letter-spacing:0.18em;color:#39FF14;
+  font-family:'Cinzel',serif;
+  padding:6px 18px 8px;
   border:1px solid rgba(57,255,20,0.45);
   border-radius:3px;
   background:rgba(0,8,0,0.82);
   box-shadow:0 0 10px rgba(57,255,20,0.25),inset 0 0 10px rgba(57,255,20,0.05);
   white-space:nowrap;
   display:none;
+  overflow:hidden;
   animation:drawerIn 0.5s ease forwards, loadPulse 2.5s ease-in-out 0.5s infinite;
   pointer-events:none;
   z-index:200;
+  min-width:300px;
+  text-align:center;
 }
+#ctrl-load-bar{
+  position:absolute;inset:0;
+  width:0%;
+  background:linear-gradient(90deg,rgba(57,255,20,0.18),rgba(57,255,20,0.08));
+  border-right:1px solid rgba(57,255,20,0.5);
+  transition:width 0.4s ease;
+  pointer-events:none;
+}
+#ctrl-load-text{position:relative;z-index:1;}
 @keyframes drawerIn{
   from{opacity:0;transform:translateX(-50%) translateY(10px);}
   to{opacity:1;transform:translateX(-50%) translateY(0);}
 }
 @keyframes loadPulse{
-  0%,100%{opacity:0.65;} 50%{opacity:1;}
+  0%,100%{opacity:0.7;} 50%{opacity:1;}
 }
 #mmap{position:fixed;bottom:20px;left:20px;display:none}
 #dpad{position:fixed;bottom:24px;left:24px;display:none;z-index:80;width:160px;height:160px;user-select:none;-webkit-user-select:none}
@@ -133,7 +146,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 @keyframes holoFlicker{0%,100%{box-shadow:0 0 30px #39FF1466,0 0 80px #39FF1422,inset 0 0 40px rgba(57,255,20,0.04)}50%{box-shadow:0 0 40px #39FF1499,0 0 100px #39FF1433,inset 0 0 50px rgba(57,255,20,0.07)}}
 #nuPanel.open{display:flex}
 .nu-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(57,255,20,0.3);flex-shrink:0;background:rgba(57,255,20,0.06)}
-.nu-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#39FF14;text-shadow:0 0 10px #39FF14}
+.nu-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.35em;color:#39FF14;text-shadow:0 0 10px #39FF14}
 .nu-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#39FF14;border:1.5px solid rgba(57,255,20,0.5);border-radius:50%;cursor:pointer;background:rgba(57,255,20,0.08);box-shadow:0 0 10px #39FF1455,inset 0 0 8px rgba(57,255,20,0.08);transition:all 0.2s;line-height:1;flex-shrink:0}
 .nu-close:hover{background:rgba(57,255,20,0.2);box-shadow:0 0 18px #39FF14AA,inset 0 0 14px rgba(57,255,20,0.15);border-color:#39FF14;transform:scale(1.1)}
 .nu-body{flex:1;display:flex;overflow:hidden;min-height:0}
@@ -163,7 +176,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 @keyframes rbFlicker{0%,100%{box-shadow:0 0 30px #BF5FFF66,0 0 80px #BF5FFF22,inset 0 0 40px rgba(191,95,255,0.04)}50%{box-shadow:0 0 44px #BF5FFF99,0 0 110px #BF5FFF33,inset 0 0 55px rgba(191,95,255,0.08)}}
 #rbPanel.open{display:flex}
 .rb-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(191,95,255,0.3);flex-shrink:0;background:rgba(191,95,255,0.06)}
-.rb-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#BF5FFF;text-shadow:0 0 10px #BF5FFF}
+.rb-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.35em;color:#BF5FFF;text-shadow:0 0 10px #BF5FFF}
 .rb-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#BF5FFF;border:1.5px solid rgba(191,95,255,0.5);border-radius:50%;cursor:pointer;background:rgba(191,95,255,0.08);box-shadow:0 0 10px #BF5FFF55,inset 0 0 8px rgba(191,95,255,0.08);transition:all 0.2s;line-height:1;flex-shrink:0}
 .rb-close:hover{background:rgba(191,95,255,0.2);box-shadow:0 0 18px #BF5FFFAA,inset 0 0 14px rgba(191,95,255,0.15);border-color:#BF5FFF;transform:scale(1.1)}
 .rb-body{flex:1;display:flex;overflow:hidden;min-height:0}
@@ -202,7 +215,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 }
 #trashPanel.open{display:flex}
 .tr-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,0.15);flex-shrink:0;background:rgba(255,255,255,0.04)}
-.tr-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#fff;animation:rgbText 3s linear infinite}
+.tr-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.35em;color:#fff;animation:rgbText 3s linear infinite}
 @keyframes rgbText{
   0%{color:#FF0000;text-shadow:0 0 8px #FF0000}
   33%{color:#00FF00;text-shadow:0 0 8px #00FF00}
@@ -242,7 +255,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 }
 #lkPanel.open{display:flex}
 .lk-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(200,144,26,0.3);flex-shrink:0;background:rgba(200,144,26,0.06)}
-.lk-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#FFD700;text-shadow:0 0 12px #C8901A}
+.lk-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.35em;color:#FFD700;text-shadow:0 0 12px #C8901A}
 .lk-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#C8901A;border:1.5px solid rgba(200,144,26,0.5);border-radius:50%;cursor:pointer;background:rgba(200,144,26,0.08);box-shadow:0 0 10px rgba(200,144,26,0.4),inset 0 0 8px rgba(200,144,26,0.08);transition:all 0.2s;line-height:1;flex-shrink:0}
 .lk-close:hover{background:rgba(200,144,26,0.22);box-shadow:0 0 20px rgba(200,144,26,0.8),inset 0 0 14px rgba(200,144,26,0.15);border-color:#FFD700;color:#FFD700;transform:scale(1.1)}
 .lk-body{flex:1;display:flex;overflow:hidden;min-height:0}
@@ -276,7 +289,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 }
 #ksPanel.open{display:flex}
 .ks-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(0,204,68,0.3);flex-shrink:0;background:rgba(0,204,68,0.05)}
-.ks-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#00FF55;text-shadow:0 0 10px #00CC44}
+.ks-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.35em;color:#00FF55;text-shadow:0 0 10px #00CC44}
 .ks-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#00CC44;border:1.5px solid rgba(0,204,68,0.5);border-radius:50%;cursor:pointer;background:rgba(0,204,68,0.08);box-shadow:0 0 10px rgba(0,204,68,0.4),inset 0 0 8px rgba(0,204,68,0.06);transition:all 0.2s;line-height:1;flex-shrink:0}
 .ks-close:hover{background:rgba(0,204,68,0.2);box-shadow:0 0 20px rgba(0,255,85,0.7),inset 0 0 14px rgba(0,204,68,0.12);border-color:#00FF55;color:#00FF55;transform:scale(1.1)}
 .ks-body{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column}
@@ -303,7 +316,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 }
 #dsPanel.open{display:flex}
 .ds-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(255,62,165,0.3);flex-shrink:0;background:rgba(255,62,165,0.05)}
-.ds-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#FF69C0;text-shadow:0 0 10px #FF3EA5}
+.ds-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.35em;color:#FF69C0;text-shadow:0 0 10px #FF3EA5}
 .ds-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#FF3EA5;border:1.5px solid rgba(255,62,165,0.5);border-radius:50%;cursor:pointer;background:rgba(255,62,165,0.08);box-shadow:0 0 10px rgba(255,62,165,0.4),inset 0 0 8px rgba(255,62,165,0.06);transition:all 0.2s;line-height:1;flex-shrink:0}
 .ds-close:hover{background:rgba(255,62,165,0.2);box-shadow:0 0 20px rgba(255,105,192,0.7),inset 0 0 14px rgba(255,62,165,0.12);border-color:#FF69C0;color:#FF69C0;transform:scale(1.1)}
 .ds-body{flex:1;display:flex;overflow:hidden;min-height:0}
@@ -337,7 +350,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
 }
 #bkPanel.open{display:flex}
 .bk-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(224,52,47,0.3);flex-shrink:0;background:rgba(224,52,47,0.06)}
-.bk-title{font-family:'Tenor Sans',serif;font-size:10px;letter-spacing:0.35em;color:#FF6B68;text-shadow:0 0 10px #E0342F}
+.bk-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.35em;color:#FF6B68;text-shadow:0 0 10px #E0342F}
 .bk-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#E0342F;border:1.5px solid rgba(224,52,47,0.5);border-radius:50%;cursor:pointer;background:rgba(224,52,47,0.08);box-shadow:0 0 10px rgba(224,52,47,0.4),inset 0 0 8px rgba(224,52,47,0.06);transition:all 0.2s;line-height:1;flex-shrink:0}
 .bk-close:hover{background:rgba(224,52,47,0.2);box-shadow:0 0 20px rgba(255,74,68,0.7),inset 0 0 14px rgba(224,52,47,0.12);border-color:#FF6B68;color:#FF6B68;transform:scale(1.1)}
 .bk-body{flex:1;display:flex;overflow:hidden;min-height:0}
@@ -423,7 +436,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
   </div>
 </div>
 <div id="ctrl">W A S D &middot; MOVE<br>SHIFT &middot; RUN<br>F &middot; FLY MODE<br>E / Q &middot; UP / DOWN<br>MOUSE DRAG &middot; LOOK<br>ESC &middot; RELEASE</div>
-<div id="ctrl-load">&#9670; PLEASE WAIT — MASTERPEPES ARTWORK IS LOADING &#9670;</div>
+<div id="ctrl-load"><div id="ctrl-load-bar"></div><div id="ctrl-load-text">&#9670; Please Wait &mdash; Masterpepes Artwork Is Loading &#9670;</div></div>
 <div id="mmap"><canvas id="mm" width="175" height="175"></canvas></div>
 <div id="dpad">
   <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" touch-action="none">
@@ -441,7 +454,7 @@ body{background:#B8E898;overflow:hidden;font-family:'Tenor Sans',serif;text-tran
     <polygon class="dp-arrow" points="110,60 92,51 92,69" fill="#FFD700" pointer-events="none"/>
     <!-- Centre RUN — large circle, full hit area -->
     <circle id="dp-run" cx="60" cy="60" r="22" fill="rgba(0,0,0,0.55)" stroke="#C8901A" stroke-width="2" class="dp-btn"/>
-    <text x="60" y="64" text-anchor="middle" font-size="9" fill="#C8901A" font-family="Tenor Sans,serif" letter-spacing="0.5" pointer-events="none">RUN</text>
+    <text x="60" y="64" text-anchor="middle" font-size="9" fill="#C8901A" font-family="Cinzel,serif" letter-spacing="0.5" pointer-events="none">RUN</text>
   </svg>
 </div>
 <div id="look-hint">DRAG RIGHT SIDE<br>TO LOOK AROUND<br>TAP &#9679; TO RUN</div>
@@ -1367,6 +1380,11 @@ function processQueue(){
     loadImg(url,fallback,artMat,art,frameLines,anchorY,()=>{
       activeLoads--;
       totalLoaded++;
+      const pct=Math.round(totalLoaded/TOTAL_ARTWORKS*100);
+      const bar=document.getElementById('ctrl-load-bar');
+      if(bar) bar.style.width=pct+'%';
+      const txt=document.getElementById('ctrl-load-text');
+      if(txt) txt.textContent='◈ Loading Masterpepes — '+pct+'% ◈';
       if(totalLoaded>=TOTAL_ARTWORKS) hideLoadMsg();
       processQueue();
     });

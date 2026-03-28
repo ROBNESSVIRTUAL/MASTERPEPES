@@ -162,7 +162,10 @@
     height:auto;
     filter:drop-shadow(0 0 22px rgba(224,52,47,0.7)) drop-shadow(0 0 8px rgba(255,80,60,0.5));
     animation:warriorGlow 3s ease-in-out infinite;
+    cursor:pointer;
+    transition:transform 0.2s;
   }
+  .warrior-img:hover{transform:scale(1.05);}
   @keyframes warriorGlow{
     0%,100%{filter:drop-shadow(0 0 18px rgba(224,52,47,0.65)) drop-shadow(0 0 6px rgba(255,80,60,0.4));}
     50%{filter:drop-shadow(0 0 38px rgba(224,52,47,0.95)) drop-shadow(0 0 16px rgba(255,120,80,0.7));}
@@ -183,6 +186,93 @@
     .drop-date{font-size:9px;}
     .warrior-wrap{width:min(160px,50vw);}
     .logo-img{max-width:80vw;}
+  }
+
+  /* Warrior spin-to-map transition */
+  .warrior-img.spinning{
+    animation:spinFlip 0.8s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+  @keyframes spinFlip{
+    0%{transform:scale(1) rotateY(0deg);opacity:1;}
+    50%{transform:scale(0.3) rotateY(180deg);opacity:0.3;}
+    100%{transform:scale(0) rotateY(360deg);opacity:0;}
+  }
+
+  /* 3D Map overlay */
+  #mapOverlay{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(5,0,0,0.92);
+    z-index:500;
+    align-items:center;justify-content:center;
+    flex-direction:column;
+    gap:16px;
+  }
+  #mapOverlay.active{display:flex;}
+  #mapCanvas{
+    border:1px solid rgba(224,52,47,0.5);
+    border-radius:6px;
+    box-shadow:0 0 40px rgba(224,52,47,0.3),0 0 80px rgba(224,52,47,0.1);
+    cursor:grab;
+    animation:mapFadeIn 0.6s ease forwards;
+    max-width:92vw;max-height:70vh;
+  }
+  #mapCanvas:active{cursor:grabbing;}
+  @keyframes mapFadeIn{
+    from{opacity:0;transform:scale(0.85) rotateX(20deg);}
+    to{opacity:1;transform:scale(1) rotateX(0deg);}
+  }
+  .map-label{
+    font-family:'Cinzel',serif;
+    font-size:9px;letter-spacing:0.3em;
+    color:rgba(224,52,47,0.7);
+    text-transform:uppercase;
+  }
+  .map-close{
+    font-family:'Cinzel',serif;
+    font-size:8px;letter-spacing:0.25em;
+    color:rgba(224,52,47,0.6);
+    border:0.5px solid rgba(224,52,47,0.35);
+    padding:7px 22px;border-radius:3px;
+    cursor:pointer;background:rgba(224,52,47,0.06);
+    transition:all 0.2s;text-transform:uppercase;
+  }
+  .map-close:hover{color:#E0342F;border-color:#E0342F;background:rgba(224,52,47,0.12);
+    box-shadow:0 0 14px rgba(224,52,47,0.4);}
+
+  /* Enter Museum button — right side fixed */
+  #enterBtn{
+    position:fixed;right:24px;top:50%;transform:translateY(-50%);
+    font-family:'Cinzel',serif;
+    font-size:8px;letter-spacing:0.28em;
+    color:#FFD700;
+    border:1px solid rgba(200,144,26,0.6);
+    border-radius:4px;
+    padding:14px 16px;
+    background:rgba(200,144,26,0.07);
+    box-shadow:0 0 14px rgba(200,144,26,0.3),0 0 30px rgba(200,144,26,0.1),inset 0 0 12px rgba(200,144,26,0.05);
+    cursor:pointer;
+    writing-mode:vertical-rl;
+    text-orientation:mixed;
+    letter-spacing:0.35em;
+    text-transform:uppercase;
+    text-decoration:none;
+    animation:btnPulse 3s ease-in-out infinite;
+    transition:all 0.25s;
+    z-index:100;
+  }
+  #enterBtn:hover{
+    color:#FFD700;
+    box-shadow:0 0 24px rgba(200,144,26,0.65),0 0 50px rgba(200,144,26,0.2),inset 0 0 18px rgba(200,144,26,0.1);
+    border-color:#C8901A;background:rgba(200,144,26,0.14);
+    transform:translateY(-50%) scale(1.04);
+  }
+  @keyframes btnPulse{
+    0%,100%{box-shadow:0 0 14px rgba(200,144,26,0.3),0 0 30px rgba(200,144,26,0.1),inset 0 0 12px rgba(200,144,26,0.05);}
+    50%{box-shadow:0 0 22px rgba(200,144,26,0.55),0 0 50px rgba(200,144,26,0.18),inset 0 0 18px rgba(200,144,26,0.08);}
+  }
+  @media(max-width:480px){
+    #enterBtn{right:10px;padding:10px 10px;font-size:7px;}
   }
 </style>
 </head>
@@ -244,6 +334,157 @@
 </div>
 
 <script>
+// ── WARRIOR CLICK → 3D MAP ────────────────────────────────────────────────────
+document.querySelector('.warrior-img').addEventListener('click', function(){
+  this.classList.add('spinning');
+  setTimeout(openMap, 700);
+});
+
+function openMap(){
+  document.getElementById('mapOverlay').classList.add('active');
+  initMap();
+}
+function closeMap(){
+  document.getElementById('mapOverlay').classList.remove('active');
+  // Reset warrior
+  const img=document.querySelector('.warrior-img');
+  img.classList.remove('spinning');
+  img.style.opacity='1';img.style.transform='';
+}
+
+// ── THREE.JS MAP ──────────────────────────────────────────────────────────────
+let mapInitialized=false;
+function initMap(){
+  if(mapInitialized)return;
+  mapInitialized=true;
+  const script=document.createElement('script');
+  script.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  script.onload=buildMap;
+  document.head.appendChild(script);
+}
+
+function buildMap(){
+  const canvas=document.getElementById('mapCanvas');
+  const W=canvas.width,H=canvas.height;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setSize(W,H);renderer.setClearColor(0x000000,0);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(45,W/H,0.1,2000);
+  camera.position.set(0,180,220);camera.lookAt(0,0,0);
+
+  // Lighting
+  scene.add(new THREE.AmbientLight(0xFFEEDD,0.5));
+  const dl=new THREE.DirectionalLight(0xFFD700,1.2);dl.position.set(50,100,80);scene.add(dl);
+  const rl=new THREE.DirectionalLight(0xE0342F,0.8);rl.position.set(-50,60,-40);scene.add(rl);
+
+  // Museum geometry constants (scaled down)
+  const S=0.18; // scale factor
+  const CW=12*S,RH=45*S,SEG=180*S,RD=90*S;
+  const _SEGS=[120,180,180,180,180];
+  let _z=0;const ROOMS_Z=[];
+  _SEGS.forEach(s=>{_z+=s*S;ROOMS_Z.push([_z,_z+RD,_z+RD/2]);_z+=RD*S;});
+  const END_Z=_z+SEG;
+
+  // Center the map at origin
+  const MID_Z=END_Z/2;
+
+  const floorMat=new THREE.MeshStandardMaterial({color:0x1A3B1A,roughness:0.6,metalness:0.2});
+  const wallMat=new THREE.MeshStandardMaterial({color:0xC0281F,roughness:0.5,metalness:0.3,
+    emissive:0x400808,emissiveIntensity:0.4});
+  const chamberMat=new THREE.MeshStandardMaterial({color:0x2A0D0D,roughness:0.6,metalness:0.1,
+    emissive:0x1A0404,emissiveIntensity:0.3});
+  const capMat=new THREE.MeshStandardMaterial({color:0xFFD700,roughness:0.3,metalness:0.7,
+    emissive:0x443300,emissiveIntensity:0.5});
+
+  function box(w,h,d,mat,x,y,z){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+    m.position.set(x,y,z-MID_Z);scene.add(m);return m;
+  }
+
+  // Floor
+  box(CW*2,0.3,END_Z,floorMat,0,0,END_Z/2);
+  // Room floors
+  ROOMS_Z.forEach(([z0,z1,zc])=>box(RH*2,0.35,RD,chamberMat,0,0.05,zc));
+
+  // Corridor walls
+  const H3=4,WT=0.4*S;
+  let wz=0;
+  ROOMS_Z.forEach(([z0,z1])=>{
+    const len=z0-wz;if(len>0){
+      box(WT,H3,len,wallMat,-CW,H3/2,wz+len/2);
+      box(WT,H3,len,wallMat,CW,H3/2,wz+len/2);
+    }
+    wz=z1;
+  });
+  const flen=END_Z-wz;
+  box(WT,H3,flen,wallMat,-CW,H3/2,wz+flen/2);
+  box(WT,H3,flen,wallMat,CW,H3/2,wz+flen/2);
+
+  // Room side walls + columns
+  ROOMS_Z.forEach(([z0,z1,zc],i)=>{
+    box(WT,H3,RD,wallMat,-RH,H3/2,zc);
+    box(WT,H3,RD,wallMat,RH,H3/2,zc);
+    // Corner columns
+    [[-RH,z0],[RH,z0],[-RH,z1],[RH,z1],[-CW,z0],[CW,z0],[-CW,z1],[CW,z1]].forEach(([cx,cz])=>{
+      const col=new THREE.Mesh(new THREE.CylinderGeometry(0.6*S,0.8*S,H3,8),wallMat);
+      col.position.set(cx,H3/2,cz-MID_Z);scene.add(col);
+      const cap=new THREE.Mesh(new THREE.BoxGeometry(1.6*S,0.5,1.6*S),capMat);
+      cap.position.set(cx,H3+0.25,cz-MID_Z);scene.add(cap);
+    });
+    // Room label (floating text via small glowing plane)
+    const lbl=new THREE.Mesh(new THREE.PlaneGeometry(RH*1.2,1.2),
+      new THREE.MeshBasicMaterial({color:0xFFD700,transparent:true,opacity:0.6,side:THREE.DoubleSide}));
+    lbl.position.set(0,H3+1,zc-MID_Z);lbl.rotation.x=-Math.PI/2;scene.add(lbl);
+  });
+
+  // End walls
+  box(CW*2,H3,WT,wallMat,0,H3/2,0);
+  box(CW*2,H3,WT,wallMat,0,H3/2,END_Z);
+
+  // Glowing floor grid lines
+  const gridMat=new THREE.LineBasicMaterial({color:0x2A5A2A,transparent:true,opacity:0.4});
+  for(let gz=0;gz<=END_Z;gz+=SEG/4){
+    const g=new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-CW,0.2,gz-MID_Z),new THREE.Vector3(CW,0.2,gz-MID_Z)]);
+    scene.add(new THREE.Line(g,gridMat));
+  }
+
+  // Orbit controls (manual)
+  let isDragging=false,lastX=0,lastY=0;
+  let rotY=0.3,rotX=0.5;
+  const pivot=new THREE.Group();scene.add(pivot);
+
+  canvas.addEventListener('mousedown',e=>{isDragging=true;lastX=e.clientX;lastY=e.clientY;});
+  canvas.addEventListener('touchstart',e=>{isDragging=true;lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;},{passive:true});
+  window.addEventListener('mouseup',()=>isDragging=false);
+  window.addEventListener('touchend',()=>isDragging=false);
+  window.addEventListener('mousemove',e=>{
+    if(!isDragging)return;
+    rotY+=(e.clientX-lastX)*0.008;
+    rotX+=(e.clientY-lastY)*0.005;
+    rotX=Math.max(-0.8,Math.min(1.2,rotX));
+    lastX=e.clientX;lastY=e.clientY;
+  });
+  window.addEventListener('touchmove',e=>{
+    if(!isDragging)return;
+    rotY+=(e.touches[0].clientX-lastX)*0.008;
+    rotX+=(e.touches[0].clientY-lastY)*0.005;
+    rotX=Math.max(-0.8,Math.min(1.2,rotX));
+    lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;
+  },{passive:true});
+
+  (function render(){
+    requestAnimationFrame(render);
+    if(!document.getElementById('mapOverlay').classList.contains('active'))return;
+    if(!isDragging)rotY+=0.004;
+    camera.position.x=Math.sin(rotY)*220*Math.cos(rotX);
+    camera.position.z=Math.cos(rotY)*220*Math.cos(rotX)-MID_Z;
+    camera.position.y=180*Math.sin(rotX)+60;
+    camera.lookAt(0,10,-MID_Z+MID_Z);
+    renderer.render(scene,camera);
+  })();
+}
+
 const DROP = new Date('2026-05-01T19:00:00Z'); // 12pm Pacific = 19:00 UTC
 function pad(n){return String(n).padStart(2,'0');}
 function tick(){
@@ -264,5 +505,16 @@ function tick(){
 tick();
 setInterval(tick,1000);
 </script>
+
+<!-- 3D Museum Map Overlay -->
+<div id="mapOverlay">
+  <div class="map-label">&#9670; MASTERPEPES MUSEUM — 3D MAP &#9670;</div>
+  <canvas id="mapCanvas" width="520" height="420"></canvas>
+  <div class="map-label">CLICK &amp; DRAG TO ROTATE</div>
+  <div class="map-close" onclick="closeMap()">&#10005; CLOSE MAP</div>
+</div>
+
+<!-- Enter 3D Museum button -->
+<a id="enterBtn" href="museum3d.html">&#9670; ENTER 3D MUSEUM &#9670;</a>
 </body>
 </html>

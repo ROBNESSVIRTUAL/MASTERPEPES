@@ -1057,9 +1057,9 @@ function makePlaceholder(work){
   ctx.fillText(line.trim(),256,y);return new THREE.CanvasTexture(C);
 }
 // Corridor: 24 wide × 1470 long — tile size ~8 world units → repeat = dim/(8*4)
-const floorMat      =new THREE.MeshStandardMaterial({color:0x0D2B0D,transparent:true,opacity:0.22,roughness:0.5,metalness:0.1,depthWrite:false});
+const floorMat      =new THREE.MeshStandardMaterial({color:0x3A0808,transparent:true,opacity:0.28,roughness:0.5,metalness:0.1,depthWrite:false});
 // Chambers: 90 × 90 — same tile size
-const floorMatRoom  =new THREE.MeshStandardMaterial({color:0x0D2B0D,transparent:true,opacity:0.22,roughness:0.5,metalness:0.1,depthWrite:false});
+const floorMatRoom  =new THREE.MeshStandardMaterial({color:0x3A0808,transparent:true,opacity:0.28,roughness:0.5,metalness:0.1,depthWrite:false});
 
 const wallMat =new THREE.MeshLambertMaterial({color:0xE0342F,side:THREE.DoubleSide});
 const moldMat =new THREE.MeshLambertMaterial({color:0xC02018});

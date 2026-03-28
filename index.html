@@ -211,13 +211,11 @@
   }
   #mapContainer.active{display:flex;}
   #mapCanvas{
-    border:1px solid rgba(224,52,47,0.5);
-    border-radius:6px;
-    box-shadow:0 0 30px rgba(224,52,47,0.35),0 0 60px rgba(224,52,47,0.1);
     cursor:grab;
     width:min(280px,72vw);
     height:auto;
-    aspect-ratio:4/3;
+    aspect-ratio:1/1;
+    background:transparent;
   }
   #mapCanvas:active{cursor:grabbing;}
   @keyframes mapFadeIn{
@@ -366,131 +364,193 @@ let mapInitialized=false;
 function initMap(){
   if(mapInitialized)return;
   mapInitialized=true;
-  const script=document.createElement('script');
-  script.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-  script.onload=buildMap;
-  document.head.appendChild(script);
+buildMap();
 }
 
 function buildMap(){
   const canvas=document.getElementById('mapCanvas');
-  const W=canvas.width,H=canvas.height;
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  renderer.setSize(W,H);renderer.setClearColor(0x000000,0);
-  const scene=new THREE.Scene();
-  const camera=new THREE.PerspectiveCamera(45,W/H,0.1,2000);
-  camera.position.set(0,180,220);camera.lookAt(0,0,0);
+  const W=canvas.width=400, H=canvas.height=400;
+  const ctx=canvas.getContext('2d');
 
-  // Lighting
-  scene.add(new THREE.AmbientLight(0xFFEEDD,0.5));
-  const dl=new THREE.DirectionalLight(0xFFD700,1.2);dl.position.set(50,100,80);scene.add(dl);
-  const rl=new THREE.DirectionalLight(0xE0342F,0.8);rl.position.set(-50,60,-40);scene.add(rl);
-
-  // Museum geometry constants (scaled down)
-  const S=0.18; // scale factor
-  const CW=12*S,RH=45*S,SEG=180*S,RD=90*S;
+  // Museum geometry (world units)
+  const CW=12,RH=45,RD=90,END_Z=1470;
   const _SEGS=[120,180,180,180,180];
-  let _z=0;const ROOMS_Z=[];
-  _SEGS.forEach(s=>{_z+=s*S;ROOMS_Z.push([_z,_z+RD,_z+RD/2]);_z+=RD*S;});
-  const END_Z=_z+SEG;
+  let _z=0; const ROOMS_Z=[];
+  _SEGS.forEach(s=>{_z+=s; ROOMS_Z.push([_z,_z+RD,_z+RD/2]); _z+=RD;});
 
-  // Center the map at origin
-  const MID_Z=END_Z/2;
-
-  const floorMat=new THREE.MeshStandardMaterial({color:0x1A3B1A,roughness:0.6,metalness:0.2});
-  const wallMat=new THREE.MeshStandardMaterial({color:0xC0281F,roughness:0.5,metalness:0.3,
-    emissive:0x400808,emissiveIntensity:0.4});
-  const chamberMat=new THREE.MeshStandardMaterial({color:0x2A0D0D,roughness:0.6,metalness:0.1,
-    emissive:0x1A0404,emissiveIntensity:0.3});
-  const capMat=new THREE.MeshStandardMaterial({color:0xFFD700,roughness:0.3,metalness:0.7,
-    emissive:0x443300,emissiveIntensity:0.5});
-
-  function box(w,h,d,mat,x,y,z){
-    const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
-    m.position.set(x,y,z-MID_Z);scene.add(m);return m;
-  }
-
-  // Floor
-  box(CW*2,0.3,END_Z,floorMat,0,0,END_Z/2);
-  // Room floors
-  ROOMS_Z.forEach(([z0,z1,zc])=>box(RH*2,0.35,RD,chamberMat,0,0.05,zc));
-
-  // Corridor walls
-  const H3=4,WT=0.4*S;
-  let wz=0;
-  ROOMS_Z.forEach(([z0,z1])=>{
-    const len=z0-wz;if(len>0){
-      box(WT,H3,len,wallMat,-CW,H3/2,wz+len/2);
-      box(WT,H3,len,wallMat,CW,H3/2,wz+len/2);
+  // Art spot positions — corridor both sides + room walls
+  const artSpots3D=[];
+  const STEP=22;
+  const segs=[];
+  let prev=0;
+  ROOMS_Z.forEach(([z0,z1])=>{segs.push([prev,z0]);prev=z1;});
+  segs.push([prev,END_Z]);
+  segs.forEach(([za,zb])=>{
+    const n=Math.max(1,Math.floor((zb-za)/STEP));
+    const sp=(zb-za)/n;
+    for(let j=0;j<n;j++){
+      const z=za+sp*(j+0.5);
+      artSpots3D.push([-20,z],[ 20,z]);
     }
-    wz=z1;
   });
-  const flen=END_Z-wz;
-  box(WT,H3,flen,wallMat,-CW,H3/2,wz+flen/2);
-  box(WT,H3,flen,wallMat,CW,H3/2,wz+flen/2);
-
-  // Room side walls + columns
-  ROOMS_Z.forEach(([z0,z1,zc],i)=>{
-    box(WT,H3,RD,wallMat,-RH,H3/2,zc);
-    box(WT,H3,RD,wallMat,RH,H3/2,zc);
-    // Corner columns
-    [[-RH,z0],[RH,z0],[-RH,z1],[RH,z1],[-CW,z0],[CW,z0],[-CW,z1],[CW,z1]].forEach(([cx,cz])=>{
-      const col=new THREE.Mesh(new THREE.CylinderGeometry(0.6*S,0.8*S,H3,8),wallMat);
-      col.position.set(cx,H3/2,cz-MID_Z);scene.add(col);
-      const cap=new THREE.Mesh(new THREE.BoxGeometry(1.6*S,0.5,1.6*S),capMat);
-      cap.position.set(cx,H3+0.25,cz-MID_Z);scene.add(cap);
-    });
-    // Room label (floating text via small glowing plane)
-    const lbl=new THREE.Mesh(new THREE.PlaneGeometry(RH*1.2,1.2),
-      new THREE.MeshBasicMaterial({color:0xFFD700,transparent:true,opacity:0.6,side:THREE.DoubleSide}));
-    lbl.position.set(0,H3+1,zc-MID_Z);lbl.rotation.x=-Math.PI/2;scene.add(lbl);
+  ROOMS_Z.forEach(([z0,z1])=>{
+    const n=Math.max(1,Math.floor((z1-z0)/STEP));
+    const sp=(z1-z0)/n;
+    for(let j=0;j<n;j++){
+      const z=z0+sp*(j+0.5);
+      artSpots3D.push([-RH,z],[RH,z]);
+    }
   });
 
-  // End walls
-  box(CW*2,H3,WT,wallMat,0,H3/2,0);
-  box(CW*2,H3,WT,wallMat,0,H3/2,END_Z);
+  // 3D rotation state
+  let rotX=0.55, rotY=0.3;
+  let isDragging=false,lastMX=0,lastMY=0;
 
-  // Glowing floor grid lines
-  const gridMat=new THREE.LineBasicMaterial({color:0x2A5A2A,transparent:true,opacity:0.4});
-  for(let gz=0;gz<=END_Z;gz+=SEG/4){
-    const g=new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-CW,0.2,gz-MID_Z),new THREE.Vector3(CW,0.2,gz-MID_Z)]);
-    scene.add(new THREE.Line(g,gridMat));
-  }
-
-  // Orbit controls (manual)
-  let isDragging=false,lastX=0,lastY=0;
-  let rotY=0.3,rotX=0.5;
-  const pivot=new THREE.Group();scene.add(pivot);
-
-  canvas.addEventListener('mousedown',e=>{isDragging=true;lastX=e.clientX;lastY=e.clientY;});
-  canvas.addEventListener('touchstart',e=>{isDragging=true;lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;},{passive:true});
+  canvas.addEventListener('mousedown',e=>{isDragging=true;lastMX=e.clientX;lastMY=e.clientY;e.preventDefault();});
+  canvas.addEventListener('touchstart',e=>{isDragging=true;lastMX=e.touches[0].clientX;lastMY=e.touches[0].clientY;},{passive:true});
   window.addEventListener('mouseup',()=>isDragging=false);
   window.addEventListener('touchend',()=>isDragging=false);
   window.addEventListener('mousemove',e=>{
     if(!isDragging)return;
-    rotY+=(e.clientX-lastX)*0.008;
-    rotX+=(e.clientY-lastY)*0.005;
-    rotX=Math.max(-0.8,Math.min(1.2,rotX));
-    lastX=e.clientX;lastY=e.clientY;
+    rotY+=(e.clientX-lastMX)*0.009;
+    rotX+=(e.clientY-lastMY)*0.006;
+    rotX=Math.max(-0.2,Math.min(1.4,rotX));
+    lastMX=e.clientX;lastMY=e.clientY;
   });
   window.addEventListener('touchmove',e=>{
     if(!isDragging)return;
-    rotY+=(e.touches[0].clientX-lastX)*0.008;
-    rotX+=(e.touches[0].clientY-lastY)*0.005;
-    rotX=Math.max(-0.8,Math.min(1.2,rotX));
-    lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;
+    rotY+=(e.touches[0].clientX-lastMX)*0.009;
+    rotX+=(e.touches[0].clientY-lastMY)*0.006;
+    rotX=Math.max(-0.2,Math.min(1.4,rotX));
+    lastMX=e.touches[0].clientX;lastMY=e.touches[0].clientY;
   },{passive:true});
 
-  (function render(){
-    requestAnimationFrame(render);
+  // Project 3D point (x,y,z) → 2D canvas
+  function project(x3,y3,z3){
+    const cx=Math.cos(rotY),sx=Math.sin(rotY);
+    const rx=cx*x3+sx*z3, rz=-sx*x3+cx*z3;
+    const cy2=Math.cos(rotX),sy2=Math.sin(rotX);
+    const ry=cy2*y3-sy2*rz, rz2=sy2*y3+cy2*rz;
+    const fov=320, pz=rz2+340;
+    if(pz<1)return null;
+    return[W/2+rx*fov/pz, H/2-ry*fov/pz];
+  }
+
+  function line3(x1,y1,z1,x2,y2,z2,col,lw=1){
+    const a=project(x1,y1,z1),b=project(x2,y2,z2);
+    if(!a||!b)return;
+    ctx.strokeStyle=col;ctx.lineWidth=lw;
+    ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+  }
+  function dot3(x3,y3,z3,col,r=2){
+    const p=project(x3,y3,z3);if(!p)return;
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(p[0],p[1],r,0,Math.PI*2);ctx.fill();
+  }
+  function label3(x3,y3,z3,txt,col,sz=6){
+    const p=project(x3,y3,z3);if(!p)return;
+    ctx.fillStyle=col;ctx.font=sz+'px Cinzel,serif';
+    ctx.textAlign='center';ctx.fillText(txt,p[0],p[1]);
+  }
+
+  const MID_X=0, MID_Z=END_Z/2, H3=18;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const zOff=-MID_Z;
+
+    // Floor fill — subtle green
+    const floorPts=[
+      project(-CW,0,0+zOff), project(CW,0,0+zOff),
+      project(CW,0,END_Z+zOff), project(-CW,0,END_Z+zOff)
+    ].filter(Boolean);
+    if(floorPts.length===4){
+      ctx.fillStyle='rgba(20,60,20,0.25)';
+      ctx.beginPath();ctx.moveTo(floorPts[0][0],floorPts[0][1]);
+      floorPts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));
+      ctx.closePath();ctx.fill();
+    }
+
+    // Room floor fills
+    ROOMS_Z.forEach(([z0,z1,zc])=>{
+      const rpts=[
+        project(-RH,0,z0+zOff),project(RH,0,z0+zOff),
+        project(RH,0,z1+zOff),project(-RH,0,z1+zOff)
+      ].filter(Boolean);
+      if(rpts.length===4){
+        ctx.fillStyle='rgba(10,35,10,0.35)';
+        ctx.beginPath();ctx.moveTo(rpts[0][0],rpts[0][1]);
+        rpts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));
+        ctx.closePath();ctx.fill();
+      }
+    });
+
+    // Corridor walls (wireframe green)
+    const WC='rgba(57,255,20,0.7)', WCdim='rgba(57,255,20,0.35)';
+    // South entrance
+    line3(-CW,0,zOff, CW,0,zOff,WC,1);
+    line3(-CW,H3,zOff, CW,H3,zOff,WCdim,0.5);
+    line3(-CW,0,zOff,-CW,H3,zOff,WCdim,0.5);
+    line3(CW,0,zOff, CW,H3,zOff,WCdim,0.5);
+    // North end
+    line3(-CW,0,END_Z+zOff, CW,0,END_Z+zOff,WC,1);
+
+    // Corridor side walls — segments between rooms
+    const segs2=[];let wprev=0;
+    ROOMS_Z.forEach(([z0,z1])=>{segs2.push([wprev,z0]);wprev=z1;});
+    segs2.push([wprev,END_Z]);
+    segs2.forEach(([za,zb])=>{
+      line3(-CW,0,za+zOff,-CW,0,zb+zOff,WC,1.2);
+      line3( CW,0,za+zOff, CW,0,zb+zOff,WC,1.2);
+      line3(-CW,H3,za+zOff,-CW,H3,zb+zOff,WCdim,0.5);
+      line3( CW,H3,za+zOff, CW,H3,zb+zOff,WCdim,0.5);
+    });
+
+    // Room walls
+    const RC='rgba(57,255,20,0.9)';
+    ROOMS_Z.forEach(([z0,z1,zc],i)=>{
+      // S wall (with corridor gap)
+      line3(-RH,0,z0+zOff,-CW,0,z0+zOff,RC,1.2);
+      line3( CW,0,z0+zOff, RH,0,z0+zOff,RC,1.2);
+      // N wall
+      line3(-RH,0,z1+zOff,-CW,0,z1+zOff,RC,1.2);
+      line3( CW,0,z1+zOff, RH,0,z1+zOff,RC,1.2);
+      // Side walls
+      line3(-RH,0,z0+zOff,-RH,0,z1+zOff,RC,1.5);
+      line3( RH,0,z0+zOff, RH,0,z1+zOff,RC,1.5);
+      // Top edges dim
+      line3(-RH,H3,z0+zOff,-RH,H3,z1+zOff,WCdim,0.5);
+      line3( RH,H3,z0+zOff, RH,H3,z1+zOff,WCdim,0.5);
+      // Verticals at corners
+      [[-RH,z0],[RH,z0],[-RH,z1],[RH,z1]].forEach(([cx,cz])=>{
+        line3(cx,0,cz+zOff,cx,H3,cz+zOff,WCdim,0.5);
+      });
+      // Room label
+      const names=['CHAMBER I','CHAMBER II','CHAMBER III','CHAMBER IV','CHAMBER V'];
+      label3(0,2,zc+zOff,names[i],'rgba(200,144,26,0.85)',7);
+    });
+
+    // Art spot dots — gold
+    artSpots3D.forEach(([ax,az])=>{
+      dot3(ax,0.5,az+zOff,'rgba(255,215,0,0.75)',1.8);
+    });
+
+    // Column dots at junctions
+    ROOMS_Z.forEach(([z0,z1])=>{
+      [[-RH,z0],[RH,z0],[-RH,z1],[RH,z1],[-CW,z0],[CW,z0],[-CW,z1],[CW,z1]].forEach(([cx,cz])=>{
+        dot3(cx,0,cz+zOff,'rgba(255,215,0,0.9)',2.5);
+      });
+    });
+
+    // Scanline glow overlay
+    ctx.fillStyle='rgba(57,255,20,0.015)';
+    for(let y=0;y<H;y+=3)ctx.fillRect(0,y,W,1);
+  }
+
+  (function loop(){
+    requestAnimationFrame(loop);
     if(!document.getElementById('mapContainer').classList.contains('active'))return;
-    if(!isDragging)rotY+=0.004;
-    camera.position.x=Math.sin(rotY)*220*Math.cos(rotX);
-    camera.position.z=Math.cos(rotY)*220*Math.cos(rotX)-MID_Z;
-    camera.position.y=180*Math.sin(rotX)+60;
-    camera.lookAt(0,10,-MID_Z+MID_Z);
-    renderer.render(scene,camera);
+    if(!isDragging)rotY+=0.003;
+    draw();
   })();
 }
 

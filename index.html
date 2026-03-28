@@ -154,7 +154,7 @@
   /* Warrior Pepe */
   .warrior-wrap{
     position:relative;
-    width:min(280px,72vw);
+    width:min(700px,96vw);
     flex-shrink:0;
     display:flex;
     align-items:center;
@@ -212,7 +212,7 @@
   #mapContainer.active{display:flex;}
   #mapCanvas{
     cursor:grab;
-    width:min(280px,72vw);
+    width:min(700px,96vw);
     height:auto;
     aspect-ratio:1/1;
     background:transparent;
@@ -228,17 +228,25 @@
     color:rgba(224,52,47,0.65);
     text-transform:uppercase;
   }
-  .map-close{
+  .map-enter{
+    display:inline-block;
     font-family:'Cinzel',serif;
-    font-size:7px;letter-spacing:0.2em;
-    color:rgba(224,52,47,0.6);
-    border:0.5px solid rgba(224,52,47,0.35);
-    padding:5px 16px;border-radius:3px;
-    cursor:pointer;background:rgba(224,52,47,0.06);
-    transition:all 0.2s;text-transform:uppercase;
+    font-size:8px;letter-spacing:0.28em;
+    color:#FFD700;text-decoration:none;
+    border:1px solid rgba(200,144,26,0.6);
+    border-radius:4px;
+    padding:10px 24px;
+    background:rgba(200,144,26,0.07);
+    box-shadow:0 0 14px rgba(200,144,26,0.35),0 0 30px rgba(200,144,26,0.12),inset 0 0 12px rgba(200,144,26,0.05);
+    cursor:pointer;text-transform:uppercase;
+    animation:btnPulse 3s ease-in-out infinite;
+    transition:all 0.25s;
   }
-  .map-close:hover{color:#E0342F;border-color:#E0342F;
-    box-shadow:0 0 10px rgba(224,52,47,0.4);}
+  .map-enter:hover{
+    box-shadow:0 0 24px rgba(200,144,26,0.7),0 0 50px rgba(200,144,26,0.2),inset 0 0 18px rgba(200,144,26,0.1);
+    border-color:#C8901A;background:rgba(200,144,26,0.14);
+    transform:scale(1.03);
+  }
 
   /* Enter Museum button — right side fixed */
   #enterBtn{
@@ -307,7 +315,7 @@
     <div id="mapContainer">
       <div class="map-label">&#9670; CLICK &amp; DRAG TO ROTATE &#9670;</div>
       <canvas id="mapCanvas" width="400" height="300"></canvas>
-      <div class="map-close" onclick="closeMap()">&#10005; CLOSE MAP</div>
+      <a class="map-enter" href="museum3d.html">&#9670; ENTER VIRTUAL MASTERPEPES MUSEUM &#9670;</a>
     </div>
   </div>
 
@@ -369,7 +377,7 @@ buildMap();
 
 function buildMap(){
   const canvas=document.getElementById('mapCanvas');
-  const W=canvas.width=400, H=canvas.height=400;
+  const W=canvas.width=700, H=canvas.height=400;
   const ctx=canvas.getContext('2d');
 
   // Museum geometry (world units)

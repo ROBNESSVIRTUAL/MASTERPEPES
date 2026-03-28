@@ -154,8 +154,11 @@
   /* Warrior Pepe */
   .warrior-wrap{
     position:relative;
-    width:min(220px,55vw,28vh);
+    width:min(280px,72vw);
     flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
   .warrior-img{
     width:100%;
@@ -198,47 +201,46 @@
     100%{transform:scale(0) rotateY(360deg);opacity:0;}
   }
 
-  /* 3D Map overlay */
-  #mapOverlay{
+  /* 3D Map — in-place replacing warrior */
+  #mapContainer{
     display:none;
-    position:fixed;inset:0;
-    background:rgba(5,0,0,0.92);
-    z-index:500;
-    align-items:center;justify-content:center;
     flex-direction:column;
-    gap:16px;
+    align-items:center;
+    gap:8px;
+    animation:mapFadeIn 0.6s ease forwards;
   }
-  #mapOverlay.active{display:flex;}
+  #mapContainer.active{display:flex;}
   #mapCanvas{
     border:1px solid rgba(224,52,47,0.5);
     border-radius:6px;
-    box-shadow:0 0 40px rgba(224,52,47,0.3),0 0 80px rgba(224,52,47,0.1);
+    box-shadow:0 0 30px rgba(224,52,47,0.35),0 0 60px rgba(224,52,47,0.1);
     cursor:grab;
-    animation:mapFadeIn 0.6s ease forwards;
-    max-width:92vw;max-height:70vh;
+    width:min(280px,72vw);
+    height:auto;
+    aspect-ratio:4/3;
   }
   #mapCanvas:active{cursor:grabbing;}
   @keyframes mapFadeIn{
-    from{opacity:0;transform:scale(0.85) rotateX(20deg);}
-    to{opacity:1;transform:scale(1) rotateX(0deg);}
+    from{opacity:0;transform:scale(0.7) rotateY(90deg);}
+    to{opacity:1;transform:scale(1) rotateY(0deg);}
   }
   .map-label{
     font-family:'Cinzel',serif;
-    font-size:9px;letter-spacing:0.3em;
-    color:rgba(224,52,47,0.7);
+    font-size:7px;letter-spacing:0.25em;
+    color:rgba(224,52,47,0.65);
     text-transform:uppercase;
   }
   .map-close{
     font-family:'Cinzel',serif;
-    font-size:8px;letter-spacing:0.25em;
+    font-size:7px;letter-spacing:0.2em;
     color:rgba(224,52,47,0.6);
     border:0.5px solid rgba(224,52,47,0.35);
-    padding:7px 22px;border-radius:3px;
+    padding:5px 16px;border-radius:3px;
     cursor:pointer;background:rgba(224,52,47,0.06);
     transition:all 0.2s;text-transform:uppercase;
   }
-  .map-close:hover{color:#E0342F;border-color:#E0342F;background:rgba(224,52,47,0.12);
-    box-shadow:0 0 14px rgba(224,52,47,0.4);}
+  .map-close:hover{color:#E0342F;border-color:#E0342F;
+    box-shadow:0 0 10px rgba(224,52,47,0.4);}
 
   /* Enter Museum button — right side fixed */
   #enterBtn{
@@ -300,10 +302,15 @@
   </div>
 
 
-  <!-- Warrior Pepe -->
+  <!-- Warrior Pepe → 3D Map (in-place) -->
   <div class="warrior-wrap">
     <img src="WARRIORPEPE.png" alt="WARRIOR PEPE" class="warrior-img"
          onerror="this.style.display='none'">
+    <div id="mapContainer">
+      <div class="map-label">&#9670; CLICK &amp; DRAG TO ROTATE &#9670;</div>
+      <canvas id="mapCanvas" width="400" height="300"></canvas>
+      <div class="map-close" onclick="closeMap()">&#10005; CLOSE MAP</div>
+    </div>
   </div>
 
   <!-- Countdown -->
@@ -341,15 +348,17 @@ document.querySelector('.warrior-img').addEventListener('click', function(){
 });
 
 function openMap(){
-  document.getElementById('mapOverlay').classList.add('active');
+  document.querySelector('.warrior-img').style.display='none';
+  document.getElementById('mapContainer').classList.add('active');
   initMap();
 }
 function closeMap(){
-  document.getElementById('mapOverlay').classList.remove('active');
-  // Reset warrior
+  document.getElementById('mapContainer').classList.remove('active');
   const img=document.querySelector('.warrior-img');
+  img.style.display='';
   img.classList.remove('spinning');
   img.style.opacity='1';img.style.transform='';
+  mapInitialized=false; // allow re-init on next open
 }
 
 // ── THREE.JS MAP ──────────────────────────────────────────────────────────────
@@ -475,7 +484,7 @@ function buildMap(){
 
   (function render(){
     requestAnimationFrame(render);
-    if(!document.getElementById('mapOverlay').classList.contains('active'))return;
+    if(!document.getElementById('mapContainer').classList.contains('active'))return;
     if(!isDragging)rotY+=0.004;
     camera.position.x=Math.sin(rotY)*220*Math.cos(rotX);
     camera.position.z=Math.cos(rotY)*220*Math.cos(rotX)-MID_Z;
@@ -505,14 +514,6 @@ function tick(){
 tick();
 setInterval(tick,1000);
 </script>
-
-<!-- 3D Museum Map Overlay -->
-<div id="mapOverlay">
-  <div class="map-label">&#9670; MASTERPEPES MUSEUM — 3D MAP &#9670;</div>
-  <canvas id="mapCanvas" width="520" height="420"></canvas>
-  <div class="map-label">CLICK &amp; DRAG TO ROTATE</div>
-  <div class="map-close" onclick="closeMap()">&#10005; CLOSE MAP</div>
-</div>
 
 <!-- Enter 3D Museum button -->
 <a id="enterBtn" href="museum3d.html">&#9670; ENTER 3D MUSEUM &#9670;</a>

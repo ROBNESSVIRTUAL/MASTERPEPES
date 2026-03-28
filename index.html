@@ -231,20 +231,24 @@
     display:inline-block;
     font-family:'Cinzel',serif;
     font-size:8px;letter-spacing:0.28em;
-    color:#FFD700;text-decoration:none;
-    border:1px solid rgba(200,144,26,0.6);
+    color:#39FF14;text-decoration:none;
+    border:1px solid rgba(57,255,20,0.65);
     border-radius:4px;
     padding:10px 24px;
-    background:rgba(200,144,26,0.07);
-    box-shadow:0 0 14px rgba(200,144,26,0.35),0 0 30px rgba(200,144,26,0.12),inset 0 0 12px rgba(200,144,26,0.05);
+    background:rgba(57,255,20,0.07);
+    box-shadow:0 0 16px rgba(57,255,20,0.5),0 0 35px rgba(57,255,20,0.2),inset 0 0 14px rgba(57,255,20,0.08);
     cursor:pointer;text-transform:uppercase;
-    animation:btnPulse 3s ease-in-out infinite;
+    animation:greenBtnPulse 2.5s ease-in-out infinite;
     transition:all 0.25s;
   }
   .map-enter:hover{
-    box-shadow:0 0 24px rgba(200,144,26,0.7),0 0 50px rgba(200,144,26,0.2),inset 0 0 18px rgba(200,144,26,0.1);
-    border-color:#C8901A;background:rgba(200,144,26,0.14);
-    transform:scale(1.03);
+    box-shadow:0 0 28px rgba(57,255,20,0.85),0 0 55px rgba(57,255,20,0.35),inset 0 0 20px rgba(57,255,20,0.15);
+    border-color:#39FF14;background:rgba(57,255,20,0.14);
+    transform:scale(1.04);
+  }
+  @keyframes greenBtnPulse{
+    0%,100%{box-shadow:0 0 16px rgba(57,255,20,0.5),0 0 35px rgba(57,255,20,0.2),inset 0 0 14px rgba(57,255,20,0.08);}
+    50%{box-shadow:0 0 28px rgba(57,255,20,0.85),0 0 60px rgba(57,255,20,0.3),inset 0 0 22px rgba(57,255,20,0.14);}
   }
 
   /* Enter Museum button — right side fixed */

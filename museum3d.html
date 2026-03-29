@@ -1107,10 +1107,12 @@ loadStatue('masterpepes_book.glb', 0, 165, 14, 0, 'Book', (m)=>{
 
 // Room 2 (z=435): Robness
 let robnessModel=null;
+let robnessMAT_BUST=null;
 const robnessCables=[];
 loadStatue('ROBNESS1.glb', 0, 435, 20, Math.PI, 'Robness', (m)=>{
   robnessModel=m;
-  const MAT_BUST   = new THREE.MeshStandardMaterial({color:0x3D0066, roughness:0.6, metalness:0.25});
+  robnessMAT_BUST = new THREE.MeshStandardMaterial({color:0x3D0066, roughness:0.55, metalness:0.3, emissive:0x3D0066, emissiveIntensity:0.35});
+  const MAT_BUST   = robnessMAT_BUST;
   const MAT_FRAMES = new THREE.MeshStandardMaterial({color:0xFF4400, roughness:0.2, metalness:0.7});
   const MAT_LENS   = new THREE.MeshStandardMaterial({color:0x000000, roughness:0.0, metalness:0.0});
   const MAT_BOLTS  = new THREE.MeshStandardMaterial({color:0x080808, roughness:0.4, metalness:0.8});
@@ -2293,7 +2295,28 @@ setTimeout(()=>{ldfill.style.width='100%';ldtxt.textContent='Museum ready';
     }
     if(lordKekMixer) lordKekMixer.update(delta);
     if(trashMixers.length) trashMixers.forEach(mx=>mx.update(delta));
-    // Book floats and rotates in Room 1
+    // Robness skin color cycle: purple → black → green → pink → white → gold → purple
+    if(robnessMAT_BUST){
+      const t=(Date.now()*0.0002)%(Math.PI*2);
+      const SKIN_COLS=[
+        [0.18,1.0,0.40],  // purple
+        [0,0,0.05],       // deep black
+        [0.33,1.0,0.35],  // green
+        [0.92,1.0,0.65],  // pink
+        [0,0,0.95],       // white
+        [0.13,1.0,0.60],  // gold
+        [0.01,0.76,0.52], // masterpepes red #E0342F
+      ];
+      const cycle=((Date.now()*0.00008)%(SKIN_COLS.length));
+      const ci=Math.floor(cycle);
+      const cf=cycle-ci;
+      const a=SKIN_COLS[ci], b=SKIN_COLS[(ci+1)%SKIN_COLS.length];
+      const lh=a[0]+(b[0]-a[0])*cf, ls=a[1]+(b[1]-a[1])*cf, ll=a[2]+(b[2]-a[2])*cf;
+      const col=new THREE.Color().setHSL(lh,ls,ll);
+      robnessMAT_BUST.color.set(col);
+      robnessMAT_BUST.emissive.set(col);
+      robnessMAT_BUST.emissiveIntensity=0.25+0.2*Math.sin(t*1.5);
+    }
     if(floatingBook){
       floatingBook.rotation.y+=0.008;
       floatingBook.position.y=8+Math.sin(Date.now()*0.0008)*0.6;

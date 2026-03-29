@@ -365,6 +365,14 @@ body{background:#B8E898;overflow:hidden;font-family:'Cinzel',serif;text-transfor
 .bk-iframe{flex:1;width:100%;border:none;background:#fff}
 .bk-proximity{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:0.3em;color:#FF6B68;text-shadow:0 0 8px #E0342F;display:none;pointer-events:none;animation:bkFlicker 2s infinite}
 </style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X52GBE3NHR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-X52GBE3NHR');
+</script>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -2024,7 +2032,29 @@ document.addEventListener('keydown',e=>{
   if(e.code==='Escape'&&bkPanelOpen){e.stopPropagation();closeBkPanel();}
 });
 let dsslModel=null;
-loadStatue('DSSL.glb', 0, 1245, 20, Math.PI, 'DSSL', (m)=>{ dsslModel=m; });
+loadStatue('DSSL.glb', 0, 1245, 20, Math.PI, 'DSSL', (m)=>{
+  dsslModel=m;
+  m.traverse(child=>{
+    if(!child.isMesh) return;
+    if(Array.isArray(child.material)){
+      child.material=child.material.map(mat=>{
+        const m2=mat.clone();
+        m2.emissive=m2.color.clone();
+        m2.emissiveIntensity=0.55;
+        m2.roughness=0.45;
+        m2.metalness=0.3;
+        return m2;
+      });
+    } else if(child.material){
+      const m2=child.material.clone();
+      m2.emissive=m2.color.clone();
+      m2.emissiveIntensity=0.55;
+      m2.roughness=0.45;
+      m2.metalness=0.3;
+      child.material=m2;
+    }
+  });
+});
 
 const dsPanelEl=document.getElementById('dsPanel');
 const dsProxEl=document.getElementById('dsProximity');

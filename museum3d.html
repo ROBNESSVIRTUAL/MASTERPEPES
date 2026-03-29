@@ -815,7 +815,7 @@ scene.background=new THREE.Color(0xB8E898);
 scene.fog=new THREE.FogExp2(0xC0EAA0,0.0018);
 const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,0.1,800);
 camera.rotation.order='YXZ';
-camera.position.set(20,1.7,165);
+camera.position.set(0,4.4,15);
 window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();});
 
 // ── DYNAMIC SKY — day/sunset/night cycle with moving clouds + stars ───────────
@@ -1556,7 +1556,7 @@ function loadRoomArtworks(roomId){
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
 // yaw=0 → facing -Z (north, into the museum from entrance at z=330)
 let entered=false,locked=false,yaw=0,pitch=0;
-yaw=0;camera.rotation.y=0;camera.rotation.x=0; // apply immediately so spawn direction is correct
+yaw=Math.PI;camera.rotation.y=Math.PI;camera.rotation.x=0; // apply immediately so spawn direction is correct
 let dragging=false,lastMX=0,lastMY=0;
 const keys={};
 document.addEventListener('keydown',e=>{
@@ -1583,7 +1583,7 @@ function enterMuseum(){
   // Show loading message at bottom center
   const cl=document.getElementById('ctrl-load');
   if(cl) cl.style.display='block';
-  yaw=0;camera.rotation.y=0;camera.rotation.x=0;
+  yaw=Math.PI;camera.rotation.y=Math.PI;camera.rotation.x=0;
   rippleLoad('hall');
   try{rc.requestPointerLock();}catch(e){}
 }
@@ -1742,7 +1742,7 @@ function tryMove(dx,dz){
 // ── MINIMAP ───────────────────────────────────────────────────────────────────
 const mmC=document.getElementById('mm'),mmCtx=mmC.getContext('2d');
 const MW=mmC.width,MH=mmC.height;
-function w2m(x,z){return[(x+55)*MW/110,(z+10)*MH/1490];}
+function w2m(x,z){return[(x+55)*MW/110, MH-(z+10)*MH/1490];}
 const RCOLS={hall:'#1A0505',r1:'#3A0A08',r2:'#4A0C0A',r3:'#3A0A08',r4:'#4A0C0A',r5:'#3A0A08'};
 function drawMap(){
   mmCtx.fillStyle='rgba(30,5,5,0.95)';mmCtx.fillRect(0,0,MW,MH);

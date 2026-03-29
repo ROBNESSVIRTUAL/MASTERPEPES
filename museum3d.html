@@ -2417,8 +2417,9 @@ function takeScreenshot(){
     setTimeout(()=>{window.open(xURL,'_blank');},400);
   };
 
-  // Mobile: try native share with image
-  if(navigator.canShare){
+  // Only use native share on mobile — desktop always gets the popup
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if(isMobile && navigator.canShare){
     fetch(dataURL).then(r=>r.blob()).then(blob=>{
       const file=new File([blob],'masterpepes-museum.png',{type:'image/png'});
       if(navigator.canShare({files:[file]})){

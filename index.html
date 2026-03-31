@@ -179,66 +179,6 @@
     color:rgba(200,144,26,0.35);
   }
 
-  /* Email notification */
-  .notify-wrap{
-    width:100%;
-    display:flex;flex-direction:column;align-items:center;gap:10px;
-    border-top:0.5px solid rgba(200,144,26,0.2);
-    border-bottom:0.5px solid rgba(200,144,26,0.2);
-    padding:20px 0;
-  }
-  .notify-label{
-    font-size:clamp(8px,2vw,10px);
-    letter-spacing:0.2em;
-    color:var(--gold);
-    text-shadow:0 0 8px rgba(200,144,26,0.4);
-  }
-  .notify-sub{
-    font-size:clamp(7px,1.8vw,8px);
-    letter-spacing:0.12em;
-    color:var(--dim);
-    margin-top:-4px;
-  }
-  .notify-form{
-    display:flex;gap:8px;width:100%;max-width:480px;flex-wrap:wrap;justify-content:center;
-  }
-  .notify-form input[type=email]{
-    flex:1;min-width:200px;
-    background:rgba(200,144,26,0.05);
-    border:0.5px solid rgba(200,144,26,0.35);
-    border-radius:3px;
-    padding:10px 14px;
-    color:var(--text);
-    font-family:'Cinzel',serif;
-    font-size:clamp(8px,2vw,9px);
-    letter-spacing:0.15em;
-    outline:none;
-    transition:border-color 0.2s;
-  }
-  .notify-form input[type=email]::placeholder{color:rgba(200,144,26,0.3);}
-  .notify-form input[type=email]:focus{border-color:var(--gold2);}
-  .notify-form button{
-    font-family:'Cinzel',serif;
-    font-size:clamp(8px,2vw,9px);
-    letter-spacing:0.2em;
-    color:var(--deep);
-    background:var(--gold);
-    border:none;
-    border-radius:3px;
-    padding:10px 20px;
-    cursor:pointer;
-    transition:all 0.2s;
-    white-space:nowrap;
-  }
-  .notify-form button:hover{background:var(--gold2);box-shadow:0 0 16px rgba(255,215,0,0.4);}
-  #notify-msg{
-    font-size:clamp(8px,2vw,9px);
-    letter-spacing:0.15em;
-    min-height:16px;
-    color:var(--green);
-    display:none;
-  }
-
   @media(max-width:480px){
     .wrap{gap:18px;padding:24px 16px;}
     .tagline{font-size:8px;letter-spacing:0.12em;line-height:2;}
@@ -345,6 +285,47 @@
   @media(max-width:480px){
     #enterBtn{right:10px;padding:10px 10px;font-size:7px;}
   }
+
+  /* ── COLLECTOR DOT GRID ─────────────────────────────────────────── */
+  .dot-section{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .dot-grid-label{
+    font-size:7px;letter-spacing:0.3em;color:rgba(200,144,26,0.7);
+  }
+  .dot-tally{
+    font-size:11px;letter-spacing:0.2em;color:var(--gold2);
+    text-shadow:0 0 10px rgba(255,215,0,0.4);
+  }
+  .dot-tally span{color:#39FF14;text-shadow:0 0 10px rgba(57,255,20,0.6);}
+  .dot-grid{
+    display:flex;flex-wrap:wrap;
+    justify-content:center;
+    gap:5px;
+    max-width:min(460px,92vw);
+  }
+  .dot{
+    width:9px;height:9px;border-radius:50%;
+    background:#1A0A0A;
+    border:0.5px solid rgba(200,144,26,0.2);
+    transition:all 0.4s ease;
+    flex-shrink:0;
+  }
+  .dot.taken{
+    background:#39FF14;
+    border-color:#39FF14;
+    box-shadow:0 0 6px rgba(57,255,20,0.8),0 0 12px rgba(57,255,20,0.4);
+    animation:dotGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes dotGlow{
+    0%,100%{box-shadow:0 0 6px rgba(57,255,20,0.8),0 0 12px rgba(57,255,20,0.4);}
+    50%{box-shadow:0 0 10px rgba(57,255,20,1),0 0 20px rgba(57,255,20,0.6);}
+  }
+  .dot-legend{
+    display:flex;gap:18px;align-items:center;
+    font-size:6.5px;letter-spacing:0.18em;color:var(--dim);
+  }
+  .dot-legend-item{display:flex;align-items:center;gap:5px;}
+  .dot-legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
@@ -406,24 +387,15 @@
     DROPPING MAY 1, 2026 &nbsp;&middot;&nbsp; 12:00 PM PACIFIC
   </div>
 
-  <!-- Email notification signup -->
-  <div class="notify-wrap">
-    <div class="notify-label">&#9670; NOTIFY ME WHEN THE DROP GOES LIVE &#9670;</div>
-    <div class="notify-sub">BE THE FIRST TO KNOW &nbsp;&middot;&nbsp; NO SPAM &nbsp;&middot;&nbsp; ONE EMAIL ONLY</div>
-    <form class="notify-form" id="notify-form"
-          action="https://formspree.io/f/mzdkgbgo"
-          method="POST">
-      <input type="email" name="email" placeholder="YOUR EMAIL ADDRESS" required autocomplete="email"/>
-      <input type="hidden" name="_subject" value="Masterpepes Drop Notification Signup"/>
-      <button type="submit">NOTIFY ME</button>
-    </form>
-    <div id="notify-msg">&#9670; YOU'RE ON THE LIST &#9670;</div>
-  </div>
-
-  <!-- Live spots -->
-  <div class="spots">
-    <div class="dot-live"></div>
-    300 COLLECTOR SPOTS AVAILABLE
+  <!-- Collector Dot Grid -->
+  <div class="dot-section">
+    <div class="dot-grid-label">&#9670; COLLECTOR SPOTS &#9670;</div>
+    <div class="dot-tally"><span id="takenCount">2</span> OF 300 SPOTS RESERVED</div>
+    <div class="dot-grid" id="dotGrid"></div>
+    <div class="dot-legend">
+      <div class="dot-legend-item"><div class="dot-legend-dot" style="background:#39FF14;box-shadow:0 0 5px #39FF14;"></div>RESERVED</div>
+      <div class="dot-legend-item"><div class="dot-legend-dot" style="background:#1A0A0A;border:0.5px solid rgba(200,144,26,0.3);"></div>AVAILABLE</div>
+    </div>
   </div>
 
   <!-- Credit -->
@@ -647,6 +619,22 @@ function buildMap(){
   })();
 }
 
+
+// ── COLLECTOR DOT GRID ────────────────────────────────────────────────────────
+// TO UPDATE: change CONFIRMED and PENDING numbers and push to GitHub
+const CONFIRMED = 2;
+const TOTAL     = 300;
+
+(function buildGrid(){
+  const grid = document.getElementById('dotGrid');
+  if(!grid) return;
+  for(let i = 0; i < TOTAL; i++){
+    const d = document.createElement('div');
+    d.className = 'dot' + (i < CONFIRMED ? ' taken' : '');
+    grid.appendChild(d);
+  }
+})();
+
 const DROP = new Date('2026-05-01T19:00:00Z'); // 12pm Pacific = 19:00 UTC
 function pad(n){return String(n).padStart(2,'0');}
 function tick(){
@@ -666,29 +654,6 @@ function tick(){
 }
 tick();
 setInterval(tick,1000);
-
-// ── EMAIL FORM ────────────────────────────────────────────────────────────────
-document.getElementById('notify-form').addEventListener('submit',async function(e){
-  e.preventDefault();
-  const btn=this.querySelector('button');
-  btn.textContent='SENDING…';btn.disabled=true;
-  try{
-    const res=await fetch(this.action,{
-      method:'POST',
-      body:new FormData(this),
-      headers:{Accept:'application/json'}
-    });
-    if(res.ok){
-      this.style.display='none';
-      const msg=document.getElementById('notify-msg');
-      msg.style.display='block';
-    } else {
-      btn.textContent='TRY AGAIN';btn.disabled=false;
-    }
-  }catch(err){
-    btn.textContent='TRY AGAIN';btn.disabled=false;
-  }
-});
 </script>
 
 <!-- Enter 3D Museum button -->

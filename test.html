@@ -127,6 +127,126 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hid
 .cd-cell{background:var(--panel);border:0.5px solid var(--rl);padding:8px 4px;text-align:center}
 .cd-num{font-family:'Cinzel Decorative',serif;font-size:clamp(12px,1.8vw,22px);color:var(--gold2);line-height:1;text-transform:none}
 .cd-lbl{font-size:clamp(6px,0.6vw,8px);letter-spacing:0.25em;color:var(--dim);margin-top:3px}
+/* ── COLLECTOR LIST SIDEBAR ───────────────────────────────────────────────── */
+#collectorSidebar{
+  width:200px;flex-shrink:0;background:#040A04;border-right:0.5px solid #0E1E0E;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.cl-header{
+  padding:12px 14px 8px;border-bottom:0.5px solid #0E2A0E;flex-shrink:0;
+}
+.cl-title{font-size:7px;letter-spacing:0.3em;color:#39FF14;text-shadow:0 0 8px rgba(57,255,20,0.5);}
+.cl-count{font-size:9px;letter-spacing:0.15em;color:rgba(57,255,20,0.6);margin-top:3px;}
+.cl-list{flex:1;overflow-y:auto;padding:6px 0;}
+.cl-list::-webkit-scrollbar{width:2px;}
+.cl-list::-webkit-scrollbar-track{background:#040A04;}
+.cl-list::-webkit-scrollbar-thumb{background:#0E2A0E;}
+.cl-entry{
+  padding:7px 14px;border-bottom:0.5px solid #0A180A;
+  animation:clFadeIn 0.6s ease forwards;
+}
+@keyframes clFadeIn{from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:translateX(0);}}
+.cl-num{font-size:7px;letter-spacing:0.2em;color:rgba(57,255,20,0.45);margin-bottom:1px;}
+.cl-name{font-size:9px;letter-spacing:0.1em;color:#39FF14;text-shadow:0 0 6px rgba(57,255,20,0.4);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cl-addr{font-size:7px;letter-spacing:0.05em;color:rgba(57,255,20,0.4);text-transform:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cl-empty{padding:20px 14px;font-size:7px;letter-spacing:0.15em;color:#0E2A0E;line-height:2;text-align:center;}
+.cl-spots{padding:8px 14px;border-top:0.5px solid #0E2A0E;flex-shrink:0;}
+.cl-spots-grid{display:flex;flex-wrap:wrap;gap:2px;}
+.cl-dot{width:6px;height:6px;border-radius:50%;background:#0E1E0E;border:0.5px solid #0E2A0E;transition:all 0.4s;}
+.cl-dot.taken{background:#39FF14;border-color:#39FF14;box-shadow:0 0 4px rgba(57,255,20,0.8);}
+
+/* ── ACQUIRE BUTTON ───────────────────────────────────────────────────────── */
+.btn-acquire{
+  width:100%;padding:14px;
+  background:var(--gold);color:#040804;
+  border:none;cursor:pointer;
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.35em;
+  text-transform:uppercase;margin-bottom:12px;
+  box-shadow:0 0 16px rgba(200,144,26,0.4);
+  transition:all 0.25s;
+}
+.btn-acquire:hover{background:var(--gold2);box-shadow:0 0 28px rgba(200,144,26,0.7);}
+
+/* ── ACQUIRE MODAL ────────────────────────────────────────────────────────── */
+#acquireModal{
+  display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(4,8,4,0.92);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;padding:20px;
+}
+#acquireModal.open{display:flex;}
+.acq-box{
+  background:#070F07;border:0.5px solid rgba(200,144,26,0.5);
+  border-radius:4px;width:100%;max-width:580px;
+  box-shadow:0 0 40px rgba(200,144,26,0.15);
+  display:flex;flex-direction:column;max-height:90vh;overflow-y:auto;
+}
+.acq-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 22px;border-bottom:0.5px solid rgba(200,144,26,0.2);flex-shrink:0;
+}
+.acq-title{font-size:10px;letter-spacing:0.35em;color:var(--gold2);}
+.acq-close{
+  width:28px;height:28px;border-radius:50%;border:0.5px solid rgba(200,144,26,0.4);
+  background:rgba(200,144,26,0.07);color:var(--gold);cursor:pointer;
+  font-size:14px;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.acq-close:hover{background:rgba(200,144,26,0.2);box-shadow:0 0 10px rgba(200,144,26,0.4);}
+.acq-body{padding:22px;display:flex;flex-direction:column;gap:16px;}
+.acq-label{font-size:8px;letter-spacing:0.28em;color:var(--gold);margin-bottom:6px;}
+.acq-inp{
+  width:100%;padding:11px 14px;
+  background:rgba(200,144,26,0.04);border:0.5px solid rgba(200,144,26,0.25);
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.08em;
+  color:var(--text);outline:none;transition:border-color 0.2s;text-transform:none;
+}
+.acq-inp:focus{border-color:var(--gold);}
+.acq-inp::placeholder{color:rgba(200,144,26,0.2);font-size:9px;}
+.acq-note{font-size:7.5px;letter-spacing:0.1em;color:var(--dim);line-height:1.9;text-transform:none;margin-top:-8px;}
+.acq-divider{height:0.5px;background:rgba(200,144,26,0.15);}
+.acq-qr-section{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;}
+.acq-qr-block{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;min-width:200px;}
+.acq-qr-label{font-size:8px;letter-spacing:0.3em;color:var(--gold);}
+.acq-qr-wrap{
+  padding:10px;background:#FFF;border-radius:3px;
+  box-shadow:0 0 16px rgba(200,144,26,0.25);
+}
+.acq-qr-addr{
+  font-size:7px;letter-spacing:0.04em;color:var(--dim);
+  text-transform:none;word-break:break-all;text-align:center;
+  max-width:180px;line-height:1.8;
+}
+.acq-qr-copy{
+  font-size:7px;letter-spacing:0.15em;color:var(--gold);cursor:pointer;
+  border:0.5px solid rgba(200,144,26,0.3);padding:3px 10px;
+  background:none;font-family:'Cinzel',serif;transition:all 0.2s;text-transform:uppercase;
+}
+.acq-qr-copy:hover{background:rgba(200,144,26,0.1);}
+.acq-price{
+  background:rgba(200,144,26,0.05);border:0.5px solid rgba(200,144,26,0.2);
+  padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+}
+.acq-price-item{text-align:center;}
+.acq-price-label{font-size:7px;letter-spacing:0.25em;color:var(--dim);margin-bottom:3px;}
+.acq-price-val{font-size:14px;letter-spacing:0.1em;color:var(--gold2);}
+.acq-submit{
+  width:100%;padding:13px;background:var(--gold);color:#040804;
+  border:none;cursor:pointer;font-family:'Cinzel',serif;
+  font-size:10px;letter-spacing:0.35em;text-transform:uppercase;
+  transition:all 0.2s;opacity:0.4;pointer-events:none;
+}
+.acq-submit.on{opacity:1;pointer-events:all;}
+.acq-submit.on:hover{background:var(--gold2);}
+
+/* ── POLLING STATUS ───────────────────────────────────────────────────────── */
+#pollStatus{
+  display:none;padding:16px 22px;border-top:0.5px solid rgba(200,144,26,0.2);
+  text-align:center;
+}
+.poll-scanning{font-size:8px;letter-spacing:0.2em;color:var(--gold);animation:blink 1.5s infinite;}
+.poll-confirmed{font-size:10px;letter-spacing:0.2em;color:#39FF14;text-shadow:0 0 12px rgba(57,255,20,0.6);}
+.poll-dots{display:inline-block;animation:blink 0.8s infinite;}
+
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
@@ -135,6 +255,38 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hid
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-KTL6JDNCD6');
+</script>
+<!-- QR Code library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDwK8A1MwyvskfC9BuWzs7oGmRz31QtZTQ",
+    authDomain: "masterpepes-408c1.firebaseapp.com",
+    databaseURL: "https://masterpepes-408c1-default-rtdb.firebaseio.com",
+    projectId: "masterpepes-408c1",
+    storageBucket: "masterpepes-408c1.firebasestorage.app",
+    messagingSenderId: "475838814600",
+    appId: "1:475838814600:web:c8bad58127b6a705a9c23d"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  // Expose to global scope for non-module JS
+  window._fbDb   = db;
+  window._fbRef  = ref;
+  window._fbPush = push;
+  window._fbOn   = onValue;
+
+  // Live collector list listener
+  onValue(ref(db, 'collectors'), snap => {
+    const data = snap.val() || {};
+    const entries = Object.values(data).sort((a,b)=>a.ts-b.ts);
+    window._renderCollectors(entries);
+  });
 </script>
 </head>
 <body>
@@ -149,6 +301,20 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hid
 </div>
 
 <div class="main">
+<!-- COLLECTOR LIST SIDEBAR -->
+<div id="collectorSidebar">
+  <div class="cl-header">
+    <div class="cl-title">&#9670; COLLECTORS &#9670;</div>
+    <div class="cl-count"><span id="clCount">0</span> / 300 SPOTS TAKEN</div>
+  </div>
+  <div class="cl-list" id="clList">
+    <div class="cl-empty">AWAITING<br>FIRST COLLECTOR...<br><br>BE FIRST.</div>
+  </div>
+  <div class="cl-spots">
+    <div class="cl-spots-grid" id="clDots"></div>
+  </div>
+</div>
+
   <div class="left">
 
     <!-- BOOK VIEW -->
@@ -694,50 +860,212 @@ function closePdfPanel() {
 }
 document.getElementById('museumSvg').addEventListener('click', closePanel);
 
-// ── METAMASK ────────────────────────────────────────────
-async function connectWallet() {
-  if(typeof window.ethereum==='undefined'){alert('MetaMask not detected.\nInstall from metamask.io and refresh.');return;}
+// ── CONSTANTS ───────────────────────────────────────────────────────────────
+const ETH_ADDR  = '0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329';
+const BTC_ADDR  = '1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH';
+const ESCAN_KEY = '9GWK5I3YAXQ29TCCGDN4RKP7YZPGP31HNZ';
+const TOTAL_SPOTS = 300;
+
+let pollInterval   = null;
+let pollStartTime  = null;
+let pendingName    = '';
+let pendingXcp     = '';
+let qrGenerated    = false;
+
+// ── PRICE LOADING ────────────────────────────────────────────────────────────
+async function loadPrices(){
   try{
-    const accounts = await window.ethereum.request({method:'eth_requestAccounts'});
-    walletAddress  = accounts[0];
-    const chainId  = await window.ethereum.request({method:'eth_chainId'});
-    const net      = chainId==='0x1' ? 'Ethereum Mainnet' : 'Wrong Network — Switch to Mainnet';
-    const short    = walletAddress.slice(0,6)+'...'+walletAddress.slice(-4);
-    document.getElementById('wsAddr').textContent    = short.toUpperCase();
-    document.getElementById('wsNetwork').textContent = net.toUpperCase();
-    document.getElementById('walletStatus').classList.add('show');
-    document.getElementById('mmBtn').style.display   = 'none';
-    document.getElementById('mmTopBtn').textContent  = short.toUpperCase();
-    document.getElementById('mmTopBtn').classList.add('connected');
-    loadEth(); checkReady();
-    window.ethereum.on('accountsChanged', a => { if(!a.length) disconnectWallet(); else { walletAddress=a[0]; connectWallet(); } });
-  }catch(e){if(e.code===4001)alert('Cancelled.');else alert('Error: '+e.message);}
-}
-function disconnectWallet(){
-  walletAddress = null;
-  document.getElementById('walletStatus').classList.remove('show');
-  document.getElementById('mmBtn').style.display   = 'block';
-  document.getElementById('mmTopBtn').textContent  = 'Connect Wallet';
-  document.getElementById('mmTopBtn').classList.remove('connected');
-  checkReady();
-}
-function checkReady(){
-  const ok = document.getElementById('addr').value.trim().length>25 && walletAddress!==null;
-  document.getElementById('btn').classList.toggle('on',ok);
-  document.getElementById('pbox').classList.toggle('on',ok);
-  if(ok) loadEth();
-}
-async function loadEth(){
-  try{
-    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin&vs_currencies=usd');
     const d=await r.json();
-    document.getElementById('usd').textContent='~$'+d.ethereum.usd.toLocaleString()+' USD at current rate';
-  }catch(e){document.getElementById('usd').textContent='Current ETH market rate';}
+    const ethUsd=d.ethereum.usd;
+    const btcUsd=d.bitcoin.usd;
+    const btcAmt=(ethUsd/btcUsd).toFixed(5);
+    document.getElementById('usd').textContent='~$'+ethUsd.toLocaleString()+' USD';
+    document.getElementById('acqUsd').textContent='~$'+ethUsd.toLocaleString();
+    document.getElementById('btcEquiv').textContent=btcAmt+' BTC';
+  }catch(e){
+    document.getElementById('usd').textContent='1 ETH';
+    document.getElementById('acqUsd').textContent='';
+    document.getElementById('btcEquiv').textContent='~0.015 BTC';
+  }
 }
-function bid(){
-  const btc=document.getElementById('addr').value.trim();
-  alert('Smart contract coming soon!\n\nETH Wallet: '+walletAddress+'\nBTC/XCP Address: '+btc+'\n\nFollow @robnessofficial on X for launch date.');
+loadPrices();
+
+// ── ACQUIRE MODAL ────────────────────────────────────────────────────────────
+function openAcquire(){
+  document.getElementById('acquireModal').classList.add('open');
+  loadPrices();
+  if(!qrGenerated){
+    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:140,height:140,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});
+    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:140,height:140,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});
+    qrGenerated=true;
+  }
 }
+function closeAcquire(){
+  document.getElementById('acquireModal').classList.remove('open');
+  stopPolling();
+  document.getElementById('pollStatus').style.display='none';
+  document.getElementById('pollMsg').className='poll-scanning';
+  document.getElementById('pollMsg').textContent='SCANNING BLOCKCHAIN...';
+}
+function checkAcqReady(){
+  const name=document.getElementById('acqName').value.trim();
+  const xcp =document.getElementById('acqXcp').value.trim();
+  const ok=name.length>1 && xcp.length>25;
+  document.getElementById('acqBtn').classList.toggle('on',ok);
+}
+function copyAddr(addr,btn){
+  navigator.clipboard.writeText(addr).then(()=>{
+    btn.textContent='COPIED!';
+    setTimeout(()=>btn.textContent=btn.textContent.includes('ETH')?'COPY ETH ADDRESS':'COPY BTC ADDRESS',2000);
+  });
+}
+
+// ── SUBMIT + BLOCKCHAIN POLLING ──────────────────────────────────────────────
+function submitAcquire(){
+  pendingName = document.getElementById('acqName').value.trim();
+  pendingXcp  = document.getElementById('acqXcp').value.trim();
+  if(!pendingName||pendingXcp.length<25){return;}
+
+  pollStartTime = Math.floor(Date.now()/1000);
+  document.getElementById('pollStatus').style.display='block';
+  document.getElementById('acqBtn').disabled=true;
+  document.getElementById('acqBtn').textContent='VERIFYING PAYMENT...';
+
+  startPolling();
+}
+
+function startPolling(){
+  stopPolling();
+  pollInterval=setInterval(async()=>{
+    const ethFound=await checkEth();
+    const btcFound=await checkBtc();
+    if(ethFound||btcFound){
+      stopPolling();
+      onPaymentConfirmed(ethFound?'ETH':'BTC', ethFound||btcFound);
+    }
+  },15000);
+  // Also check immediately
+  setTimeout(async()=>{
+    const ethFound=await checkEth();
+    const btcFound=await checkBtc();
+    if(ethFound||btcFound){stopPolling();onPaymentConfirmed(ethFound?'ETH':'BTC',ethFound||btcFound);}
+  },3000);
+}
+function stopPolling(){
+  if(pollInterval){clearInterval(pollInterval);pollInterval=null;}
+}
+
+async function checkEth(){
+  try{
+    const url=\`https://api.etherscan.io/api?module=account&action=txlist&address=\${ETH_ADDR}&startblock=0&endblock=99999999&sort=desc&apikey=\${ESCAN_KEY}\`;
+    const r=await fetch(url);
+    const d=await r.json();
+    if(d.status!=='1'||!d.result) return null;
+    for(const tx of d.result){
+      if(parseInt(tx.timeStamp)<pollStartTime-120) break;
+      const val=parseFloat(tx.value)/1e18;
+      if(tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&val>=0.98&&tx.isError==='0'){
+        return tx.from;
+      }
+    }
+  }catch(e){}
+  return null;
+}
+
+async function checkBtc(){
+  try{
+    const r=await fetch(\`https://mempool.space/api/address/\${BTC_ADDR}/txs\`);
+    const txs=await r.json();
+    const now=Math.floor(Date.now()/1000);
+    for(const tx of txs){
+      const ts=tx.status.block_time||now;
+      if(ts<pollStartTime-120) continue;
+      for(const out of tx.vout){
+        if(out.scriptpubkey_address===BTC_ADDR){
+          const btcVal=out.value/1e8;
+          if(btcVal>=0.012){
+            // get sender from vin
+            const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
+            return sender;
+          }
+        }
+      }
+    }
+  }catch(e){}
+  return null;
+}
+
+async function onPaymentConfirmed(chain, fromAddr){
+  // Show confirmed
+  const msg=document.getElementById('pollMsg');
+  msg.className='poll-confirmed';
+  msg.textContent='PAYMENT CONFIRMED ON '+chain+'!';
+
+  // Write to Firebase
+  try{
+    if(window._fbDb&&window._fbPush&&window._fbRef){
+      await window._fbPush(window._fbRef(window._fbDb,'collectors'),{
+        name: pendingName,
+        xcp:  pendingXcp,
+        from: fromAddr,
+        chain:chain,
+        ts:   Date.now()
+      });
+    }
+  }catch(e){console.log('Firebase write error:',e);}
+
+  // Close modal after 3 seconds
+  setTimeout(()=>{
+    closeAcquire();
+    document.getElementById('acqBtn').disabled=false;
+    document.getElementById('acqBtn').textContent='&#9670; I HAVE SENT PAYMENT &#9670;';
+  },3000);
+}
+
+// ── COLLECTOR LIST RENDERER ──────────────────────────────────────────────────
+window._renderCollectors = function(entries){
+  const list=document.getElementById('clList');
+  const count=document.getElementById('clCount');
+  const dotsEl=document.getElementById('clDots');
+  const spotsLeft=document.getElementById('spotsLeft');
+  const slots=document.getElementById('slots');
+
+  const taken=entries.length;
+  count.textContent=taken;
+  if(spotsLeft) spotsLeft.textContent=TOTAL_SPOTS-taken;
+  if(slots) slots.textContent=TOTAL_SPOTS-taken;
+
+  if(taken===0){
+    list.innerHTML='<div class="cl-empty">AWAITING<br>FIRST COLLECTOR...<br><br>BE FIRST.</div>';
+  } else {
+    list.innerHTML=entries.map((e,i)=>\`
+      <div class="cl-entry">
+        <div class="cl-num">No. \${String(i+1).padStart(3,'0')}</div>
+        <div class="cl-name">\${e.name.toUpperCase()}</div>
+        <div class="cl-addr">\${e.xcp.slice(0,8)}...\${e.xcp.slice(-6)}</div>
+      </div>
+    \`).join('');
+    list.scrollTop=list.scrollHeight;
+  }
+
+  // Dot grid
+  dotsEl.innerHTML='';
+  for(let i=0;i<TOTAL_SPOTS;i++){
+    const d=document.createElement('div');
+    d.className='cl-dot'+(i<taken?' taken':'');
+    dotsEl.appendChild(d);
+  }
+};
+
+// ── KEEP EXISTING FUNCTIONS ──────────────────────────────────────────────────
+function connectWallet(){
+  document.getElementById('mmTopBtn').textContent='WALLET N/A';
+}
+function disconnectWallet(){}
+function checkReady(){}
+function dismissGate(){}
+
 
 
 
@@ -745,5 +1073,84 @@ function bid(){
   
 
 </script>
+
+<!-- ── ACQUIRE MODAL ──────────────────────────────────────────────────────── -->
+<div id="acquireModal">
+  <div class="acq-box">
+    <div class="acq-header">
+      <div class="acq-title">&#9670; ACQUIRE MASTERPEPES &#9670;</div>
+      <button class="acq-close" onclick="closeAcquire()">&#10005;</button>
+    </div>
+    <div class="acq-body">
+
+      <!-- Name -->
+      <div>
+        <div class="acq-label">YOUR NAME</div>
+        <input class="acq-inp" id="acqName" type="text" placeholder="Name (will appear on collector list)" oninput="checkAcqReady()">
+      </div>
+
+      <!-- XCP Address -->
+      <div>
+        <div class="acq-label">YOUR XCP / COUNTERPARTY ADDRESS</div>
+        <input class="acq-inp" id="acqXcp" type="text" placeholder="Bitcoin address starting with 1..." oninput="checkAcqReady()">
+        <p class="acq-note">This is the Bitcoin address where you will RECEIVE all 150 Masterpepes works. Must be a Counterparty-compatible address (starts with 1). Double-check before submitting.</p>
+      </div>
+
+      <div class="acq-divider"></div>
+
+      <!-- Price display -->
+      <div class="acq-price">
+        <div class="acq-price-item">
+          <div class="acq-price-label">PAY IN ETH</div>
+          <div class="acq-price-val">1 ETH</div>
+        </div>
+        <div style="font-size:9px;color:var(--dim);">OR</div>
+        <div class="acq-price-item">
+          <div class="acq-price-label">PAY IN BTC</div>
+          <div class="acq-price-val" id="btcEquiv">...</div>
+        </div>
+        <div class="acq-price-item">
+          <div class="acq-price-label">USD VALUE</div>
+          <div class="acq-price-val" id="acqUsd">...</div>
+        </div>
+      </div>
+
+      <!-- QR Codes -->
+      <div class="acq-qr-section">
+        <div class="acq-qr-block">
+          <div class="acq-qr-label">&#9670; SEND ETH HERE &#9670;</div>
+          <div class="acq-qr-wrap"><div id="qrEth"></div></div>
+          <div class="acq-qr-addr">0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329</div>
+          <button class="acq-qr-copy" onclick="copyAddr('0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329',this)">COPY ETH ADDRESS</button>
+        </div>
+        <div class="acq-qr-block">
+          <div class="acq-qr-label">&#9670; SEND BTC HERE &#9670;</div>
+          <div class="acq-qr-wrap"><div id="qrBtc"></div></div>
+          <div class="acq-qr-addr">1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH</div>
+          <button class="acq-qr-copy" onclick="copyAddr('1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH',this)">COPY BTC ADDRESS</button>
+        </div>
+      </div>
+
+      <div class="acq-divider"></div>
+
+      <!-- Submit -->
+      <div>
+        <button class="acq-submit" id="acqBtn" onclick="submitAcquire()">
+          &#9670; I HAVE SENT PAYMENT &#9670;
+        </button>
+        <p class="acq-note" style="text-align:center;margin-top:8px;">
+          Click after sending payment. We will verify your transaction on-chain and add you to the collector list.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Polling status -->
+    <div id="pollStatus">
+      <div id="pollMsg" class="poll-scanning">SCANNING BLOCKCHAIN<span class="poll-dots">...</span></div>
+    </div>
+
+  </div>
+</div>
 </body>
 </html>

@@ -326,6 +326,21 @@
   }
   .dot-legend-item{display:flex;align-items:center;gap:5px;}
   .dot-legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+  .emblems{
+    display:flex;align-items:center;justify-content:center;
+    gap:32px;padding-top:8px;
+    border-top:0.5px solid rgba(200,144,26,0.15);
+    width:100%;flex-wrap:wrap;
+  }
+  .emblem-img{
+    height:auto;opacity:0.85;
+    filter:drop-shadow(0 0 8px rgba(200,144,26,0.3));
+    transition:opacity 0.2s;
+  }
+  .emblem-img:hover{opacity:1;filter:drop-shadow(0 0 14px rgba(200,144,26,0.6));}
+  .emblem-cp{width:min(52px,12vw);}
+  .emblem-sig{width:min(140px,32vw);}
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
@@ -400,6 +415,14 @@
 
   <!-- Credit -->
   <div class="robness-credit">A CRYPTOART PROJECT BY ROBNESS &nbsp;&middot;&nbsp; X.COM/ROBNESSOFFICIAL</div>
+
+  <!-- Emblems -->
+  <div class="emblems">
+    <img src="COUNTERPARTYGOLD.png" alt="Counterparty" class="emblem-img emblem-cp"
+         onerror="this.style.display='none'">
+    <img src="SIGNATURE_GOLD.png" alt="Robness Signature" class="emblem-img emblem-sig"
+         onerror="this.style.display='none'">
+  </div>
 
 </div>
 

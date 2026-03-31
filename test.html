@@ -27,7 +27,7 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hid
 .main{flex:1;display:flex;overflow:hidden}
 
 /* LEFT */
-.left{flex:0 0 58%;position:relative;border-right:0.5px solid var(--rl);overflow:hidden}
+.left{flex:1 1 auto;position:relative;border-right:0.5px solid var(--rl);overflow:hidden;min-width:0}
 
 /* BOOK VIEW */
 #bookView{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10;background:var(--deep);transition:opacity 0.4s;padding:16px 24px;overflow:hidden}
@@ -71,7 +71,7 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hid
 .ap-close:hover{border-color:var(--gold);color:var(--gold)}
 
 /* RIGHT */
-.right{flex:0 0 42%;background:var(--panel);display:flex;flex-direction:column;padding:24px 24px 16px;overflow-y:auto;position:relative}
+.right{flex:0 0 280px;background:var(--panel);display:flex;flex-direction:column;padding:18px 18px 16px;overflow-y:auto;position:relative}
 #rightGate{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;background:rgba(20,60,20,0);border:none;transition:background 0.35s,backdrop-filter 0.35s;cursor:default;pointer-events:all}
 #rightGate:hover,#rightGate.hover{background:rgba(20,80,20,0.72);backdrop-filter:blur(3px)}
 #rightGate-inner{opacity:0;transform:scale(0.94);transition:opacity 0.3s,transform 0.3s;pointer-events:none}
@@ -129,7 +129,7 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hid
 .cd-lbl{font-size:clamp(6px,0.6vw,8px);letter-spacing:0.25em;color:var(--dim);margin-top:3px}
 /* ── COLLECTOR LIST SIDEBAR ───────────────────────────────────────────────── */
 #collectorSidebar{
-  width:200px;flex-shrink:0;background:#040A04;border-right:0.5px solid #0E1E0E;
+  width:170px;flex-shrink:0;background:#040A04;border-right:0.5px solid #0E1E0E;
   display:flex;flex-direction:column;overflow:hidden;
 }
 .cl-header{
@@ -546,10 +546,12 @@ function resizeBookCanvas() {
   camera.updateProjectionMatrix();
 }
 
-// ResizeObserver is the only reliable way — fires whenever .left actually changes size
 const ro = new ResizeObserver(() => resizeBookCanvas());
 ro.observe(leftPanel);
-resizeBookCanvas(); // also call immediately
+// Delayed calls to ensure layout is complete before sizing
+setTimeout(resizeBookCanvas, 100);
+setTimeout(resizeBookCanvas, 500);
+window.addEventListener('resize', resizeBookCanvas);
 
 scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 const dl = new THREE.DirectionalLight(0xfff5e0, 1.2);

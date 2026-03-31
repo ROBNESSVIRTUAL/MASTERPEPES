@@ -493,23 +493,11 @@ let walletAddress = null;
 let selectedIdx   = null;
 
 // ── RIGHT PANEL GATE ──────────────────────────────────────
-function dismissGate(){
-  const gate = document.getElementById('rightGate');
-  gate.style.transition='opacity 0.4s';
-  gate.style.opacity='0';
-  gate.style.pointerEvents='none';
-  setTimeout(()=>gate.style.display='none', 420);
-}
+function dismissGate(){}
 
 // On touch devices: show gate immediately (no hover available)
 // On desktop: gate appears on hover via CSS
-if('ontouchstart' in window){
-  const gate = document.getElementById('rightGate');
-  const inner = document.getElementById('rightGate-inner');
-  if(gate && inner){
-    gate.classList.add('hover'); // trigger the hover CSS state permanently
-  }
-}
+// gate removed
 
 // ── VIEW SWITCHING ──────────────────────────────────────
 function showMuseum() {

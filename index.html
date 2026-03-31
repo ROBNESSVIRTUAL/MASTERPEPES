@@ -341,14 +341,70 @@
   .emblem-img:hover{opacity:1;filter:drop-shadow(0 0 14px rgba(200,144,26,0.6));}
   .emblem-cp{width:min(52px,12vw);}
   .emblem-sig{width:min(140px,32vw);}
+
+  /* Email notification */
+  .notify-wrap{
+    width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;
+    border-top:0.5px solid rgba(200,144,26,0.2);
+    border-bottom:0.5px solid rgba(200,144,26,0.2);
+    padding:18px 0;
+  }
+  .notify-label{font-size:clamp(8px,2vw,10px);letter-spacing:0.2em;color:var(--gold);text-shadow:0 0 8px rgba(200,144,26,0.4);}
+  .notify-sub{font-size:clamp(7px,1.8vw,8px);letter-spacing:0.12em;color:var(--dim);margin-top:-4px;}
+  .notify-form{display:flex;gap:8px;width:100%;max-width:480px;flex-wrap:wrap;justify-content:center;}
+  .notify-form input[type=email]{
+    flex:1;min-width:200px;
+    background:rgba(200,144,26,0.05);
+    border:0.5px solid rgba(200,144,26,0.35);border-radius:3px;
+    padding:10px 14px;color:var(--text);
+    font-family:'Cinzel',serif;font-size:clamp(8px,2vw,9px);letter-spacing:0.15em;
+    outline:none;transition:border-color 0.2s;
+  }
+  .notify-form input[type=email]::placeholder{color:rgba(200,144,26,0.3);}
+  .notify-form input[type=email]:focus{border-color:var(--gold2);}
+  .notify-form button{
+    font-family:'Cinzel',serif;font-size:clamp(8px,2vw,9px);letter-spacing:0.2em;
+    color:#0D0101;background:var(--gold);border:none;border-radius:3px;
+    padding:10px 20px;cursor:pointer;transition:all 0.2s;white-space:nowrap;
+  }
+  .notify-form button:hover{background:var(--gold2);box-shadow:0 0 16px rgba(255,215,0,0.4);}
+  #notify-msg{font-size:clamp(8px,2vw,9px);letter-spacing:0.15em;min-height:16px;color:var(--green);display:none;}
 </style>
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6">
+// ── EMAIL FORM ────────────────────────────────────────────────────────────────
+document.getElementById('notify-form').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=this.querySelector('button');
+  btn.textContent='SENDING...';btn.disabled=true;
+  try{
+    const res=await fetch(this.action,{method:'POST',body:new FormData(this),headers:{Accept:'application/json'}});
+    if(res.ok){
+      this.style.display='none';
+      document.getElementById('notify-msg').style.display='block';
+    } else {btn.textContent='TRY AGAIN';btn.disabled=false;}
+  }catch(err){btn.textContent='TRY AGAIN';btn.disabled=false;}
+});
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-KTL6JDNCD6');
+
+// ── EMAIL FORM ────────────────────────────────────────────────────────────────
+document.getElementById('notify-form').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=this.querySelector('button');
+  btn.textContent='SENDING...';btn.disabled=true;
+  try{
+    const res=await fetch(this.action,{method:'POST',body:new FormData(this),headers:{Accept:'application/json'}});
+    if(res.ok){
+      this.style.display='none';
+      document.getElementById('notify-msg').style.display='block';
+    } else {btn.textContent='TRY AGAIN';btn.disabled=false;}
+  }catch(err){btn.textContent='TRY AGAIN';btn.disabled=false;}
+});
 </script>
 </head>
 <body>
@@ -400,6 +456,20 @@
   <!-- Drop date -->
   <div class="drop-date">
     DROPPING MAY 1, 2026 &nbsp;&middot;&nbsp; 12:00 PM PACIFIC
+  </div>
+
+  <!-- Email notification signup -->
+  <div class="notify-wrap">
+    <div class="notify-label">&#9670; NOTIFY ME WHEN THE DROP GOES LIVE &#9670;</div>
+    <div class="notify-sub">BE THE FIRST TO KNOW &nbsp;&middot;&nbsp; NO SPAM &nbsp;&middot;&nbsp; ONE EMAIL ONLY</div>
+    <form class="notify-form" id="notify-form"
+          action="https://formspree.io/f/mzdkgbgo"
+          method="POST">
+      <input type="email" name="email" placeholder="YOUR EMAIL ADDRESS" required autocomplete="email"/>
+      <input type="hidden" name="_subject" value="Masterpepes Drop Notification Signup"/>
+      <button type="submit">NOTIFY ME</button>
+    </form>
+    <div id="notify-msg">&#9670; YOU'RE ON THE LIST &#9670;</div>
   </div>
 
   <!-- Collector Dot Grid -->
@@ -677,6 +747,20 @@ function tick(){
 }
 tick();
 setInterval(tick,1000);
+
+// ── EMAIL FORM ────────────────────────────────────────────────────────────────
+document.getElementById('notify-form').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=this.querySelector('button');
+  btn.textContent='SENDING...';btn.disabled=true;
+  try{
+    const res=await fetch(this.action,{method:'POST',body:new FormData(this),headers:{Accept:'application/json'}});
+    if(res.ok){
+      this.style.display='none';
+      document.getElementById('notify-msg').style.display='block';
+    } else {btn.textContent='TRY AGAIN';btn.disabled=false;}
+  }catch(err){btn.textContent='TRY AGAIN';btn.disabled=false;}
+});
 </script>
 
 <!-- Enter 3D Museum button -->

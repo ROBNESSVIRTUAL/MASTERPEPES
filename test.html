@@ -71,7 +71,7 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hid
 .ap-close:hover{border-color:var(--gold);color:var(--gold)}
 
 /* RIGHT */
-.right{flex:0 0 275px;background:var(--panel);display:flex;flex-direction:column;padding:20px 18px 16px;overflow-y:auto;position:relative}
+.right{flex:0 0 300px;background:var(--panel);display:flex;flex-direction:column;padding:20px 18px 16px;overflow-y:auto;position:relative}
 #rightGate{position:absolute;top:0;left:0;right:0;min-height:100%;height:auto;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;background:rgba(20,60,20,0);border:none;transition:background 0.35s,backdrop-filter 0.35s;cursor:default;pointer-events:all}
 #rightGate:hover,#rightGate.hover{background:rgba(20,80,20,0.72);backdrop-filter:blur(3px)}
 #rightGate-inner{opacity:0;transform:scale(0.94);transition:opacity 0.3s,transform 0.3s;pointer-events:none}
@@ -129,7 +129,7 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hid
 .cd-lbl{font-size:clamp(6px,0.6vw,8px);letter-spacing:0.25em;color:var(--dim);margin-top:3px}
 
 /* COLLECTOR SIDEBAR */
-#clSidebar{width:175px;flex-shrink:0;background:#040A04;border-right:0.5px solid #0E1E0E;display:flex;flex-direction:column;overflow:hidden}
+#clSidebar{width:200px;flex-shrink:0;background:#040A04;border-right:0.5px solid #0E1E0E;display:flex;flex-direction:column;overflow:hidden}
 .cl-hdr{padding:10px 12px 6px;border-bottom:0.5px solid #0E2A0E;flex-shrink:0}
 .cl-ttl{font-size:6.5px;letter-spacing:0.3em;color:#39FF14;text-shadow:0 0 8px rgba(57,255,20,0.5)}
 .cl-cnt{font-size:8px;letter-spacing:0.12em;color:rgba(57,255,20,0.55);margin-top:2px}
@@ -460,7 +460,7 @@ function resizeBookCanvas() {
   const pw = leftPanel.offsetWidth;
   const ph = leftPanel.offsetHeight;
   if (!pw || !ph) return;
-  const sz = Math.floor(Math.min(pw * 0.85, ph * 0.72));
+  const sz = Math.floor(Math.min(pw * 0.58, ph * 0.52));
   if (sz < 10) return;
   renderer.setSize(sz, sz);
   camera.aspect = 1;

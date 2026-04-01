@@ -921,7 +921,7 @@ async function chkEth(){
     const r=await fetch('https://api.etherscan.io/api?module=account&action=txlist&address='+ETH_ADDR+'&sort=desc&apikey='+ESCAN_KEY);
     const d=await r.json();
     console.log('Etherscan status:',d.status,'tx count:',d.result?d.result.length:0);
-    if(d.status==='1'){
+    if(d.result && d.result.length>0){
       for(const tx of d.result.slice(0,20)){
         console.log('TX:',tx.hash,'to:',tx.to,'value:',(parseFloat(tx.value)/1e18).toFixed(6),'ETH','time:',tx.timeStamp);
         if(tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.002&&tx.isError==='0'){

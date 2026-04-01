@@ -922,7 +922,7 @@ async function chkEth(){
     if(d.status==='1'){
       for(const tx of d.result){
         if(parseInt(tx.timeStamp)<pollStart-60) break;
-        if(tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.98&&tx.isError==='0') return tx.from;
+        if(tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.002&&tx.isError==='0') return tx.from;
       }
     }
     // Also check pending (mempool)
@@ -937,7 +937,7 @@ async function chkBtc(){
     // Check mempool first (unconfirmed — first detection)
     for(const tx of mempool){
       for(const out of tx.vout){
-        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012)
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.00005)
           return tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
       }
     }
@@ -949,7 +949,7 @@ async function chkBtc(){
       const ts=tx.status.block_time||now;
       if(ts<pollStart-120) continue;
       for(const out of tx.vout){
-        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012)
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.00005)
           return tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
       }
     }
@@ -992,7 +992,7 @@ loadAcqPrices();
 <div id="acqModal">
   <div class="acq-box">
     <div class="acq-hdr">
-      <div class="acq-ttl">&#9670; ACQUIRE MASTERPEPES &#9670;</div>
+      <div class="acq-ttl">&#9670; ACQUIRE MASTERPEPES &#9670;</div><div style="font-size:7px;letter-spacing:0.2em;color:#FF4444;margin-top:4px;">&#9888; TEST MODE — $5 THRESHOLD</div>
       <button class="acq-x" onclick="closeAcq()">&#10005;</button>
     </div>
     <div class="acq-body">

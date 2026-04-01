@@ -916,18 +916,17 @@ async function checkPayment(){
 }
 async function chkEth(){
   try{
-    // Check confirmed txs
     const r=await fetch('https://api.etherscan.io/api?module=account&action=txlist&address='+ETH_ADDR+'&sort=desc&apikey='+ESCAN_KEY);
     const d=await r.json();
     if(d.status==='1'){
-      for(const tx of d.result){
-        if(parseInt(tx.timeStamp)<pollStart-60) break;
-        if(tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.002&&tx.isError==='0') return tx.from;
+      for(const tx of d.result.slice(0,20)){ // check last 20 txs, no early break
+        if(tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.002&&tx.isError==='0'){
+          // Must be within 30 minutes of when scanning started
+          if(parseInt(tx.timeStamp)>=pollStart-1800) return tx.from;
+        }
       }
     }
-    // Also check pending (mempool)
-    const r2=await fetch('https://api.etherscan.io/api?module=account&action=txlistinternal&address='+ETH_ADDR+'&sort=desc&apikey='+ESCAN_KEY);
-  }catch(e){}
+  }catch(e){console.log('ETH check error:',e);}
   return null;
 }
 async function chkBtc(){

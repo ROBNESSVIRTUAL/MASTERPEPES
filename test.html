@@ -918,7 +918,7 @@ async function checkPayment(){
 async function chkEth(){
   try{
     console.log('Checking ETH... pollStart='+pollStart+' now='+Math.floor(Date.now()/1000));
-    const r=await fetch('https://api.etherscan.io/api?module=account&action=txlist&address='+ETH_ADDR+'&sort=desc&apikey='+ESCAN_KEY);
+    const r=await fetch('https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address='+ETH_ADDR+'&sort=desc&apikey='+ESCAN_KEY);
     const d=await r.json();
     console.log('Etherscan status:',d.status,'result type:',typeof d.result,'tx count:',Array.isArray(d.result)?d.result.length:d.result);
     if(!Array.isArray(d.result)||d.result.length===0) return null;

@@ -182,6 +182,8 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hid
 .acq-poll{display:none;padding:14px 20px;border-top:0.5px solid rgba(200,144,26,0.18);text-align:center;font-size:8px;letter-spacing:0.2em}
 .acq-poll.scanning{color:var(--gold);animation:blink 1.4s infinite}
 .acq-poll.confirmed{color:#39FF14;text-shadow:0 0 10px rgba(57,255,20,0.5)}
+.acq-poll small{display:block;font-size:7px;letter-spacing:0.1em;color:rgba(57,255,20,0.65);line-height:1.9;margin-top:8px;text-transform:none}
+.scan-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);animation:blink 1s infinite;margin-right:6px;vertical-align:middle}
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
@@ -850,14 +852,32 @@ function openAcq(){
 function closeAcq(){
   document.getElementById('acqModal').classList.remove('open');
   clearInterval(pollTimer);pollTimer=null;
+  setStatus('','');
+}
+function setStatus(msg,cls){
   const p=document.getElementById('acqPoll');
-  p.style.display='none';p.className='acq-poll';
-  document.getElementById('acqBtn').disabled=false;
-  document.getElementById('acqBtn').textContent='\u25c8 I HAVE SENT PAYMENT \u25c8';
+  if(!msg){p.style.display='none';p.className='acq-poll';p.innerHTML='';return;}
+  p.style.display='block';p.className='acq-poll '+cls;p.innerHTML=msg;
 }
 function chkAcq(){
-  const ok=document.getElementById('acqName').value.trim().length>1&&document.getElementById('acqXcp').value.trim().length>25;
-  document.getElementById('acqBtn').classList.toggle('on',ok);
+  const name=document.getElementById('acqName').value.trim();
+  const xcp=document.getElementById('acqXcp').value.trim();
+  const ready=name.length>1&&xcp.length>25;
+  document.getElementById('acqBtn').classList.toggle('on',ready);
+  // Auto-start scanning as soon as both fields are filled
+  if(ready&&!pollTimer){
+    pendingName=name;pendingXcp=xcp;
+    startScanning();
+  } else if(!ready&&pollTimer){
+    clearInterval(pollTimer);pollTimer=null;
+    setStatus('','');
+  }
+}
+function startScanning(){
+  pollStart=Math.floor(Date.now()/1000);
+  setStatus('<span class="scan-dot"></span> WATCHING FOR YOUR PAYMENT...','scanning');
+  checkPayment();
+  pollTimer=setInterval(checkPayment,12000);
 }
 function cpAddr(addr,btn){
   navigator.clipboard.writeText(addr).then(()=>{const t=btn.textContent;btn.textContent='COPIED!';setTimeout(()=>btn.textContent=t,2000);});
@@ -875,56 +895,83 @@ async function loadAcqPrices(){
     if(usdEl)usdEl.textContent='~$'+eu.toLocaleString()+' USD at current rate';
   }catch(e){}
 }
+// submitAcq now just confirms intent — scanning already running
 function submitAcq(){
   pendingName=document.getElementById('acqName').value.trim();
   pendingXcp=document.getElementById('acqXcp').value.trim();
   if(!pendingName||pendingXcp.length<25)return;
-  pollStart=Math.floor(Date.now()/1000);
-  const p=document.getElementById('acqPoll');
-  p.style.display='block';p.className='acq-poll scanning';
-  p.textContent='SCANNING BLOCKCHAIN...';
+  if(!pollTimer) startScanning();
+  setStatus('<span class="scan-dot"></span> SCANNING BLOCKCHAIN — YOUR PAYMENT WILL BE DETECTED AUTOMATICALLY...','scanning');
   document.getElementById('acqBtn').disabled=true;
-  document.getElementById('acqBtn').textContent='VERIFYING...';
-  checkPayment();
-  pollTimer=setInterval(checkPayment,15000);
+  document.getElementById('acqBtn').textContent='WATCHING...';
 }
 async function checkPayment(){
+  // Update pending values in case user edited fields
+  const n=document.getElementById('acqName').value.trim();
+  const x=document.getElementById('acqXcp').value.trim();
+  if(n) pendingName=n;
+  if(x) pendingXcp=x;
   const eth=await chkEth(),btc=await chkBtc();
-  if(eth||btc){clearInterval(pollTimer);onConfirmed(eth?'ETH':'BTC');}
+  if(eth||btc){clearInterval(pollTimer);pollTimer=null;onDetected(eth?'ETH':'BTC',eth||btc);}
 }
 async function chkEth(){
   try{
+    // Check confirmed txs
     const r=await fetch('https://api.etherscan.io/api?module=account&action=txlist&address='+ETH_ADDR+'&sort=desc&apikey='+ESCAN_KEY);
     const d=await r.json();
-    if(d.status!=='1')return null;
-    for(const tx of d.result){
-      if(parseInt(tx.timeStamp)<pollStart-120)break;
-      if(tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.98&&tx.isError==='0')return tx.from;
+    if(d.status==='1'){
+      for(const tx of d.result){
+        if(parseInt(tx.timeStamp)<pollStart-60) break;
+        if(tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.98&&tx.isError==='0') return tx.from;
+      }
     }
+    // Also check pending (mempool)
+    const r2=await fetch('https://api.etherscan.io/api?module=account&action=txlistinternal&address='+ETH_ADDR+'&sort=desc&apikey='+ESCAN_KEY);
   }catch(e){}
   return null;
 }
 async function chkBtc(){
   try{
-    const r=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs');
-    const txs=await r.json();
+    const r=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs/mempool');
+    const mempool=await r.json();
+    // Check mempool first (unconfirmed — first detection)
+    for(const tx of mempool){
+      for(const out of tx.vout){
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012)
+          return tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
+      }
+    }
+    // Also check confirmed recent txs
+    const r2=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs');
+    const txs=await r2.json();
     const now=Math.floor(Date.now()/1000);
     for(const tx of txs){
       const ts=tx.status.block_time||now;
-      if(ts<pollStart-120)continue;
+      if(ts<pollStart-120) continue;
       for(const out of tx.vout){
-        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012)return tx.vin[0]?.prevout?.scriptpubkey_address||'BTC';
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012)
+          return tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
       }
     }
   }catch(e){}
   return null;
 }
-async function onConfirmed(chain){
-  const p=document.getElementById('acqPoll');
-  p.className='acq-poll confirmed';
-  p.textContent='PAYMENT CONFIRMED ON '+chain+'!';
-  try{await window._fbPush({name:pendingName,xcp:pendingXcp,chain,ts:Date.now()});}catch(e){}
-  setTimeout(closeAcq,3000);
+async function onDetected(chain,fromAddr){
+  const isBtc=chain==='BTC';
+  const msg=isBtc
+    ? '&#9670; BTC TRANSACTION DETECTED! &#9670;<br><small>Adding you to the collector list now. Bitcoin transactions typically confirm within 10-60 minutes depending on network congestion \u2014 your spot is secured the moment we detect your transaction in the mempool. No need to wait.</small>'
+    : '&#9670; ETH PAYMENT CONFIRMED! &#9670;';
+  setStatus(msg,'confirmed');
+  try{await window._fbPush({name:pendingName,xcp:pendingXcp,chain,from:fromAddr,ts:Date.now()});}catch(e){console.log('Firebase:',e);}
+  // Close after 6 seconds so they can read the message
+  setTimeout(()=>{
+    closeAcq();
+    document.getElementById('acqBtn').disabled=false;
+    document.getElementById('acqBtn').textContent='\u25c8 I HAVE SENT PAYMENT \u25c8';
+    document.getElementById('acqBtn').classList.remove('on');
+    document.getElementById('acqName').value='';
+    document.getElementById('acqXcp').value='';
+  },6000);
 }
 window._renderCollectors=function(entries){
   const n=entries.length;
@@ -981,8 +1028,8 @@ loadAcqPrices();
       </div>
       <div class="acq-hr"></div>
       <div>
-        <button class="acq-sub" id="acqBtn" onclick="submitAcq()">&#9670; I HAVE SENT PAYMENT &#9670;</button>
-        <p class="acq-note" style="text-align:center;margin-top:8px">Click after sending. We will verify your transaction on-chain and add you to the collector list.</p>
+        <button class="acq-sub" id="acqBtn" onclick="submitAcq()">&#9670; I HAVE SENT MY PAYMENT &#9670;</button>
+        <p class="acq-note" style="text-align:center;margin-top:8px">Once your name and XCP address are entered above, we begin watching the blockchain automatically. Hit this button after sending to confirm intent.</p>
       </div>
     </div>
     <div class="acq-poll" id="acqPoll"></div>

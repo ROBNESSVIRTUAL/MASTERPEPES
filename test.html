@@ -875,6 +875,7 @@ function chkAcq(){
 }
 function startScanning(){
   pollStart=Math.floor(Date.now()/1000);
+  console.log('Scanning started at',pollStart);
   setStatus('<span class="scan-dot"></span> WATCHING FOR YOUR PAYMENT...','scanning');
   checkPayment();
   pollTimer=setInterval(checkPayment,12000);
@@ -916,12 +917,14 @@ async function checkPayment(){
 }
 async function chkEth(){
   try{
+    console.log('Checking ETH... pollStart='+pollStart+' now='+Math.floor(Date.now()/1000));
     const r=await fetch('https://api.etherscan.io/api?module=account&action=txlist&address='+ETH_ADDR+'&sort=desc&apikey='+ESCAN_KEY);
     const d=await r.json();
+    console.log('Etherscan status:',d.status,'tx count:',d.result?d.result.length:0);
     if(d.status==='1'){
-      for(const tx of d.result.slice(0,20)){ // check last 20 txs, no early break
+      for(const tx of d.result.slice(0,20)){
+        console.log('TX:',tx.hash,'to:',tx.to,'value:',(parseFloat(tx.value)/1e18).toFixed(6),'ETH','time:',tx.timeStamp);
         if(tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.002&&tx.isError==='0'){
-          // Must be within 30 minutes of when scanning started
           if(parseInt(tx.timeStamp)>=pollStart-1800) return tx.from;
         }
       }

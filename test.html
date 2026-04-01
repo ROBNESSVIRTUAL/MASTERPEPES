@@ -923,9 +923,11 @@ async function chkEth(){
     console.log('Etherscan status:',d.status,'result type:',typeof d.result,'tx count:',Array.isArray(d.result)?d.result.length:d.result);
     if(!Array.isArray(d.result)||d.result.length===0) return null;
     for(const tx of d.result.slice(0,20)){
-      console.log('TX:',tx.hash,'to:',tx.to,'value:',(parseFloat(tx.value)/1e18).toFixed(6),'ETH','time:',tx.timeStamp);
-      if(tx.to&&tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.002&&tx.isError==='0'){
-        if(parseInt(tx.timeStamp)>=pollStart-1800) return tx.from;
+      const txTime = parseInt(tx.timeStamp);
+      console.log('TX:',tx.hash,'to:',tx.to,'value:',(parseFloat(tx.value)/1e18).toFixed(6),'ETH','txTime:',txTime,'pollStart:',pollStart,'fresh:',txTime>=pollStart);
+      // MUST be after pollStart — no grace period, strict
+      if(tx.to&&tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.002&&tx.isError==='0'&&txTime>=pollStart){
+        return tx.from;
       }
     }
   }catch(e){console.log('ETH check error:',e);}
@@ -933,28 +935,27 @@ async function chkEth(){
 }
 async function chkBtc(){
   try{
+    // Check mempool first (unconfirmed — first detection, no timestamp available so always fresh)
     const r=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs/mempool');
     const mempool=await r.json();
-    // Check mempool first (unconfirmed — first detection)
     for(const tx of mempool){
       for(const out of tx.vout){
         if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.00005)
           return tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
       }
     }
-    // Also check confirmed recent txs
+    // Check confirmed txs — strictly after pollStart only
     const r2=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs');
     const txs=await r2.json();
-    const now=Math.floor(Date.now()/1000);
     for(const tx of txs){
-      const ts=tx.status.block_time||now;
-      if(ts<pollStart-120) continue;
+      const ts=tx.status.block_time;
+      if(!ts||ts<pollStart) continue; // must be confirmed AFTER scan started
       for(const out of tx.vout){
         if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.00005)
           return tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
       }
     }
-  }catch(e){}
+  }catch(e){console.log('BTC check error:',e);}
   return null;
 }
 async function onDetected(chain,fromAddr){

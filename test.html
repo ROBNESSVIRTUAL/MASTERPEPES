@@ -1045,7 +1045,7 @@ function initCelebCanvas(){
   if(celebRenderer) return;
   celebScene=new THREE.Scene();
   celebCamera=new THREE.PerspectiveCamera(45,1,0.1,100);
-  celebCamera.position.set(0,0,3.5);
+  celebCamera.position.set(0,0,4);
   celebRenderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
   celebRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   celebRenderer.setSize(200,200);
@@ -1062,7 +1062,7 @@ function initCelebCanvas(){
         celebModel=gltf.scene;
         const box=new THREE.Box3().setFromObject(celebModel);
         const size=box.getSize(new THREE.Vector3());
-        const scale=2.0/Math.max(size.x,size.y,size.z);
+        const scale=1.4/Math.max(size.x,size.y,size.z);
         celebModel.scale.setScalar(scale);
         const center=box.getCenter(new THREE.Vector3());
         celebModel.position.sub(center.multiplyScalar(scale));
@@ -1087,7 +1087,11 @@ function initCelebCanvas(){
   }
   (function animCeleb(){
     celebAnim=requestAnimationFrame(animCeleb);
-    if(celebModel){celebModel.rotation.y+=0.012;celebModel.rotation.x=Math.sin(Date.now()*0.001)*0.15;}
+    if(celebModel){
+      celebModel.rotation.y+=0.012;
+      celebModel.rotation.x+=0.005;
+      celebModel.rotation.z+=0.003;
+    }
     celebRenderer.render(celebScene,celebCamera);
   })();
 }

@@ -184,6 +184,64 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;overflow:hid
 .acq-poll.confirmed{color:#39FF14;text-shadow:0 0 10px rgba(57,255,20,0.5)}
 .acq-poll small{display:block;font-size:7px;letter-spacing:0.1em;color:rgba(57,255,20,0.65);line-height:1.9;margin-top:8px;text-transform:none}
 .scan-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);animation:blink 1s infinite;margin-right:6px;vertical-align:middle}
+
+/* STATUS HEADER at top of acquire modal */
+#acqStatus{
+  display:none;padding:12px 20px;
+  background:rgba(200,144,26,0.08);
+  border-bottom:0.5px solid rgba(200,144,26,0.3);
+  text-align:center;font-size:8px;letter-spacing:0.25em;
+  color:var(--gold);flex-shrink:0;
+}
+#acqStatus.scanning{color:var(--gold);animation:blink 1.4s infinite;}
+#acqStatus.confirmed{color:#39FF14;text-shadow:0 0 10px rgba(57,255,20,0.5);}
+
+/* CELEBRATION MODAL */
+#celebModal{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(4,8,4,0.96);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:20px;
+}
+#celebModal.open{display:flex;}
+.celeb-box{
+  background:#070F07;border:1px solid rgba(255,200,0,0.6);
+  border-radius:4px;width:100%;max-width:500px;
+  box-shadow:0 0 60px rgba(255,200,0,0.25),0 0 120px rgba(255,200,0,0.1);
+  display:flex;flex-direction:column;align-items:center;
+  padding:32px 28px;gap:20px;text-align:center;
+  animation:celebIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes celebIn{
+  from{opacity:0;transform:scale(0.85);}
+  to{opacity:1;transform:scale(1);}
+}
+.celeb-title{
+  font-size:13px;letter-spacing:0.35em;
+  color:#FFD700;
+  text-shadow:0 0 20px rgba(255,215,0,0.8),0 0 40px rgba(255,215,0,0.4);
+  animation:goldPulse 2s ease-in-out infinite;
+}
+@keyframes goldPulse{
+  0%,100%{text-shadow:0 0 20px rgba(255,215,0,0.8),0 0 40px rgba(255,215,0,0.4);}
+  50%{text-shadow:0 0 30px rgba(255,215,0,1),0 0 60px rgba(255,215,0,0.6),0 0 80px rgba(255,215,0,0.2);}
+}
+#celebCanvas{
+  border-radius:50%;
+  box-shadow:0 0 30px rgba(255,200,0,0.6),0 0 60px rgba(255,200,0,0.3),0 0 90px rgba(255,200,0,0.1);
+  background:radial-gradient(circle,rgba(255,200,0,0.08) 0%,transparent 70%);
+}
+.celeb-msg{
+  font-size:8px;letter-spacing:0.15em;color:rgba(255,215,0,0.75);
+  line-height:2.2;max-width:400px;
+}
+.celeb-msg strong{color:#FFD700;font-size:9px;letter-spacing:0.2em;}
+.celeb-close{
+  font-size:8px;letter-spacing:0.25em;color:rgba(255,215,0,0.4);
+  cursor:pointer;border:0.5px solid rgba(255,215,0,0.25);
+  padding:8px 24px;background:none;font-family:'Cinzel',serif;
+  text-transform:uppercase;transition:all 0.2s;margin-top:4px;
+}
+.celeb-close:hover{color:#FFD700;border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,0.3);}
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
@@ -859,9 +917,9 @@ function closeAcq(){
   pendingFrom='';
 }
 function setStatus(msg,cls){
-  const p=document.getElementById('acqPoll');
-  if(!msg){p.style.display='none';p.className='acq-poll';p.innerHTML='';return;}
-  p.style.display='block';p.className='acq-poll '+cls;p.innerHTML=msg;
+  const s=document.getElementById('acqStatus');
+  if(!msg){s.style.display='none';s.className='';s.innerHTML='';return;}
+  s.style.display='block';s.className=cls;s.innerHTML=msg;
 }
 function chkAcq(){
   const name=document.getElementById('acqName').value.trim();
@@ -955,28 +1013,83 @@ async function chkBtc(){
   return null;
 }
 async function onDetected(chain,fromAddr){
-  const isBtc=chain==='BTC';
-  const btcNote=isBtc?'<br><small>Bitcoin transactions typically confirm within 10-60 minutes depending on network congestion. Your spot is secured the moment your transaction is detected in the mempool. No need to wait or do anything further.</small>':'';
-  const msg='&#9670; PAYMENT SENT! &#9670;'+btcNote
-    +'<br><br><small>YOU ARE NOW A MASTERPEPES COLLECTOR.<br><br>'
-    +'AFTER THE DROP CONCLUDES, ROBNESS WILL PERSONALLY SEND ALL 150 MASTERPEPES ARTWORKS TO YOUR XCP ADDRESS. '
-    +'THIS IS BEING DONE MANUALLY TO ENSURE EVERY COLLECTOR RECEIVES THEIR WORKS WITH ZERO FUSS.<br><br>'
-    +'&#9670; WELCOME TO THE COLLECTION. &#9670;</small>';
-  setStatus(msg,'confirmed');
   // Write to Firebase
   try{
     if(typeof window._fbPush==='function'){
       await window._fbPush({name:pendingName,xcp:pendingXcp,from:fromAddr,sendingAddr:pendingFrom,chain,ts:Date.now()});
       console.log('Firebase write successful');
     } else {
-      console.log('Firebase not ready, retrying...');
       setTimeout(async()=>{
-        try{await window._fbPush({name:pendingName,xcp:pendingXcp,from:fromAddr,sendingAddr:pendingFrom,chain,ts:Date.now()});}catch(e){console.log('Firebase retry failed:',e);}
+        try{await window._fbPush({name:pendingName,xcp:pendingXcp,from:fromAddr,sendingAddr:pendingFrom,chain,ts:Date.now()});}catch(e){console.log('Firebase retry:',e);}
       },3000);
     }
   }catch(e){console.log('Firebase error:',e);}
-  // Close after 10 seconds so they can read the full message
-  setTimeout(closeAcq,10000);
+  // Close acquire modal, open celebration
+  closeAcq();
+  openCeleb(chain);
+}
+
+let celebRenderer=null,celebScene=null,celebCamera=null,celebModel=null,celebAnim=null;
+function openCeleb(chain){
+  document.getElementById('celebModal').classList.add('open');
+  initCelebCanvas();
+}
+function closeCeleb(){
+  document.getElementById('celebModal').classList.remove('open');
+  if(celebAnim){cancelAnimationFrame(celebAnim);celebAnim=null;}
+  if(celebRenderer){celebRenderer.dispose();celebRenderer=null;}
+  celebScene=null;celebCamera=null;celebModel=null;
+}
+function initCelebCanvas(){
+  const canvas=document.getElementById('celebCanvas');
+  if(celebRenderer) return;
+  celebScene=new THREE.Scene();
+  celebCamera=new THREE.PerspectiveCamera(45,1,0.1,100);
+  celebCamera.position.set(0,0,3.5);
+  celebRenderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  celebRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  celebRenderer.setSize(200,200);
+  celebRenderer.outputEncoding=THREE.sRGBEncoding;
+  // Rich gold lighting
+  celebScene.add(new THREE.AmbientLight(0xFFD700,1.2));
+  const p1=new THREE.PointLight(0xFFAA00,3,10);p1.position.set(2,2,2);celebScene.add(p1);
+  const p2=new THREE.PointLight(0xFFDD00,2,10);p2.position.set(-2,-1,1);celebScene.add(p2);
+  const p3=new THREE.PointLight(0xFFFFAA,1.5,8);p3.position.set(0,3,0);celebScene.add(p3);
+  // Load LORDKEK
+  if(typeof THREE.GLTFLoader!=='undefined'){
+    new THREE.GLTFLoader().load('LORDKEK.glb',
+      gltf=>{
+        celebModel=gltf.scene;
+        const box=new THREE.Box3().setFromObject(celebModel);
+        const size=box.getSize(new THREE.Vector3());
+        const scale=2.0/Math.max(size.x,size.y,size.z);
+        celebModel.scale.setScalar(scale);
+        const center=box.getCenter(new THREE.Vector3());
+        celebModel.position.sub(center.multiplyScalar(scale));
+        // Gold emissive glow on all meshes
+        celebModel.traverse(c=>{
+          if(c.isMesh&&c.material){
+            const mats=Array.isArray(c.material)?c.material:[c.material];
+            mats.forEach(m=>{m.emissive=new THREE.Color(0xAA6600);m.emissiveIntensity=0.4;});
+          }
+        });
+        celebScene.add(celebModel);
+      },
+      null,
+      ()=>{
+        // fallback: gold spinning torus if GLB not found
+        const geo=new THREE.TorusGeometry(0.7,0.3,16,100);
+        const mat=new THREE.MeshStandardMaterial({color:0xFFD700,emissive:0xAA6600,emissiveIntensity:0.5,roughness:0.3,metalness:0.8});
+        celebModel=new THREE.Mesh(geo,mat);
+        celebScene.add(celebModel);
+      }
+    );
+  }
+  (function animCeleb(){
+    celebAnim=requestAnimationFrame(animCeleb);
+    if(celebModel){celebModel.rotation.y+=0.012;celebModel.rotation.x=Math.sin(Date.now()*0.001)*0.15;}
+    celebRenderer.render(celebScene,celebCamera);
+  })();
 }
 window._renderCollectors=function(entries){
   const n=entries.length;
@@ -1000,6 +1113,7 @@ loadAcqPrices();
       <div class="acq-ttl">&#9670; ACQUIRE MASTERPEPES &#9670;</div><div style="font-size:7px;letter-spacing:0.2em;color:#FF4444;margin-top:4px;">&#9888; TEST MODE — $5 THRESHOLD</div>
       <button class="acq-x" onclick="closeAcq()">&#10005;</button>
     </div>
+    <div id="acqStatus"></div>
     <div class="acq-body">
       <div>
         <div class="acq-lbl">YOUR NAME</div>
@@ -1038,10 +1152,24 @@ loadAcqPrices();
       </div>
       <div class="acq-hr"></div>
       <div style="text-align:center;padding:4px 0">
-        <p class="acq-note" style="text-align:center;color:rgba(57,255,20,0.5);letter-spacing:0.15em;">&#9670; SEND PAYMENT TO EITHER ADDRESS ABOVE &#9670;<br>WE ARE WATCHING THE BLOCKCHAIN AND WILL CONFIRM AUTOMATICALLY.</p>
+        <p class="acq-note" style="text-align:center;color:rgba(200,144,26,0.45);letter-spacing:0.12em;">SEND PAYMENT TO EITHER ADDRESS ABOVE. ONCE YOUR NAME AND SENDING ADDRESS ARE ENTERED, WE WATCH THE BLOCKCHAIN AUTOMATICALLY.</p>
       </div>
     </div>
-    <div class="acq-poll" id="acqPoll"></div>
+  </div>
+</div>
+
+<!-- CELEBRATION MODAL -->
+<div id="celebModal">
+  <div class="celeb-box">
+    <div class="celeb-title">&#9670; PAYMENT CONFIRMED &#9670;</div>
+    <canvas id="celebCanvas" width="200" height="200"></canvas>
+    <div class="celeb-msg">
+      <strong>YOU ARE NOW A MASTERPEPES COLLECTOR.</strong><br><br>
+      AFTER THE DROP CONCLUDES, ROBNESS WILL PERSONALLY SEND ALL 150 MASTERPEPES ARTWORKS TO YOUR XCP ADDRESS.<br><br>
+      THIS IS BEING DONE MANUALLY TO ENSURE EVERY COLLECTOR RECEIVES THEIR WORKS WITH ZERO FUSS.<br><br>
+      <strong>&#9670; WELCOME TO THE COLLECTION. &#9670;</strong>
+    </div>
+    <button class="celeb-close" onclick="closeCeleb()">&#10005; CLOSE</button>
   </div>
 </div>
 </body>

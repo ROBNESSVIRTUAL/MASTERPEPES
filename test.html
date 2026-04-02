@@ -1014,6 +1014,20 @@ const BTC_ADDR  = '1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH';
 const ESCAN_KEY = '9GWK5I3YAXQ29TCCGDN4RKP7YZPGP31HNZ';
 let qrDone=false,pollTimer=null,pollStart=0,pendingName='',pendingXcp='',pendingFrom='';
 
+function openAcq(){
+  document.getElementById('acqModal').classList.add('open');
+  loadAcqPrices();
+  if(!qrDone){
+    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    setTimeout(()=>{
+      overlayQrLogo('qrEth','ETH');
+      overlayQrLogo('qrBtc','BTC');
+    },300);
+    qrDone=true;
+  }
+}
+
 function overlayQrLogo(containerId, type){
   const wrap = document.getElementById(containerId);
   if(!wrap) return;
@@ -1087,20 +1101,6 @@ function drawLogo(ctx, type, size){
   }
 }
 
-  document.getElementById('acqModal').classList.add('open');
-  loadAcqPrices();
-  if(!qrDone){
-    // Generate QR codes then overlay logos
-    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
-    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
-    // Overlay logos after QR renders
-    setTimeout(()=>{
-      overlayQrLogo('qrEth','ETH');
-      overlayQrLogo('qrBtc','BTC');
-    },300);
-    qrDone=true;
-  }
-}
 function closeAcq(){
   document.getElementById('acqModal').classList.remove('open');
   clearInterval(pollTimer);pollTimer=null;

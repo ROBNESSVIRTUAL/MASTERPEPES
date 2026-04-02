@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>MASTERPEPES</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cinzel+Decorative:wght@400&family=Tenor+Sans&display=swap" rel="stylesheet">
 <style>
@@ -12,7 +12,7 @@
   --gold:#C8901A;--gold2:#E8B030;--mut:#3A6A3A;--rl:#182E18;
   --text:#C8DCA8;--dim:#4A7A4A;--white:#E8F0D8;
 }
-body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;min-height:100svh;overflow:hidden;display:flex;flex-direction:column;color:var(--text);text-transform:uppercase;letter-spacing:0.08em}
+body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column;color:var(--text);text-transform:uppercase;letter-spacing:0.08em}
 
 .topbar{height:52px;flex-shrink:0;border-bottom:0.5px solid #A02020;display:grid;grid-template-columns:300px 1fr 300px;align-items:center;padding:0 32px;background:#E0342F;}
 .topbar-logo{height:28px;object-fit:contain;filter:brightness(10)}
@@ -24,7 +24,7 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;min-height:1
 .mm-btn:hover{border-color:#fff;color:#fff}
 .mm-btn.connected{border-color:#fff;color:#fff;background:rgba(255,255,255,0.1)}
 
-.main{flex:1;display:flex;overflow:hidden}
+.main{flex:1;display:flex;overflow:hidden;min-height:0;}
 
 /* LEFT */
 .left{flex:1 1 auto;min-width:0;position:relative;border-right:0.5px solid var(--rl);overflow:hidden;height:100%}
@@ -255,6 +255,10 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;min-height:1
   .left{height:50vh;min-height:300px;flex:none;width:100%;}
   .right{flex:none;width:100%;height:auto;border-left:none;}
 }
+@supports(height: 100dvh){
+  body{height:100dvh;}
+}
+body{padding-bottom:env(safe-area-inset-bottom);}
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>

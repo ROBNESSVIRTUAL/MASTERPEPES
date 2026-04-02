@@ -1014,12 +1014,90 @@ const BTC_ADDR  = '1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH';
 const ESCAN_KEY = '9GWK5I3YAXQ29TCCGDN4RKP7YZPGP31HNZ';
 let qrDone=false,pollTimer=null,pollStart=0,pendingName='',pendingXcp='',pendingFrom='';
 
-function openAcq(){
+function overlayQrLogo(containerId, type){
+  const wrap = document.getElementById(containerId);
+  if(!wrap) return;
+  const img = wrap.querySelector('img');
+  const canvas = wrap.querySelector('canvas');
+  // QRCode lib renders to either img or canvas depending on browser
+  if(img){
+    // Convert img to canvas so we can draw on it
+    const c = document.createElement('canvas');
+    c.width = 130; c.height = 130;
+    const ctx = c.getContext('2d');
+    const i = new Image();
+    i.onload = () => {
+      ctx.drawImage(i, 0, 0, 130, 130);
+      drawLogo(ctx, type, 130);
+      img.src = c.toDataURL();
+    };
+    i.src = img.src;
+  } else if(canvas){
+    const ctx = canvas.getContext('2d');
+    drawLogo(ctx, type, canvas.width);
+  }
+}
+
+function drawLogo(ctx, type, size){
+  const cx = size/2, cy = size/2, r = size*0.1;
+  // White circle background
+  ctx.beginPath();
+  ctx.arc(cx, cy, r+2, 0, Math.PI*2);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fill();
+
+  if(type === 'ETH'){
+    // Ethereum diamond
+    const s = r * 0.85;
+    ctx.fillStyle = '#627EEA';
+    // Top triangle
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - s);
+    ctx.lineTo(cx + s*0.6, cy);
+    ctx.lineTo(cx - s*0.6, cy);
+    ctx.closePath();
+    ctx.fill();
+    // Bottom triangle
+    ctx.fillStyle = '#4A6FD4';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + s);
+    ctx.lineTo(cx + s*0.6, cy);
+    ctx.lineTo(cx - s*0.6, cy);
+    ctx.closePath();
+    ctx.fill();
+    // Middle lighter strip
+    ctx.fillStyle = '#8EAAF0';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - s*0.1);
+    ctx.lineTo(cx + s*0.6, cy);
+    ctx.lineTo(cx - s*0.6, cy);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    // Bitcoin B
+    ctx.fillStyle = '#F7931A';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = `bold ${r*1.2}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('₿', cx+1, cy+1);
+  }
+}
+
   document.getElementById('acqModal').classList.add('open');
   loadAcqPrices();
   if(!qrDone){
-    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff'});
-    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff'});
+    // Generate QR codes then overlay logos
+    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    // Overlay logos after QR renders
+    setTimeout(()=>{
+      overlayQrLogo('qrEth','ETH');
+      overlayQrLogo('qrBtc','BTC');
+    },300);
     qrDone=true;
   }
 }

@@ -307,6 +307,48 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;height:100dv
   body{height:100dvh;}
 }
 body{padding-bottom:env(safe-area-inset-bottom);}
+
+/* SOLD OUT OVERLAY — right panel only */
+#soldOverlay{
+  display:none;position:absolute;inset:0;z-index:100;
+  background:rgba(7,9,3,0.97);
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;padding:24px;text-align:center;
+  border-left:1px solid rgba(255,215,0,0.3);
+  box-shadow:inset 0 0 60px rgba(255,215,0,0.08);
+  animation:soldIn 0.6s ease forwards;
+}
+#soldOverlay.show{display:flex;}
+@keyframes soldIn{from{opacity:0;}to{opacity:1;}}
+.sold-title{
+  font-size:11px;letter-spacing:0.3em;color:#FFD700;
+  text-shadow:0 0 20px rgba(255,215,0,0.8),0 0 40px rgba(255,215,0,0.4);
+  animation:goldPulse 2s ease-in-out infinite;
+  line-height:1.8;
+}
+.sold-sub{
+  font-size:8px;letter-spacing:0.2em;color:rgba(255,215,0,0.6);
+  line-height:2;
+}
+#soldCanvas{
+  border-radius:50%;
+  box-shadow:0 0 30px rgba(255,200,0,0.6),0 0 60px rgba(255,200,0,0.3);
+}
+.sold-dots{
+  display:flex;flex-wrap:wrap;gap:2px;
+  justify-content:center;max-width:260px;
+}
+.sold-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:#FFD700;
+  box-shadow:0 0 3px rgba(255,215,0,0.6);
+}
+.sold-link{
+  font-size:7.5px;letter-spacing:0.2em;color:rgba(255,215,0,0.5);
+  text-decoration:none;border:0.5px solid rgba(255,215,0,0.25);
+  padding:7px 20px;transition:all 0.2s;margin-top:4px;
+}
+.sold-link:hover{color:#FFD700;border-color:#FFD700;box-shadow:0 0 10px rgba(255,215,0,0.3);}
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
@@ -492,7 +534,14 @@ body{padding-bottom:env(safe-area-inset-bottom);}
   </div>
 
   <!-- RIGHT PANEL -->
-  <div class="right">
+  <div class="right" style="position:relative;">
+    <div id="soldOverlay">
+      <div class="sold-title">&#9670; COLLECTION SOLD OUT &#9670;<br>CRYPTOART LIVES!</div>
+      <canvas id="soldCanvas" width="160" height="160"></canvas>
+      <div class="sold-sub">ALL 300 COLLECTOR SPOTS<br>HAVE BEEN CLAIMED.<br>THE COLLECTION IS COMPLETE.</div>
+      <div class="sold-dots" id="soldDots"></div>
+      <a href="https://x.com/robnessofficial" target="_blank" class="sold-link">FOLLOW @ROBNESSOFFICIAL</a>
+    </div>
     <img src="MASTERPEPES%20LOGO%20GOLD%20HI%20RES.png" alt="MASTERPEPES" class="r-logo" onerror="this.outerHTML='<h1 class=&quot;r-title&quot;>MASTERPEPES</h1>'">
     <div class="r-details">
       <div class="drow"><span class="dl">COLLECTOR SPOTS</span><span class="dv">300</span></div>
@@ -1170,8 +1219,75 @@ window._renderCollectors=function(entries){
   dots.innerHTML='';
   for(let i=0;i<300;i++){const d=document.createElement('div');d.className='cl-dot'+(i<n?' on':'');dots.appendChild(d);}
   const s=document.getElementById('slots');if(s)s.textContent=300-n;
+  checkSoldOut(n);
 };
 loadAcqPrices();
+
+
+// ── SOLD OUT ─────────────────────────────────────────────────────────────────
+let soldRenderer=null,soldModel=null,soldAnim=null;
+
+function checkSoldOut(n){
+  if(n<300) return;
+  const overlay=document.getElementById('soldOverlay');
+  if(overlay.classList.contains('show')) return; // already showing
+  overlay.classList.add('show');
+  // Fill dot grid gold
+  const dots=document.getElementById('soldDots');
+  dots.innerHTML='';
+  for(let i=0;i<300;i++){
+    const d=document.createElement('div');d.className='sold-dot';dots.appendChild(d);
+  }
+  // Disable acquire button
+  const btn=document.querySelector('.btn-acquire');
+  if(btn){btn.textContent='&#9670; SOLD OUT &#9670;';btn.style.opacity='0.5';btn.style.pointerEvents='none';}
+  // Spin LORDKEK in gold
+  initSoldCanvas();
+}
+
+function initSoldCanvas(){
+  if(soldRenderer) return;
+  const canvas=document.getElementById('soldCanvas');
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(45,1,0.1,100);
+  cam.position.set(0,0,4);
+  soldRenderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  soldRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  soldRenderer.setSize(160,160);
+  soldRenderer.outputEncoding=THREE.sRGBEncoding;
+  scene.add(new THREE.AmbientLight(0xFFD700,1.2));
+  const p1=new THREE.PointLight(0xFFAA00,3,10);p1.position.set(2,2,2);scene.add(p1);
+  const p2=new THREE.PointLight(0xFFDD00,2,10);p2.position.set(-2,-1,1);scene.add(p2);
+  const p3=new THREE.PointLight(0xFFFFAA,1.5,8);p3.position.set(0,3,0);scene.add(p3);
+  const goldMat=new THREE.MeshStandardMaterial({color:0xFFD700,emissive:new THREE.Color(0xAA6600),emissiveIntensity:0.6,roughness:0.25,metalness:0.9});
+  if(typeof THREE.GLTFLoader!=='undefined'){
+    new THREE.GLTFLoader().load('LORDKEK.glb',
+      gltf=>{
+        const model=gltf.scene;
+        const box=new THREE.Box3().setFromObject(model);
+        const center=box.getCenter(new THREE.Vector3());
+        const size=box.getSize(new THREE.Vector3());
+        const scale=1.2/Math.max(size.x,size.y,size.z);
+        model.position.set(-center.x*scale,-center.y*scale,-center.z*scale);
+        model.scale.setScalar(scale);
+        model.traverse(c=>{if(c.isMesh)c.material=goldMat;});
+        soldModel=new THREE.Group();soldModel.add(model);scene.add(soldModel);
+      },null,
+      ()=>{
+        const geo=new THREE.TorusGeometry(0.6,0.25,16,100);
+        soldModel=new THREE.Mesh(geo,goldMat);scene.add(soldModel);
+      }
+    );
+  }
+  let lastT=performance.now();
+  (function anim(){
+    soldAnim=requestAnimationFrame(anim);
+    const now=performance.now();
+    const dt=Math.min((now-lastT)/1000,0.05);lastT=now;
+    if(soldModel){soldModel.rotation.y+=1.2*dt;soldModel.rotation.x+=0.4*dt;soldModel.rotation.z+=0.3*dt;}
+    soldRenderer.render(scene,cam);
+  })();
+}
 
 </script>
 

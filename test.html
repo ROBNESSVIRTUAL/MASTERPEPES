@@ -1059,20 +1059,24 @@ function initCelebCanvas(){
   if(typeof THREE.GLTFLoader!=='undefined'){
     new THREE.GLTFLoader().load('LORDKEK.glb',
       gltf=>{
-        celebModel=gltf.scene;
-        const box=new THREE.Box3().setFromObject(celebModel);
+        const model=gltf.scene;
+        const box=new THREE.Box3().setFromObject(model);
+        const center=box.getCenter(new THREE.Vector3());
         const size=box.getSize(new THREE.Vector3());
         const scale=1.4/Math.max(size.x,size.y,size.z);
-        celebModel.scale.setScalar(scale);
-        const center=box.getCenter(new THREE.Vector3());
-        celebModel.position.sub(center.multiplyScalar(scale));
+        // Center the model at origin exactly
+        model.position.set(-center.x*scale,-center.y*scale,-center.z*scale);
+        model.scale.setScalar(scale);
         // Gold emissive glow on all meshes
-        celebModel.traverse(c=>{
+        model.traverse(c=>{
           if(c.isMesh&&c.material){
             const mats=Array.isArray(c.material)?c.material:[c.material];
             mats.forEach(m=>{m.emissive=new THREE.Color(0xAA6600);m.emissiveIntensity=0.4;});
           }
         });
+        // Wrap in pivot group — rotation happens on group, model stays centered
+        celebModel=new THREE.Group();
+        celebModel.add(model);
         celebScene.add(celebModel);
       },
       null,

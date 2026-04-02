@@ -1063,16 +1063,20 @@ function initCelebCanvas(){
         const box=new THREE.Box3().setFromObject(model);
         const center=box.getCenter(new THREE.Vector3());
         const size=box.getSize(new THREE.Vector3());
-        const scale=1.4/Math.max(size.x,size.y,size.z);
+        const scale=2.8/Math.max(size.x,size.y,size.z);
         // Center the model at origin exactly
         model.position.set(-center.x*scale,-center.y*scale,-center.z*scale);
         model.scale.setScalar(scale);
-        // Gold emissive glow on all meshes
+        // Override all materials with solid gold
+        const goldMat=new THREE.MeshStandardMaterial({
+          color:0xFFD700,
+          emissive:new THREE.Color(0xAA6600),
+          emissiveIntensity:0.6,
+          roughness:0.25,
+          metalness:0.9
+        });
         model.traverse(c=>{
-          if(c.isMesh&&c.material){
-            const mats=Array.isArray(c.material)?c.material:[c.material];
-            mats.forEach(m=>{m.emissive=new THREE.Color(0xAA6600);m.emissiveIntensity=0.4;});
-          }
+          if(c.isMesh){c.material=goldMat;}
         });
         // Wrap in pivot group — rotation happens on group, model stays centered
         celebModel=new THREE.Group();
@@ -1089,12 +1093,16 @@ function initCelebCanvas(){
       }
     );
   }
+  let lastT=performance.now();
   (function animCeleb(){
     celebAnim=requestAnimationFrame(animCeleb);
+    const now=performance.now();
+    const delta=Math.min((now-lastT)/1000,0.05);
+    lastT=now;
     if(celebModel){
-      celebModel.rotation.y+=0.012;
-      celebModel.rotation.x+=0.005;
-      celebModel.rotation.z+=0.003;
+      celebModel.rotation.y+=1.2*delta;
+      celebModel.rotation.x+=0.4*delta;
+      celebModel.rotation.z+=0.3*delta;
     }
     celebRenderer.render(celebScene,celebCamera);
   })();

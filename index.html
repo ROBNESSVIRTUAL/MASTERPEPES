@@ -371,27 +371,14 @@
   #notify-msg{font-size:clamp(8px,2vw,9px);letter-spacing:0.15em;min-height:16px;color:var(--green);display:none;}
 </style>
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6">
-// ── EMAIL FORM ────────────────────────────────────────────────────────────────
-document.getElementById('notify-form').addEventListener('submit',async function(e){
-  e.preventDefault();
-  const btn=this.querySelector('button');
-  btn.textContent='SENDING...';btn.disabled=true;
-  try{
-    const res=await fetch(this.action,{method:'POST',body:new FormData(this),headers:{Accept:'application/json'}});
-    if(res.ok){
-      this.style.display='none';
-      document.getElementById('notify-msg').style.display='block';
-    } else {btn.textContent='TRY AGAIN';btn.disabled=false;}
-  }catch(err){btn.textContent='TRY AGAIN';btn.disabled=false;}
-});
-</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-KTL6JDNCD6');
-
+</script>
+<script>
 // ── EMAIL FORM ────────────────────────────────────────────────────────────────
 document.getElementById('notify-form').addEventListener('submit',async function(e){
   e.preventDefault();

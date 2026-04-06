@@ -155,17 +155,17 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;height:100dv
 /* ACQUIRE MODAL */
 #acqModal{display:none;position:fixed;inset:0;z-index:999;background:rgba(4,8,4,0.93);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px}
 #acqModal.open{display:flex}
-.acq-box{background:#070F07;border:0.5px solid rgba(200,144,26,0.45);border-radius:3px;width:100%;max-width:680px;max-height:96vh;overflow-y:hidden;box-shadow:0 0 40px rgba(200,144,26,0.12)}
+.acq-box{background:#070F07;border:0.5px solid rgba(200,144,26,0.45);border-radius:3px;width:100%;max-width:680px;max-height:96vh;overflow-y:auto;box-shadow:0 0 40px rgba(200,144,26,0.12);scrollbar-width:thin;scrollbar-color:rgba(200,144,26,0.3) transparent;}
 .acq-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:0.5px solid rgba(200,144,26,0.2)}
 .acq-ttl{font-size:9px;letter-spacing:0.35em;color:var(--gold2)}
 .acq-x{width:26px;height:26px;border-radius:50%;border:0.5px solid rgba(200,144,26,0.35);background:rgba(200,144,26,0.06);color:var(--gold);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
 .acq-x:hover{background:rgba(200,144,26,0.18)}
 .acq-body{padding:10px 20px;display:flex;flex-direction:column;gap:7px;}
 .acq-lbl{font-size:7.5px;letter-spacing:0.28em;color:var(--gold);margin-bottom:5px}
-.acq-inp{width:100%;padding:8px 12px;background:rgba(200,144,26,0.04);border:0.5px solid rgba(200,144,26,0.22);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:0.06em;color:var(--text);outline:none;transition:border-color 0.2s;text-transform:none}
+.acq-inp{width:100%;padding:6px 12px;background:rgba(200,144,26,0.04);border:0.5px solid rgba(200,144,26,0.22);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:0.06em;color:var(--text);outline:none;transition:border-color 0.2s;text-transform:none}
 .acq-inp:focus{border-color:var(--gold)}
 .acq-inp::placeholder{color:rgba(200,144,26,0.2);font-size:8.5px}
-.acq-note{font-size:7px;letter-spacing:0.08em;color:var(--dim);line-height:1.9;text-transform:none;margin-top:8px;margin-bottom:4px}
+.acq-note{font-size:7px;letter-spacing:0.08em;color:var(--dim);line-height:1.7;text-transform:none;margin-top:5px;margin-bottom:2px}
 .acq-hr{height:0.5px;background:rgba(200,144,26,0.15)}
 .acq-price{background:rgba(200,144,26,0.04);border:0.5px solid rgba(200,144,26,0.18);padding:10px 16px;display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:8px}
 .acq-pi{text-align:center}
@@ -1109,8 +1109,8 @@ function openAcq(){
   document.getElementById('acqModal').classList.add('open');
   loadAcqPrices();
   if(!qrDone){
-    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:105,height:105,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
-    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:105,height:105,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:90,height:90,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:90,height:90,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
     setTimeout(()=>{
       overlayQrLogo('qrEth','ETH');
       overlayQrLogo('qrBtc','BTC');
@@ -1128,11 +1128,11 @@ function overlayQrLogo(containerId, type){
   if(img){
     // Convert img to canvas so we can draw on it
     const c = document.createElement('canvas');
-    c.width = 105; c.height = 105;
+    c.width = 90; c.height = 90;
     const ctx = c.getContext('2d');
     const i = new Image();
     i.onload = () => {
-      ctx.drawImage(i, 0, 0, 105, 105);
+      ctx.drawImage(i, 0, 0, 90, 90);
       drawLogo(ctx, type, 130);
       img.src = c.toDataURL();
     };

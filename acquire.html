@@ -1468,7 +1468,7 @@ function initSoldCanvas(){
 const HELP_CONTENT = {
   name: 'THIS IS THE NAME THAT WILL APPEAR ON THE COLLECTOR LIST ON THE LEFT OF THIS SITE.',
   xcp:  'SO YOU DIDN\'T LISTEN AND FORGOT TO GET AN XCP ADDRESS TO BE ABLE TO RECEIVE THE MASTERPEPES?<br><br>NO WORRIES FAM, JUST GO HERE TO GENERATE ONE REALLY QUICK:<br><br><a href="https://freewallet.io/mobile/" target="_blank" rel="noopener">&#9654; FREEWALLET.IO/MOBILE</a><br><br><strong>WARNING: DO NOT LOSE YOUR PRIVATE KEY / SEED PHRASE!!!</strong>',
-  from: 'MAKE SURE THIS IS THE WALLET YOU\'RE PAYING FROM.<br><br>TRIPLE CHECK IF YOU NEED TO... ACTUALLY TRIPLE CHECK ALL FIELDS SO YOU DON\'T BRICK AND SEND FUNDS INTO OUTER SPACE. &#128514;'
+  from: 'MAKE SURE THIS IS THE WALLET YOU\'RE PAYING FROM. TRIPLE CHECK IF YOU NEED TO... ACTUALLY TRIPLE CHECK ALL FIELDS SO YOU DON\'T BRICK AND SEND FUNDS INTO OUTER SPACE. &#128514;<br><br><strong>&#9888; DO NOT PAY DIRECTLY FROM COINBASE.</strong><br><br>COINBASE USES INTERNAL CUSTODIAL WALLETS THAT ARE NOT THE SAME AS YOUR COINBASE ACCOUNT ADDRESS. IF YOU PAY FROM COINBASE YOUR TRANSACTION CANNOT BE MATCHED TO YOUR SPOT.<br><br>SEND YOUR FUNDS TO METAMASK OR ANOTHER SELF-CUSTODY WALLET FIRST, THEN PAY FROM THERE.'
 };
 function openHelp(key){
   document.getElementById('helpText').innerHTML = HELP_CONTENT[key];
@@ -1511,8 +1511,11 @@ function closeHelp(){
           <div class="acq-step-num">3</div>
           <div class="acq-step-lbl">YOUR SENDING ADDRESS <button class="help-btn" onclick="openHelp('from')">?</button></div>
         </div>
+        <div style="background:rgba(255,60,60,0.08);border:0.5px solid rgba(255,60,60,0.4);padding:7px 12px;margin-bottom:6px;font-size:7.5px;letter-spacing:0.1em;color:#FF6B6B;line-height:1.9;text-transform:none;">
+          &#9888; DO NOT PAY DIRECTLY FROM COINBASE. Coinbase uses internal wallets that cannot be matched to your account. Send funds to MetaMask or another self-custody wallet first, then pay from there.
+        </div>
         <input class="acq-inp" id="acqFrom" type="text" placeholder="The ETH (0x...) or BTC (1... bc1...) address you are paying FROM" oninput="chkAcq()">
-        <p class="acq-note">Used to match your payment to your spot. ETH starts with 0x, BTC starts with 1, 3, or bc1.</p>
+        <p class="acq-note">The address you are paying FROM. Used to match your payment. ETH starts with 0x, BTC starts with 1, 3, or bc1.</p>
       </div>
       <!-- STEP 4 — QR Codes + Price -->
       <div>

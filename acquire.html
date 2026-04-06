@@ -442,6 +442,16 @@ body{padding-bottom:env(safe-area-inset-bottom);}
   display:flex;align-items:center;justify-content:center;font-weight:bold;
 }
 .acq-step-lbl{font-size:7.5px;letter-spacing:0.22em;color:var(--gold);}
+
+#step4{
+  opacity:0.2;pointer-events:none;
+  transition:opacity 0.6s ease, filter 0.6s ease;
+  filter:blur(1px);
+}
+#step4.revealed{
+  opacity:1;pointer-events:all;
+  filter:blur(0);
+}
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
@@ -1190,6 +1200,8 @@ function closeAcq(){
   document.getElementById('acqXcp').value='';
   document.getElementById('acqFrom').value='';
   pendingFrom='';
+  const s4=document.getElementById('step4');
+  if(s4) s4.classList.remove('revealed');
 }
 function setStatus(msg,cls){
   const s=document.getElementById('acqStatus');
@@ -1206,6 +1218,9 @@ function chkAcq(){
     pollStart=Math.floor(Date.now()/1000);
     console.log('Auto-scan started at',pollStart,'watching for from:',pendingFrom);
     setStatus('&#9888; WATCHING FOR YOUR PAYMENT &nbsp;&middot;&nbsp; DO NOT CLOSE THIS WINDOW DURING CONFIRMATION','scanning');
+    // Reveal step 4
+    const s4=document.getElementById('step4');
+    if(s4) s4.classList.add('revealed');
     pollTimer=setInterval(checkPayment,12000);
     setTimeout(checkPayment,3000);
   } else if(!ready&&pollTimer){
@@ -1518,6 +1533,7 @@ function closeHelp(){
         <p class="acq-note">The address you are paying FROM. Used to match your payment. ETH starts with 0x, BTC starts with 1, 3, or bc1.</p>
       </div>
       <!-- STEP 4 — QR Codes + Price -->
+      <div id="step4">
       <div>
         <div class="acq-step">
           <div class="acq-step-num">4</div>
@@ -1544,6 +1560,7 @@ function closeHelp(){
           </div>
         </div>
       </div>
+      </div><!-- end step4 -->
     </div>
   </div>
 </div>

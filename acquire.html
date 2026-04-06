@@ -1393,7 +1393,7 @@ loadAcqPrices();
 let soldRenderer=null,soldModel=null,soldAnim=null;
 
 function checkSoldOut(n){
-  if(n<300) return;
+  if(n<2) return; // TEST MODE — change back to 300 before drop day
   const overlay=document.getElementById('soldOverlay');
   if(overlay.classList.contains('show')) return; // already showing
   overlay.classList.add('show');

@@ -1539,21 +1539,17 @@ function closeHelp(){
           <div class="acq-step-num">4</div>
           <div class="acq-step-lbl">SEND PAYMENT TO EITHER ADDRESS BELOW</div>
         </div>
-        <div class="acq-price" style="margin-bottom:10px;">
-          <div class="acq-pi"><div class="acq-pl">ETH</div><div class="acq-pv">1 ETH</div></div>
-          <div style="font-size:8px;color:var(--dim)">OR</div>
-          <div class="acq-pi"><div class="acq-pl">BTC</div><div class="acq-pv" id="acqBtc">...</div></div>
-          <div class="acq-pi"><div class="acq-pl">USD</div><div class="acq-pv" id="acqUsd2">...</div></div>
-        </div>
         <div class="acq-qrs">
           <div class="acq-qb">
             <div class="acq-ql">&#9660; SEND ETH HERE &#9660;</div>
+            <div style="font-size:14px;letter-spacing:0.15em;color:var(--gold2);text-align:center;margin-bottom:4px;">1 ETH</div>
             <div class="acq-qw"><div id="qrEth"></div></div>
             <div class="acq-qa">0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329</div>
             <button class="acq-cp" onclick="cpAddr('0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329',this)">COPY ETH ADDRESS</button>
           </div>
           <div class="acq-qb">
             <div class="acq-ql">&#9660; SEND BTC HERE &#9660;</div>
+            <div style="font-size:14px;letter-spacing:0.15em;color:var(--gold2);text-align:center;margin-bottom:4px;" id="acqBtc">...</div>
             <div class="acq-qw"><div id="qrBtc"></div></div>
             <div class="acq-qa">1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH</div>
             <button class="acq-cp" onclick="cpAddr('1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH',this)">COPY BTC ADDRESS</button>

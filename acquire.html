@@ -160,7 +160,7 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;height:100dv
 .acq-ttl{font-size:9px;letter-spacing:0.35em;color:var(--gold2)}
 .acq-x{width:26px;height:26px;border-radius:50%;border:0.5px solid rgba(200,144,26,0.35);background:rgba(200,144,26,0.06);color:var(--gold);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
 .acq-x:hover{background:rgba(200,144,26,0.18)}
-.acq-body{padding:12px 20px;display:flex;flex-direction:column;gap:8px;}
+.acq-body{padding:10px 20px;display:flex;flex-direction:column;gap:7px;}
 .acq-lbl{font-size:7.5px;letter-spacing:0.28em;color:var(--gold);margin-bottom:5px}
 .acq-inp{width:100%;padding:8px 12px;background:rgba(200,144,26,0.04);border:0.5px solid rgba(200,144,26,0.22);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:0.06em;color:var(--text);outline:none;transition:border-color 0.2s;text-transform:none}
 .acq-inp:focus{border-color:var(--gold)}
@@ -172,13 +172,13 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;height:100dv
 .acq-pl{font-size:7px;letter-spacing:0.22em;color:var(--dim);margin-bottom:2px}
 .acq-pv{font-size:13px;letter-spacing:0.08em;color:var(--gold2)}
 .acq-qrs{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-.acq-qb{display:flex;flex-direction:column;align-items:center;gap:7px;flex:1;min-width:190px}
+.acq-qb{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:160px}
 .acq-ql{font-size:11px;letter-spacing:0.28em;color:#FFD700;text-shadow:0 0 8px rgba(255,215,0,1),0 0 20px rgba(255,215,0,0.9),0 0 40px rgba(255,215,0,0.7),0 0 80px rgba(255,215,0,0.4);animation:qlBlaze 1.2s ease-in-out infinite;}
 @keyframes qlBlaze{
   0%,100%{text-shadow:0 0 8px rgba(255,215,0,1),0 0 20px rgba(255,215,0,0.9),0 0 40px rgba(255,215,0,0.7),0 0 80px rgba(255,215,0,0.4);}
   50%{text-shadow:0 0 12px rgba(255,255,100,1),0 0 30px rgba(255,215,0,1),0 0 60px rgba(255,215,0,0.8),0 0 100px rgba(255,215,0,0.5);}
 }
-.acq-qw{padding:8px;background:#FFF;border-radius:2px;box-shadow:0 0 14px rgba(200,144,26,0.2)}
+.acq-qw{padding:6px;background:#FFF;border-radius:2px;box-shadow:0 0 14px rgba(200,144,26,0.2)}
 .acq-qa{font-size:6.5px;letter-spacing:0.03em;color:var(--dim);text-transform:none;word-break:break-all;text-align:center;max-width:175px;line-height:1.7}
 .acq-cp{font-size:7px;letter-spacing:0.15em;color:var(--gold);cursor:pointer;border:0.5px solid rgba(200,144,26,0.28);padding:3px 10px;background:none;font-family:'Cinzel',serif;transition:all 0.2s;text-transform:uppercase}
 .acq-cp:hover{background:rgba(200,144,26,0.1)}
@@ -1099,8 +1099,8 @@ function openAcq(){
   document.getElementById('acqModal').classList.add('open');
   loadAcqPrices();
   if(!qrDone){
-    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
-    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:105,height:105,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:105,height:105,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
     setTimeout(()=>{
       overlayQrLogo('qrEth','ETH');
       overlayQrLogo('qrBtc','BTC');
@@ -1118,11 +1118,11 @@ function overlayQrLogo(containerId, type){
   if(img){
     // Convert img to canvas so we can draw on it
     const c = document.createElement('canvas');
-    c.width = 130; c.height = 130;
+    c.width = 105; c.height = 105;
     const ctx = c.getContext('2d');
     const i = new Image();
     i.onload = () => {
-      ctx.drawImage(i, 0, 0, 130, 130);
+      ctx.drawImage(i, 0, 0, 105, 105);
       drawLogo(ctx, type, 130);
       img.src = c.toDataURL();
     };

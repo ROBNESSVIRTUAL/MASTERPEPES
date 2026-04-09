@@ -155,32 +155,32 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;height:100dv
 /* ACQUIRE MODAL */
 #acqModal{display:none;position:fixed;inset:0;z-index:999;background:rgba(4,8,4,0.93);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px}
 #acqModal.open{display:flex}
-.acq-box{background:#070F07;border:0.5px solid rgba(200,144,26,0.45);border-radius:3px;width:95vw;max-width:700px;max-height:94vh;overflow-y:auto;box-shadow:0 0 40px rgba(200,144,26,0.12);scrollbar-width:thin;scrollbar-color:rgba(200,144,26,0.3) transparent;}
-.acq-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:0.5px solid rgba(200,144,26,0.2)}
+.acq-box{background:#070F07;border:0.5px solid rgba(200,144,26,0.45);border-radius:3px;width:100%;max-width:760px;max-height:96vh;overflow-y:auto;box-shadow:0 0 40px rgba(200,144,26,0.12)}
+.acq-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:0.5px solid rgba(200,144,26,0.2)}
 .acq-ttl{font-size:9px;letter-spacing:0.35em;color:var(--gold2)}
 .acq-x{width:26px;height:26px;border-radius:50%;border:0.5px solid rgba(200,144,26,0.35);background:rgba(200,144,26,0.06);color:var(--gold);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
 .acq-x:hover{background:rgba(200,144,26,0.18)}
-.acq-body{padding:14px 24px;display:flex;flex-direction:column;gap:12px;}
-.acq-lbl{font-size:10px;letter-spacing:0.22em;color:var(--gold);margin-bottom:6px}
-.acq-inp{width:100%;padding:11px 14px;background:rgba(200,144,26,0.04);border:0.5px solid rgba(200,144,26,0.22);font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.06em;color:var(--text);outline:none;transition:border-color 0.2s;text-transform:none}
+.acq-body{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;align-items:start}
+.acq-lbl{font-size:7.5px;letter-spacing:0.28em;color:var(--gold);margin-bottom:5px}
+.acq-inp{width:100%;padding:10px 13px;background:rgba(200,144,26,0.04);border:0.5px solid rgba(200,144,26,0.22);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:0.06em;color:var(--text);outline:none;transition:border-color 0.2s;text-transform:none}
 .acq-inp:focus{border-color:var(--gold)}
-.acq-inp::placeholder{color:rgba(200,144,26,0.2);font-size:10px}
-.acq-note{font-size:8.5px;letter-spacing:0.07em;color:var(--dim);line-height:1.8;text-transform:none;margin-top:6px;margin-bottom:2px}
+.acq-inp::placeholder{color:rgba(200,144,26,0.2);font-size:8.5px}
+.acq-note{font-size:7px;letter-spacing:0.08em;color:var(--dim);line-height:1.9;text-transform:none;margin-top:8px;margin-bottom:4px}
 .acq-hr{height:0.5px;background:rgba(200,144,26,0.15)}
 .acq-price{background:rgba(200,144,26,0.04);border:0.5px solid rgba(200,144,26,0.18);padding:10px 16px;display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:8px}
 .acq-pi{text-align:center}
-.acq-pl{font-size:9px;letter-spacing:0.22em;color:var(--dim);margin-bottom:2px}
-.acq-pv{font-size:16px;letter-spacing:0.08em;color:var(--gold2)}
-.acq-qrs{display:flex;gap:32px;justify-content:center;flex-wrap:wrap}
-.acq-qb{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:220px;max-width:260px}
+.acq-pl{font-size:7px;letter-spacing:0.22em;color:var(--dim);margin-bottom:2px}
+.acq-pv{font-size:13px;letter-spacing:0.08em;color:var(--gold2)}
+.acq-qrs{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.acq-qb{display:flex;flex-direction:column;align-items:center;gap:7px;flex:1;min-width:190px}
 .acq-ql{font-size:11px;letter-spacing:0.28em;color:#FFD700;text-shadow:0 0 8px rgba(255,215,0,1),0 0 20px rgba(255,215,0,0.9),0 0 40px rgba(255,215,0,0.7),0 0 80px rgba(255,215,0,0.4);animation:qlBlaze 1.2s ease-in-out infinite;}
 @keyframes qlBlaze{
   0%,100%{text-shadow:0 0 8px rgba(255,215,0,1),0 0 20px rgba(255,215,0,0.9),0 0 40px rgba(255,215,0,0.7),0 0 80px rgba(255,215,0,0.4);}
   50%{text-shadow:0 0 12px rgba(255,255,100,1),0 0 30px rgba(255,215,0,1),0 0 60px rgba(255,215,0,0.8),0 0 100px rgba(255,215,0,0.5);}
 }
-.acq-qw{padding:6px;background:#FFF;border-radius:2px;box-shadow:0 0 14px rgba(200,144,26,0.2)}
-.acq-qa{font-size:8px;letter-spacing:0.03em;color:var(--dim);text-transform:none;word-break:break-all;text-align:center;max-width:240px;line-height:1.7}
-.acq-cp{font-size:9px;letter-spacing:0.15em;color:var(--gold);cursor:pointer;border:0.5px solid rgba(200,144,26,0.28);padding:7px 16px;background:none;font-family:'Cinzel',serif;transition:all 0.2s;text-transform:uppercase}
+.acq-qw{padding:8px;background:#FFF;border-radius:2px;box-shadow:0 0 14px rgba(200,144,26,0.2)}
+.acq-qa{font-size:6.5px;letter-spacing:0.03em;color:var(--dim);text-transform:none;word-break:break-all;text-align:center;max-width:175px;line-height:1.7}
+.acq-cp{font-size:7px;letter-spacing:0.15em;color:var(--gold);cursor:pointer;border:0.5px solid rgba(200,144,26,0.28);padding:3px 10px;background:none;font-family:'Cinzel',serif;transition:all 0.2s;text-transform:uppercase}
 .acq-cp:hover{background:rgba(200,144,26,0.1)}
 .acq-sub{width:100%;padding:12px;background:var(--gold);color:#040804;border:none;cursor:pointer;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:0.3em;text-transform:uppercase;transition:all 0.2s;opacity:0.35;pointer-events:none}
 .acq-sub.on{opacity:1;pointer-events:all}
@@ -432,25 +432,6 @@ body{padding-bottom:env(safe-area-inset-bottom);}
   #acqStatus{font-size:11px;padding:16px 20px;}
   .help-text{font-size:13px;line-height:2.4;}
   .help-close{font-size:11px;padding:12px;}
-}
-
-.acq-step{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
-.acq-step-num{
-  width:22px;height:22px;border-radius:50%;flex-shrink:0;
-  background:rgba(200,144,26,0.15);border:0.5px solid rgba(200,144,26,0.5);
-  color:var(--gold2);font-size:10px;letter-spacing:0;
-  display:flex;align-items:center;justify-content:center;font-weight:bold;
-}
-.acq-step-lbl{font-size:10px;letter-spacing:0.22em;color:var(--gold);}
-
-#step4{
-  opacity:0.2;pointer-events:none;
-  transition:opacity 0.6s ease, filter 0.6s ease;
-  filter:blur(1px);
-}
-#step4.revealed{
-  opacity:1;pointer-events:all;
-  filter:blur(0);
 }
 </style>
 <!-- Google Analytics -->
@@ -1109,8 +1090,8 @@ function openAcq(){
   document.getElementById('acqModal').classList.add('open');
   loadAcqPrices();
   if(!qrDone){
-    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:120,height:120,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
-    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:120,height:120,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
     setTimeout(()=>{
       overlayQrLogo('qrEth','ETH');
       overlayQrLogo('qrBtc','BTC');
@@ -1128,11 +1109,11 @@ function overlayQrLogo(containerId, type){
   if(img){
     // Convert img to canvas so we can draw on it
     const c = document.createElement('canvas');
-    c.width = 120; c.height = 120;
+    c.width = 130; c.height = 130;
     const ctx = c.getContext('2d');
     const i = new Image();
     i.onload = () => {
-      ctx.drawImage(i, 0, 0, 120, 120);
+      ctx.drawImage(i, 0, 0, 130, 130);
       drawLogo(ctx, type, 130);
       img.src = c.toDataURL();
     };
@@ -1200,8 +1181,6 @@ function closeAcq(){
   document.getElementById('acqXcp').value='';
   document.getElementById('acqFrom').value='';
   pendingFrom='';
-  const s4=document.getElementById('step4');
-  if(s4) s4.classList.remove('revealed');
 }
 function setStatus(msg,cls){
   const s=document.getElementById('acqStatus');
@@ -1218,9 +1197,6 @@ function chkAcq(){
     pollStart=Math.floor(Date.now()/1000);
     console.log('Auto-scan started at',pollStart,'watching for from:',pendingFrom);
     setStatus('&#9888; WATCHING FOR YOUR PAYMENT &nbsp;&middot;&nbsp; DO NOT CLOSE THIS WINDOW DURING CONFIRMATION','scanning');
-    // Reveal step 4
-    const s4=document.getElementById('step4');
-    if(s4) s4.classList.add('revealed');
     pollTimer=setInterval(checkPayment,12000);
     setTimeout(checkPayment,3000);
   } else if(!ready&&pollTimer){
@@ -1259,7 +1235,7 @@ async function chkEth(){
       const txTime = parseInt(tx.timeStamp);
       console.log('TX:',tx.hash,'to:',tx.to,'value:',(parseFloat(tx.value)/1e18).toFixed(6),'ETH','txTime:',txTime,'pollStart:',pollStart,'fresh:',txTime>=pollStart);
       // MUST be after pollStart — no grace period, strict
-      if(tx.to&&tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.002&&tx.isError==='0'&&txTime>=pollStart){
+      if(tx.to&&tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.98&&tx.isError==='0'&&txTime>=pollStart){
         // If collector provided their sending address, verify it matches
         if(pendingFrom&&pendingFrom.startsWith('0x')){
           if(tx.from.toLowerCase()===pendingFrom.toLowerCase()) return tx.from;
@@ -1278,7 +1254,7 @@ async function chkBtc(){
     const mempool=await r.json();
     for(const tx of mempool){
       for(const out of tx.vout){
-        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.00005){
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012){
           const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'';
           if(pendingFrom&&!pendingFrom.startsWith('0x')){
             if(sender===pendingFrom) return sender;
@@ -1295,7 +1271,7 @@ async function chkBtc(){
       const ts=tx.status.block_time;
       if(!ts||ts<pollStart) continue; // must be confirmed AFTER scan started
       for(const out of tx.vout){
-        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.00005)
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012)
           return tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
       }
     }
@@ -1483,7 +1459,7 @@ function initSoldCanvas(){
 const HELP_CONTENT = {
   name: 'THIS IS THE NAME THAT WILL APPEAR ON THE COLLECTOR LIST ON THE LEFT OF THIS SITE.',
   xcp:  'SO YOU DIDN\'T LISTEN AND FORGOT TO GET AN XCP ADDRESS TO BE ABLE TO RECEIVE THE MASTERPEPES?<br><br>NO WORRIES FAM, JUST GO HERE TO GENERATE ONE REALLY QUICK:<br><br><a href="https://freewallet.io/mobile/" target="_blank" rel="noopener">&#9654; FREEWALLET.IO/MOBILE</a><br><br><strong>WARNING: DO NOT LOSE YOUR PRIVATE KEY / SEED PHRASE!!!</strong>',
-  from: 'MAKE SURE THIS IS THE WALLET YOU\'RE PAYING FROM. TRIPLE CHECK IF YOU NEED TO... ACTUALLY TRIPLE CHECK ALL FIELDS SO YOU DON\'T BRICK AND SEND FUNDS INTO OUTER SPACE. &#128514;<br><br><strong>&#9888; DO NOT PAY DIRECTLY FROM COINBASE.</strong><br><br>COINBASE USES INTERNAL CUSTODIAL WALLETS THAT ARE NOT THE SAME AS YOUR COINBASE ACCOUNT ADDRESS. IF YOU PAY FROM COINBASE YOUR TRANSACTION CANNOT BE MATCHED TO YOUR SPOT.<br><br>SEND YOUR FUNDS TO METAMASK OR ANOTHER SELF-CUSTODY WALLET FIRST, THEN PAY FROM THERE.'
+  from: 'MAKE SURE THIS IS THE WALLET YOU\'RE PAYING FROM.<br><br>TRIPLE CHECK IF YOU NEED TO... ACTUALLY TRIPLE CHECK ALL FIELDS SO YOU DON\'T BRICK AND SEND FUNDS INTO OUTER SPACE. &#128514;'
 };
 function openHelp(key){
   document.getElementById('helpText').innerHTML = HELP_CONTENT[key];
@@ -1498,65 +1474,49 @@ function closeHelp(){
 <div id="acqModal">
   <div class="acq-box">
     <div class="acq-hdr">
-      <div class="acq-ttl">&#9670; ACQUIRE MASTERPEPES &#9670;</div><div style="font-size:7px;letter-spacing:0.2em;color:#FF4444;margin-top:4px;">&#9888; TEST MODE — $5 THRESHOLD</div>
+      <div class="acq-ttl">&#9670; ACQUIRE MASTERPEPES &#9670;</div>
       <button class="acq-x" onclick="closeAcq()">&#10005;</button>
     </div>
     <div id="acqStatus"></div>
     <div class="acq-body">
-      <!-- STEP 1 -->
-      <div>
-        <div class="acq-step">
-          <div class="acq-step-num">1</div>
-          <div class="acq-step-lbl">YOUR NAME <button class="help-btn" onclick="openHelp('name')">?</button></div>
+      <!-- LEFT COLUMN: Fields + Price -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div>
+          <div class="acq-lbl">YOUR NAME <button class="help-btn" onclick="openHelp('name')">?</button></div>
+          <input class="acq-inp" id="acqName" type="text" placeholder="Name for collector list" oninput="chkAcq()">
         </div>
-        <input class="acq-inp" id="acqName" type="text" placeholder="Name that will appear on the collector list" oninput="chkAcq()">
-      </div>
-      <!-- STEP 2 -->
-      <div>
-        <div class="acq-step">
-          <div class="acq-step-num">2</div>
-          <div class="acq-step-lbl">XCP / COUNTERPARTY RECEIVING ADDRESS <button class="help-btn" onclick="openHelp('xcp')">?</button></div>
+        <div>
+          <div class="acq-lbl">XCP / COUNTERPARTY RECEIVING ADDRESS <button class="help-btn" onclick="openHelp('xcp')">?</button></div>
+          <input class="acq-inp" id="acqXcp" type="text" placeholder="Starts with 1..." oninput="chkAcq()">
+          <p class="acq-note">Where you will RECEIVE all 150 works. Must start with 1. Double-check carefully.</p>
         </div>
-        <input class="acq-inp" id="acqXcp" type="text" placeholder="Where you will RECEIVE your works — starts with 1..." oninput="chkAcq()">
-        <p class="acq-note">Double-check this carefully. Must be a Counterparty-compatible Bitcoin address starting with 1.</p>
-      </div>
-      <!-- STEP 3 -->
-      <div>
-        <div class="acq-step">
-          <div class="acq-step-num">3</div>
-          <div class="acq-step-lbl">YOUR SENDING ADDRESS <button class="help-btn" onclick="openHelp('from')">?</button></div>
+        <div>
+          <div class="acq-lbl">YOUR SENDING ADDRESS <button class="help-btn" onclick="openHelp('from')">?</button></div>
+          <input class="acq-inp" id="acqFrom" type="text" placeholder="ETH: 0x...  BTC: 1... or bc1..." oninput="chkAcq()">
+          <p class="acq-note">The address you are paying FROM. Used to match your payment.</p>
         </div>
-        <div style="background:rgba(255,60,60,0.08);border:0.5px solid rgba(255,60,60,0.4);padding:7px 12px;margin-bottom:6px;font-size:7.5px;letter-spacing:0.1em;color:#FF6B6B;line-height:1.9;text-transform:none;">
-          &#9888; DO NOT PAY DIRECTLY FROM COINBASE. Coinbase uses internal wallets that cannot be matched to your account. Send funds to MetaMask or another self-custody wallet first, then pay from there.
-        </div>
-        <input class="acq-inp" id="acqFrom" type="text" placeholder="The ETH (0x...) or BTC (1... bc1...) address you are paying FROM" oninput="chkAcq()">
-        <p class="acq-note">The address you are paying FROM. Used to match your payment. ETH starts with 0x, BTC starts with 1, 3, or bc1.</p>
-      </div>
-      <!-- STEP 4 — QR Codes + Price -->
-      <div id="step4">
-      <div>
-        <div class="acq-step">
-          <div class="acq-step-num">4</div>
-          <div class="acq-step-lbl">SEND PAYMENT TO EITHER ADDRESS BELOW</div>
-        </div>
-        <div class="acq-qrs">
-          <div class="acq-qb">
-            <div class="acq-ql">&#9660; SEND ETH HERE &#9660;</div>
-            <div style="font-size:14px;letter-spacing:0.15em;color:var(--gold2);text-align:center;margin-bottom:4px;">1 ETH</div>
-            <div class="acq-qw"><div id="qrEth"></div></div>
-            <div class="acq-qa">0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329</div>
-            <button class="acq-cp" onclick="cpAddr('0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329',this)">COPY ETH ADDRESS</button>
-          </div>
-          <div class="acq-qb">
-            <div class="acq-ql">&#9660; SEND BTC HERE &#9660;</div>
-            <div style="font-size:14px;letter-spacing:0.15em;color:var(--gold2);text-align:center;margin-bottom:4px;" id="acqBtc">...</div>
-            <div class="acq-qw"><div id="qrBtc"></div></div>
-            <div class="acq-qa">1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH</div>
-            <button class="acq-cp" onclick="cpAddr('1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH',this)">COPY BTC ADDRESS</button>
-          </div>
+        <div class="acq-price">
+          <div class="acq-pi"><div class="acq-pl">ETH</div><div class="acq-pv">1 ETH</div></div>
+          <div style="font-size:8px;color:var(--dim)">OR</div>
+          <div class="acq-pi"><div class="acq-pl">BTC</div><div class="acq-pv" id="acqBtc">...</div></div>
+          <div class="acq-pi"><div class="acq-pl">USD</div><div class="acq-pv" id="acqUsd2">...</div></div>
         </div>
       </div>
-      </div><!-- end step4 -->
+      <!-- RIGHT COLUMN: QR Codes -->
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+        <div class="acq-qb">
+          <div class="acq-ql">&#9660; SEND ETH HERE &#9660;</div>
+          <div class="acq-qw"><div id="qrEth"></div></div>
+          <div class="acq-qa">0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329</div>
+          <button class="acq-cp" onclick="cpAddr('0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329',this)">COPY ETH ADDRESS</button>
+        </div>
+        <div class="acq-qb">
+          <div class="acq-ql">&#9660; SEND BTC HERE &#9660;</div>
+          <div class="acq-qw"><div id="qrBtc"></div></div>
+          <div class="acq-qa">1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH</div>
+          <button class="acq-cp" onclick="cpAddr('1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH',this)">COPY BTC ADDRESS</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

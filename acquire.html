@@ -30,8 +30,7 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;height:100dv
 .left{flex:1 1 auto;min-width:0;position:relative;border-right:0.5px solid var(--rl);overflow:hidden;height:100%}
 
 /* BOOK VIEW */
-#bookView{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10;background:var(--deep);transition:opacity 0.4s;padding:16px 24px;overflow:hidden;height:100%;background-image:url('DSC05579.JPG');background-size:cover;background-position:center;background-repeat:no-repeat;}
-#bookView::before{content:'';position:absolute;inset:0;background:rgba(6,13,6,0.82);z-index:0;}
+#bookView{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10;background:var(--deep);transition:opacity 0.4s;padding:16px 24px;overflow:hidden;height:100%;}
 #bookView>*{position:relative;z-index:1;}
 #bookView.hidden{opacity:0;pointer-events:none}
 #canvasWrap{flex:1 1 auto;min-height:0;height:0;display:flex;align-items:center;justify-content:center;width:100%}
@@ -435,6 +434,18 @@ body{padding-bottom:env(safe-area-inset-bottom);}
   .help-text{font-size:13px;line-height:2.4;}
   .help-close{font-size:11px;padding:12px;}
 }
+
+/* ── BOOK PANEL BACKGROUND SLIDESHOW ──────────────────────────────────────── */
+.bg-slide{
+  position:absolute;inset:0;z-index:0;
+  opacity:0;transition:opacity 2s ease-in-out;
+  background-size:cover;background-position:center;
+}
+.bg-slide.on{opacity:1;}
+.bg-slide::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(6,13,6,0.80);
+}
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
@@ -499,6 +510,11 @@ body{padding-bottom:env(safe-area-inset-bottom);}
 
     <!-- BOOK VIEW -->
     <div id="bookView">
+      <div class="bg-slide on"  style="background-image:url('DSC05539.JPG')"></div>
+      <div class="bg-slide"     style="background-image:url('DSC05570.JPG')"></div>
+      <div class="bg-slide"     style="background-image:url('DSC05579.JPG')"></div>
+      <div class="bg-slide"     style="background-image:url('DSC05614.JPG')"></div>
+      <div class="bg-slide"     style="background-image:url('DSC05619.JPG')"></div>
       <div id="bookLoading">Loading Book...</div>
       <div id="canvasWrap"><canvas id="bookCanvas"></canvas></div>
       <a href="museum3d.html" style="text-decoration:none;display:inline-block;background:#39FF14;color:#060D06;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.3em;text-transform:uppercase;padding:5px 14px;font-weight:bold;box-shadow:0 0 8px #39FF14,0 0 18px #39FF1488,0 0 32px #39FF1433;animation:kryptonite 1.8s ease-in-out infinite">&#9654; Enter 3D Museum</a>
@@ -1470,6 +1486,18 @@ function openHelp(key){
 function closeHelp(){
   document.getElementById('helpModal').classList.remove('open');
 }
+
+
+// ── BOOK PANEL BG SLIDESHOW ───────────────────────────────────────────────────
+(function(){
+  var bgs = document.querySelectorAll('#bookView .bg-slide');
+  var bi = 0;
+  setInterval(function(){
+    bgs[bi].classList.remove('on');
+    bi = (bi + 1) % bgs.length;
+    bgs[bi].classList.add('on');
+  }, 6000);
+})();
 
 </script>
 

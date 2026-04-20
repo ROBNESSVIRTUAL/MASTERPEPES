@@ -370,6 +370,46 @@
   }
   .notify-form button:hover{background:var(--gold2);box-shadow:0 0 16px rgba(255,215,0,0.4);}
   #notify-msg{font-size:clamp(8px,2vw,9px);letter-spacing:0.15em;min-height:16px;color:var(--green);display:none;}
+
+  /* ── PHOTO CAROUSEL ─────────────────────────────────────────── */
+  .carousel{
+    width:100%;max-width:min(600px,92vw);
+    position:relative;overflow:hidden;
+    border-radius:4px;
+    box-shadow:0 0 30px rgba(200,144,26,0.2),0 0 60px rgba(200,144,26,0.08);
+    aspect-ratio:16/9;
+    border:0.5px solid rgba(200,144,26,0.25);
+  }
+  .carousel-slide{
+    position:absolute;inset:0;
+    opacity:0;transition:opacity 1.5s ease-in-out;
+    background:#0D0101;
+  }
+  .carousel-slide.active{opacity:1;}
+  .carousel-slide img{
+    width:100%;height:100%;object-fit:cover;
+    display:block;
+  }
+  .carousel-caption{
+    position:absolute;bottom:0;left:0;right:0;
+    padding:8px 14px;
+    background:linear-gradient(transparent,rgba(13,1,1,0.85));
+    font-size:7px;letter-spacing:0.2em;
+    color:rgba(200,144,26,0.7);text-align:right;
+  }
+  .carousel-dots{
+    display:flex;gap:6px;justify-content:center;margin-top:8px;
+  }
+  .carousel-dot{
+    width:5px;height:5px;border-radius:50%;
+    background:rgba(200,144,26,0.25);
+    border:0.5px solid rgba(200,144,26,0.4);
+    cursor:pointer;transition:all 0.3s;
+  }
+  .carousel-dot.active{
+    background:var(--gold);
+    box-shadow:0 0 6px rgba(200,144,26,0.6);
+  }
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6">
@@ -386,6 +426,22 @@ document.getElementById('notify-form').addEventListener('submit',async function(
     } else {btn.textContent='TRY AGAIN';btn.disabled=false;}
   }catch(err){btn.textContent='TRY AGAIN';btn.disabled=false;}
 });
+
+// ── PHOTO CAROUSEL ────────────────────────────────────────────────────────────
+let carouselIdx = 0;
+const carouselSlides = document.querySelectorAll('.carousel-slide');
+const carouselDots = document.querySelectorAll('.carousel-dot');
+
+function goToSlide(n){
+  carouselSlides[carouselIdx].classList.remove('active');
+  carouselDots[carouselIdx].classList.remove('active');
+  carouselIdx = n;
+  carouselSlides[carouselIdx].classList.add('active');
+  carouselDots[carouselIdx].classList.add('active');
+}
+function nextSlide(){ goToSlide((carouselIdx+1) % carouselSlides.length); }
+setInterval(nextSlide, 5000); // auto-advance every 5 seconds
+
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -406,6 +462,22 @@ document.getElementById('notify-form').addEventListener('submit',async function(
     } else {btn.textContent='TRY AGAIN';btn.disabled=false;}
   }catch(err){btn.textContent='TRY AGAIN';btn.disabled=false;}
 });
+
+// ── PHOTO CAROUSEL ────────────────────────────────────────────────────────────
+let carouselIdx = 0;
+const carouselSlides = document.querySelectorAll('.carousel-slide');
+const carouselDots = document.querySelectorAll('.carousel-dot');
+
+function goToSlide(n){
+  carouselSlides[carouselIdx].classList.remove('active');
+  carouselDots[carouselIdx].classList.remove('active');
+  carouselIdx = n;
+  carouselSlides[carouselIdx].classList.add('active');
+  carouselDots[carouselIdx].classList.add('active');
+}
+function nextSlide(){ goToSlide((carouselIdx+1) % carouselSlides.length); }
+setInterval(nextSlide, 5000); // auto-advance every 5 seconds
+
 </script>
 </head>
 <body>
@@ -460,6 +532,38 @@ document.getElementById('notify-form').addEventListener('submit',async function(
   </div>
 
   <!-- Email notification signup -->
+
+  <!-- Photo Carousel -->
+  <div class="carousel" id="bookCarousel">
+    <div class="carousel-slide active">
+      <img src="DSC05539.JPG" alt="Masterpepes Book Cover" loading="lazy">
+      <div class="carousel-caption">MASTERPEPES &#9670; PEPE THROUGH THE AGES</div>
+    </div>
+    <div class="carousel-slide">
+      <img src="DSC05570.JPG" alt="Masterpepes Interior" loading="lazy">
+      <div class="carousel-caption">ANNUNCIATION PEPES &middot; KHMER BRONZE PEPETIKESHVARA</div>
+    </div>
+    <div class="carousel-slide">
+      <img src="DSC05579.JPG" alt="Masterpepes Interior Spread" loading="lazy">
+      <div class="carousel-caption">PEPEDAVID &middot; THE MONA LISA PEPE</div>
+    </div>
+    <div class="carousel-slide">
+      <img src="DSC05614.JPG" alt="Masterpepes Interior Spread" loading="lazy">
+      <div class="carousel-caption">SELF PORTRAIT OF GIANLORENZO PEPERNINI &middot; STORM ON THE SEA OF PEPELEE</div>
+    </div>
+    <div class="carousel-slide">
+      <img src="DSC05619.JPG" alt="Masterpepes Books Stacked" loading="lazy">
+      <div class="carousel-caption">MASTERPEPES &#9670; LIMITED EDITION HARDCOVER</div>
+    </div>
+  </div>
+  <div class="carousel-dots" id="carouselDots">
+    <div class="carousel-dot active" onclick="goToSlide(0)"></div>
+    <div class="carousel-dot" onclick="goToSlide(1)"></div>
+    <div class="carousel-dot" onclick="goToSlide(2)"></div>
+    <div class="carousel-dot" onclick="goToSlide(3)"></div>
+    <div class="carousel-dot" onclick="goToSlide(4)"></div>
+  </div>
+
   <div class="notify-wrap">
     <div class="notify-label">&#9670; NOTIFY ME WHEN THE DROP GOES LIVE &#9670;</div>
     <div class="notify-sub">BE THE FIRST TO KNOW &nbsp;&middot;&nbsp; NO SPAM &nbsp;&middot;&nbsp; ONE EMAIL ONLY</div>
@@ -762,6 +866,22 @@ document.getElementById('notify-form').addEventListener('submit',async function(
     } else {btn.textContent='TRY AGAIN';btn.disabled=false;}
   }catch(err){btn.textContent='TRY AGAIN';btn.disabled=false;}
 });
+
+// ── PHOTO CAROUSEL ────────────────────────────────────────────────────────────
+let carouselIdx = 0;
+const carouselSlides = document.querySelectorAll('.carousel-slide');
+const carouselDots = document.querySelectorAll('.carousel-dot');
+
+function goToSlide(n){
+  carouselSlides[carouselIdx].classList.remove('active');
+  carouselDots[carouselIdx].classList.remove('active');
+  carouselIdx = n;
+  carouselSlides[carouselIdx].classList.add('active');
+  carouselDots[carouselIdx].classList.add('active');
+}
+function nextSlide(){ goToSlide((carouselIdx+1) % carouselSlides.length); }
+setInterval(nextSlide, 5000); // auto-advance every 5 seconds
+
 </script>
 
 <!-- Enter 3D Museum button -->

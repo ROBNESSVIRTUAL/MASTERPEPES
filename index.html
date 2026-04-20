@@ -387,10 +387,21 @@
   .c-slide img{width:100%;height:100%;object-fit:cover;display:block;}
   .c-cap{
     position:absolute;bottom:0;left:0;right:0;
-    padding:8px 12px;
-    background:linear-gradient(transparent,rgba(13,1,1,0.88));
-    font-size:6.5px;letter-spacing:0.18em;
-    color:rgba(200,144,26,0.65);text-align:right;
+    padding:20px 20px 16px;
+    background:linear-gradient(transparent,rgba(13,1,1,0.96));
+    text-align:center;
+  }
+  .c-cap-title{
+    font-size:clamp(9px,1.4vw,13px);letter-spacing:0.3em;
+    color:#FFD700;
+    text-shadow:0 0 10px rgba(255,215,0,0.9),0 0 22px rgba(255,215,0,0.6),0 0 40px rgba(255,215,0,0.3);
+    margin-bottom:5px;line-height:1.6;
+  }
+  .c-cap-sub{
+    font-size:clamp(7px,1vw,9px);letter-spacing:0.18em;
+    color:rgba(255,215,0,0.6);
+    text-shadow:0 0 8px rgba(255,215,0,0.4);
+    line-height:1.8;
   }
   .c-dots{display:flex;gap:7px;justify-content:center;margin-top:8px;}
   .c-dot{
@@ -493,11 +504,36 @@ document.getElementById('notify-form').addEventListener('submit',async function(
   <!-- Email notification signup -->
   <!-- Book Photo Carousel -->
   <div class="carousel" id="bCarousel">
-    <div class="c-slide on"><img src="DSC05539.JPG" alt="Masterpepes Book Cover"><div class="c-cap">MASTERPEPES &#9670; HARDCOVER EDITION</div></div>
-    <div class="c-slide"><img src="DSC05619.JPG" alt="Masterpepes Stacked Books"><div class="c-cap">LIMITED EDITION &#9670; 300 COLLECTOR SPOTS</div></div>
-    <div class="c-slide"><img src="DSC05570.JPG" alt="Interior Spread"><div class="c-cap">ANNUNCIATION PEPES &middot; KHMER BRONZE PEPETIKESHVARA</div></div>
-    <div class="c-slide"><img src="DSC05579.JPG" alt="Interior Spread"><div class="c-cap">PEPEDAVID &middot; THE MONA LISA PEPE</div></div>
-    <div class="c-slide"><img src="DSC05614.JPG" alt="Interior Spread"><div class="c-cap">SELF PORTRAIT OF GIANLORENZO PEPERNINI &middot; STORM ON THE SEA OF PEPELEE</div></div>
+    <div class="c-slide on"><img src="DSC05539.JPG" alt="Masterpepes Book Cover">
+      <div class="c-cap">
+        <div class="c-cap-title">&#9670; MASTERPEPES &#9670;</div>
+        <div class="c-cap-sub">150 MASTERWORKS REIMAGINED AS PEPE &nbsp;&middot;&nbsp; MINTED ON BITCOIN VIA COUNTERPARTY</div>
+      </div>
+    </div>
+    <div class="c-slide"><img src="DSC05619.JPG" alt="Masterpepes Stacked Books">
+      <div class="c-cap">
+        <div class="c-cap-title">300 COLLECTOR SPOTS &nbsp;&middot;&nbsp; 1 ETH OR BTC</div>
+        <div class="c-cap-sub">EACH SPOT = ALL 150 WORKS &nbsp;&middot;&nbsp; 300 EDITIONS PER WORK &nbsp;&middot;&nbsp; DROP: MAY 1, 2026</div>
+      </div>
+    </div>
+    <div class="c-slide"><img src="DSC05570.JPG" alt="Interior Spread">
+      <div class="c-cap">
+        <div class="c-cap-title">EVERY PAGE IS A LIVE NFT</div>
+        <div class="c-cap-sub">EACH QR CODE IN THE BOOK LINKS DIRECTLY TO ITS NFT ON THE BITCOIN BLOCKCHAIN</div>
+      </div>
+    </div>
+    <div class="c-slide"><img src="DSC05579.JPG" alt="Interior Spread">
+      <div class="c-cap">
+        <div class="c-cap-title">158 PAGES &nbsp;&middot;&nbsp; ULTRA PREMIUM COLOR &nbsp;&middot;&nbsp; HARDCOVER</div>
+        <div class="c-cap-sub">THE PHYSICAL BOOK IS SOLD SEPARATELY &nbsp;&middot;&nbsp; AVAILABLE ON INGRAMSPARK &amp; AMAZON</div>
+      </div>
+    </div>
+    <div class="c-slide"><img src="DSC05614.JPG" alt="Interior Spread">
+      <div class="c-cap">
+        <div class="c-cap-title">CRYPTOART BY ROBNESS</div>
+        <div class="c-cap-sub">FOUNDER OF THE GLOBAL #TRASHART MOVEMENT &nbsp;&middot;&nbsp; FEATURED IN TASCHEN'S "ON NFTS"</div>
+      </div>
+    </div>
   </div>
   <div class="c-dots">
     <div class="c-dot on"  onclick="cGo(0)"></div>

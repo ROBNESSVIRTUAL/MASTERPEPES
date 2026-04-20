@@ -284,7 +284,7 @@
     50%{box-shadow:0 0 22px rgba(200,144,26,0.55),0 0 50px rgba(200,144,26,0.18),inset 0 0 18px rgba(200,144,26,0.08);}
   }
   @media(max-width:480px){
-    #enterBtn{right:10px;padding:10px 10px;font-size:7px;}
+  
   }
 
   /* ── COLLECTOR DOT GRID ─────────────────────────────────────────── */
@@ -412,6 +412,17 @@
   }
   .c-dot.on{background:var(--gold);box-shadow:0 0 7px rgba(200,144,26,0.7);}
 
+
+  .enter-museum-btn{
+    display:inline-block;margin-top:14px;
+    font-family:'Cinzel',serif;font-size:clamp(8px,1.5vw,10px);
+    letter-spacing:0.3em;color:#060D06;
+    background:#39FF14;border:none;cursor:pointer;
+    padding:10px 24px;text-decoration:none;
+    box-shadow:0 0 14px #39FF14,0 0 30px #39FF1466;
+    animation:kryptonite 1.8s ease-in-out infinite;
+    text-transform:uppercase;
+  }
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6">
@@ -478,6 +489,7 @@ document.getElementById('notify-form').addEventListener('submit',async function(
   <div class="warrior-wrap">
     <img src="WARRIORPEPE.png" alt="WARRIOR PEPE" class="warrior-img"
          onerror="this.style.display='none'">
+    <a href="museum3d.html" class="enter-museum-btn">&#9670; ENTER 3D MUSEUM &#9670;</a>
     <div id="mapContainer">
       <div class="map-label">&#9670; CLICK &amp; DRAG TO ROTATE &#9670;</div>
       <canvas id="mapCanvas" width="400" height="300"></canvas>
@@ -559,7 +571,7 @@ document.getElementById('notify-form').addEventListener('submit',async function(
   <!-- Collector Dot Grid -->
   <div class="dot-section">
     <div class="dot-grid-label">&#9670; COLLECTOR SPOTS &#9670;</div>
-    <div class="dot-tally"><span id="takenCount">7</span> OF 300 SPOTS RESERVED</div>
+    <div class="dot-tally"><span id="takenCount">7</span> OF 300 SPOTS RESERVED &nbsp;&middot;&nbsp; <span style="color:#C8901A;text-shadow:0 0 10px rgba(200,144,26,0.6);">37 EMAIL SIGNUPS SO FAR</span></div>
     <div class="dot-grid" id="dotGrid"></div>
     <div class="dot-legend">
       <div class="dot-legend-item"><div class="dot-legend-dot" style="background:#39FF14;box-shadow:0 0 5px #39FF14;"></div>RESERVED</div>
@@ -800,6 +812,7 @@ function buildMap(){
 // ── COLLECTOR DOT GRID ────────────────────────────────────────────────────────
 // TO UPDATE: change CONFIRMED and PENDING numbers and push to GitHub
 const CONFIRMED = 7;
+const EMAIL_SIGNUPS = 37; // update this number as signups come in
 const TOTAL     = 300;
 
 (function buildGrid(){
@@ -864,7 +877,5 @@ document.getElementById('notify-form').addEventListener('submit',async function(
 
 </script>
 
-<!-- Enter 3D Museum button -->
-<a id="enterBtn" href="museum3d.html">&#9670; ENTER 3D MUSEUM &#9670;</a>
 </body>
 </html>

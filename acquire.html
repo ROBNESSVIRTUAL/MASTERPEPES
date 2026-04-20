@@ -31,7 +31,7 @@ body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;height:100dv
 
 /* BOOK VIEW */
 #bookView{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10;background:var(--deep);transition:opacity 0.4s;padding:16px 24px;overflow:hidden;height:100%;}
-#bookView>*{position:relative;z-index:1;}
+#bookView>*:not(.bg-slide){position:relative;z-index:1;}
 #bookView.hidden{opacity:0;pointer-events:none}
 #canvasWrap{flex:1 1 auto;min-height:0;height:0;display:flex;align-items:center;justify-content:center;width:100%}
 #bookCanvas{display:block;cursor:grab}

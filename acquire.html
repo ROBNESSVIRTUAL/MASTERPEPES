@@ -1109,6 +1109,7 @@ const ETH_ADDR  = '0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329';
 const BTC_ADDR  = '1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH';
 const ESCAN_KEY = '9GWK5I3YAXQ29TCCGDN4RKP7YZPGP31HNZ';
 let qrDone=false,pollTimer=null,pollStart=0,pendingName='',pendingXcp='',pendingFrom='';
+const usedTxids=new Set(); // tracks confirmed tx IDs so same tx never fires twice
 
 function openAcq(){
   document.getElementById('acqModal').classList.add('open');
@@ -1262,11 +1263,11 @@ async function chkEth(){
       console.log('TX:',tx.hash,'to:',tx.to,'value:',(parseFloat(tx.value)/1e18).toFixed(6),'ETH','txTime:',txTime,'pollStart:',pollStart,'fresh:',txTime>=pollStart);
       // MUST be after pollStart — no grace period, strict
       if(tx.to&&tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.98&&tx.isError==='0'&&txTime>=pollStart){
-        // If collector provided their sending address, verify it matches
+        if(usedTxids.has(tx.hash)){console.log('TX already used:',tx.hash);continue;}
         if(pendingFrom&&pendingFrom.startsWith('0x')){
-          if(tx.from.toLowerCase()===pendingFrom.toLowerCase()) return tx.from;
+          if(tx.from.toLowerCase()===pendingFrom.toLowerCase()){usedTxids.add(tx.hash);return tx.from;}
         } else {
-          return tx.from; // no ETH from address provided, accept any
+          usedTxids.add(tx.hash);return tx.from;
         }
       }
     }
@@ -1279,13 +1280,14 @@ async function chkBtc(){
     const r=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs/mempool');
     const mempool=await r.json();
     for(const tx of mempool){
+      if(usedTxids.has(tx.txid)){continue;}
       for(const out of tx.vout){
         if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012){
           const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'';
           if(pendingFrom&&!pendingFrom.startsWith('0x')){
-            if(sender===pendingFrom) return sender;
+            if(sender===pendingFrom){usedTxids.add(tx.txid);return sender;}
           } else {
-            return sender||'BTC Sender';
+            usedTxids.add(tx.txid);return sender||'BTC Sender';
           }
         }
       }
@@ -1294,11 +1296,14 @@ async function chkBtc(){
     const r2=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs');
     const txs=await r2.json();
     for(const tx of txs){
+      if(usedTxids.has(tx.txid)){continue;}
       const ts=tx.status.block_time;
-      if(!ts||ts<pollStart) continue; // must be confirmed AFTER scan started
+      if(!ts||ts<pollStart) continue;
       for(const out of tx.vout){
-        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012)
-          return tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012){
+          const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
+          usedTxids.add(tx.txid);return sender;
+        }
       }
     }
   }catch(e){console.log('BTC check error:',e);}

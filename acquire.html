@@ -1276,14 +1276,17 @@ async function chkEth(){
 }
 async function chkBtc(){
   try{
-    // Check mempool first (unconfirmed — first detection, no timestamp available so always fresh)
+    console.log('Checking BTC... pollStart='+pollStart+' now='+Math.floor(Date.now()/1000)+' pendingFrom='+pendingFrom);
+    // Check mempool first (unconfirmed)
     const r=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs/mempool');
     const mempool=await r.json();
+    console.log('BTC mempool txs:',mempool.length);
     for(const tx of mempool){
-      if(usedTxids.has(tx.txid)){continue;}
+      if(usedTxids.has(tx.txid)){console.log('BTC mempool tx already used:',tx.txid);continue;}
       for(const out of tx.vout){
         if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012){
           const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'';
+          console.log('BTC mempool match! txid:',tx.txid,'sender:',sender,'amount:',out.value/1e8);
           if(pendingFrom&&!pendingFrom.startsWith('0x')){
             if(sender===pendingFrom){usedTxids.add(tx.txid);return sender;}
           } else {
@@ -1292,16 +1295,19 @@ async function chkBtc(){
         }
       }
     }
-    // Check confirmed txs — strictly after pollStart only
+    // Check confirmed txs
     const r2=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs');
     const txs=await r2.json();
+    console.log('BTC confirmed txs:',txs.length);
     for(const tx of txs){
-      if(usedTxids.has(tx.txid)){continue;}
+      if(usedTxids.has(tx.txid)){console.log('BTC confirmed tx already used:',tx.txid);continue;}
       const ts=tx.status.block_time;
+      const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'?';
+      console.log('BTC confirmed tx:',tx.txid,'block_time:',ts,'pollStart:',pollStart,'fresh:',ts>=pollStart,'sender:',sender);
       if(!ts||ts<pollStart) continue;
       for(const out of tx.vout){
         if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012){
-          const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'BTC Sender';
+          console.log('BTC confirmed MATCH! amount:',out.value/1e8);
           usedTxids.add(tx.txid);return sender;
         }
       }

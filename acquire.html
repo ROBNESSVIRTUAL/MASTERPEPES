@@ -541,14 +541,12 @@ body{padding-bottom:env(safe-area-inset-bottom);}
 
     <!-- MUSEUM VIEW -->
     <div id="museumView">
-      <div class="museum-topbar">
-        <span class="museum-title">Masterpepes Museum &mdash; 150 Works</span>
-        <div style="display:flex;gap:8px;align-items:center">
-          <a href="museum3d.html" class="back-btn" style="text-decoration:none;background:#39FF14;color:#060D06;border-color:#39FF14;padding:5px 18px;font-weight:bold;box-shadow:0 0 12px #39FF14,0 0 28px #39FF1488,0 0 48px #39FF1433;animation:kryptonite 1.8s ease-in-out infinite;position:relative">&#9654; Enter 3D Museum</a>
-          <button class="back-btn" onclick="showBook()">&larr; Back to Book</button>
-        </div>
-      </div>
-      <div class="map-wrap">
+      <div class="museum-topbar" style="display:none;"></div>
+      <div class="map-wrap" style="position:relative;">
+        <!-- Left: Back to Book -->
+        <button onclick="showBook()" style="position:absolute;left:6px;top:50%;transform:translateY(-50%);z-index:30;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.15em;color:var(--gold);background:rgba(6,13,6,0.85);border:0.5px solid rgba(200,144,26,0.4);padding:8px 6px;cursor:pointer;text-transform:uppercase;writing-mode:vertical-rl;text-orientation:mixed;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold2)';this.style.color='var(--gold2)'" onmouseout="this.style.borderColor='rgba(200,144,26,0.4)';this.style.color='var(--gold)'">&larr; BOOK</button>
+        <!-- Right: Enter 3D Museum -->
+        <a href="museum3d.html" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);z-index:30;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.15em;color:#060D06;background:#39FF14;border:none;padding:8px 6px;text-decoration:none;text-transform:uppercase;writing-mode:vertical-rl;text-orientation:mixed;font-weight:bold;box-shadow:0 0 10px #39FF14,0 0 20px #39FF1466;animation:kryptonite 1.8s ease-in-out infinite;display:block;">3D MUSEUM &#9654;</a>
                 <svg id="museumSvg" viewBox="0 0 180 787.8" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
   <rect x="0" y="0" width="180" height="787.8" fill="#060D06"/>
   <rect x="66.0" y="0" width="48.0" height="787.8" fill="#0A1C0A" stroke="#1A3A1A" stroke-width="0.5"/>

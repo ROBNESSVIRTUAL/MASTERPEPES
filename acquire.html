@@ -1109,7 +1109,12 @@ const ETH_ADDR  = '0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329';
 const BTC_ADDR  = '1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH';
 const ESCAN_KEY = '9GWK5I3YAXQ29TCCGDN4RKP7YZPGP31HNZ';
 let qrDone=false,pollTimer=null,pollStart=0,pendingName='',pendingXcp='',pendingFrom='';
-const usedTxids=new Set(); // tracks confirmed tx IDs so same tx never fires twice
+// Load used txids from localStorage so they persist across page reloads
+const usedTxids=new Set(JSON.parse(localStorage.getItem('mp_used_txids')||'[]'));
+function saveTxid(txid){
+  usedTxids.add(txid);
+  try{localStorage.setItem('mp_used_txids',JSON.stringify([...usedTxids]));}catch(e){}
+}
 
 function openAcq(){
   document.getElementById('acqModal').classList.add('open');
@@ -1265,9 +1270,9 @@ async function chkEth(){
       if(tx.to&&tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.98&&tx.isError==='0'&&txTime>=pollStart){
         if(usedTxids.has(tx.hash)){console.log('TX already used:',tx.hash);continue;}
         if(pendingFrom&&pendingFrom.startsWith('0x')){
-          if(tx.from.toLowerCase()===pendingFrom.toLowerCase()){usedTxids.add(tx.hash);return tx.from;}
+          if(tx.from.toLowerCase()===pendingFrom.toLowerCase()){saveTxid(tx.hash);return tx.from;}
         } else {
-          usedTxids.add(tx.hash);return tx.from;
+          saveTxid(tx.hash);return tx.from;
         }
       }
     }
@@ -1288,9 +1293,9 @@ async function chkBtc(){
           const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'';
           console.log('BTC mempool match! txid:',tx.txid,'sender:',sender,'amount:',out.value/1e8);
           if(pendingFrom&&!pendingFrom.startsWith('0x')){
-            if(sender===pendingFrom){usedTxids.add(tx.txid);return sender;}
+            if(sender===pendingFrom){saveTxid(tx.txid);return sender;}
           } else {
-            usedTxids.add(tx.txid);return sender||'BTC Sender';
+            saveTxid(tx.txid);return sender||'BTC Sender';
           }
         }
       }
@@ -1308,7 +1313,7 @@ async function chkBtc(){
       for(const out of tx.vout){
         if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012){
           console.log('BTC confirmed MATCH! amount:',out.value/1e8);
-          usedTxids.add(tx.txid);return sender;
+          saveTxid(tx.txid);return sender;
         }
       }
     }

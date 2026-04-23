@@ -543,10 +543,10 @@ body{padding-bottom:env(safe-area-inset-bottom);}
     <div id="museumView">
       <div class="museum-topbar" style="display:none;"></div>
       <div class="map-wrap" style="position:relative;">
-        <!-- Left: Back to Book -->
-        <button onclick="showBook()" style="position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:30;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.15em;color:var(--gold);background:rgba(6,13,6,0.9);border:0.5px solid rgba(200,144,26,0.4);border-left:none;padding:10px 12px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.borderColor='var(--gold2)';this.style.color='var(--gold2)'" onmouseout="this.style.borderColor='rgba(200,144,26,0.4)';this.style.color='var(--gold)'">&larr; BACK TO BOOK</button>
-        <!-- Right: Enter 3D Museum -->
-        <a href="museum3d.html" style="position:absolute;right:0;top:50%;transform:translateY(-50%);z-index:30;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.15em;color:#060D06;background:#39FF14;border:none;border-right:none;padding:10px 12px;text-decoration:none;text-transform:uppercase;font-weight:bold;box-shadow:0 0 10px #39FF14,0 0 20px #39FF1466;animation:kryptonite 1.8s ease-in-out infinite;display:block;white-space:nowrap;">&#9654; ENTER 3D MUSEUM</a>
+        <!-- Left: Back to Book — sits just left of the SVG -->
+        <button onclick="showBook()" id="btnBackBook" style="position:absolute;top:50%;transform:translateY(-50%);z-index:30;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.15em;color:var(--gold);background:rgba(6,13,6,0.9);border:0.5px solid rgba(200,144,26,0.4);padding:10px 12px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.borderColor='var(--gold2)';this.style.color='var(--gold2)'" onmouseout="this.style.borderColor='rgba(200,144,26,0.4)';this.style.color='var(--gold)'">&larr; BACK TO BOOK</button>
+        <!-- Right: Enter 3D Museum — sits just right of the SVG -->
+        <a href="museum3d.html" id="btnEnterMuseum" style="position:absolute;top:50%;transform:translateY(-50%);z-index:30;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.15em;color:#060D06;background:#39FF14;border:none;padding:10px 12px;text-decoration:none;text-transform:uppercase;font-weight:bold;box-shadow:0 0 10px #39FF14,0 0 20px #39FF1466;animation:kryptonite 1.8s ease-in-out infinite;display:block;white-space:nowrap;">&#9654; ENTER 3D MUSEUM</a>
                 <svg id="museumSvg" viewBox="0 0 180 787.8" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
   <rect x="0" y="0" width="180" height="787.8" fill="#060D06"/>
   <rect x="66.0" y="0" width="48.0" height="787.8" fill="#0A1C0A" stroke="#1A3A1A" stroke-width="0.5"/>
@@ -708,6 +708,7 @@ function showMuseum() {
   document.getElementById('bookView').classList.add('hidden');
   document.getElementById('museumView').classList.add('visible');
   buildDots();
+  setTimeout(positionMapBtns, 100);
 }
 function showBook() {
   document.getElementById('museumView').classList.remove('visible');
@@ -1520,6 +1521,22 @@ function closeHelp(){
     bgs[bi].classList.add('on');
   }, 6000);
 })();
+
+
+// Position map buttons next to SVG edges
+function positionMapBtns(){
+  const svg = document.getElementById('museumSvg');
+  const wrap = svg ? svg.closest('.map-wrap') : null;
+  const btnL = document.getElementById('btnBackBook');
+  const btnR = document.getElementById('btnEnterMuseum');
+  if(!svg||!wrap||!btnL||!btnR) return;
+  const svgRect = svg.getBoundingClientRect();
+  const wrapRect = wrap.getBoundingClientRect();
+  const leftEdge = svgRect.left - wrapRect.left;
+  const rightEdge = wrapRect.right - svgRect.right;
+  btnL.style.left = Math.max(leftEdge - btnL.offsetWidth - 4, 2) + 'px';
+  btnR.style.right = Math.max(rightEdge - btnR.offsetWidth - 4, 2) + 'px';
+}
 
 </script>
 

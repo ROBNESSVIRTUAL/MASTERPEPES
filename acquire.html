@@ -1266,7 +1266,7 @@ async function chkEth(){
       const txTime = parseInt(tx.timeStamp);
       console.log('TX:',tx.hash,'to:',tx.to,'value:',(parseFloat(tx.value)/1e18).toFixed(6),'ETH','txTime:',txTime,'pollStart:',pollStart,'fresh:',txTime>=pollStart);
       // MUST be after pollStart — no grace period, strict
-      if(tx.to&&tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.001&&tx.isError==='0'&&txTime>=pollStart){
+      if(tx.to&&tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.98&&tx.isError==='0'&&txTime>=pollStart){
         if(usedTxids.has(tx.hash)){console.log('TX already used:',tx.hash);continue;}
         if(pendingFrom&&pendingFrom.startsWith('0x')){
           if(tx.from.toLowerCase()===pendingFrom.toLowerCase()){saveTxid(tx.hash);return tx.from;}
@@ -1288,7 +1288,7 @@ async function chkBtc(){
     for(const tx of mempool){
       if(usedTxids.has(tx.txid)){console.log('BTC mempool tx already used:',tx.txid);continue;}
       for(const out of tx.vout){
-        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.00005){
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012){
           const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'';
           console.log('BTC mempool match! txid:',tx.txid,'sender:',sender,'amount:',out.value/1e8);
           if(pendingFrom&&!pendingFrom.startsWith('0x')){
@@ -1310,7 +1310,7 @@ async function chkBtc(){
       console.log('BTC confirmed tx:',tx.txid,'block_time:',ts,'pollStart:',pollStart,'fresh:',ts>=pollStart,'sender:',sender);
       if(!ts||ts<pollStart) continue;
       for(const out of tx.vout){
-        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.00005){
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012){
           console.log('BTC confirmed MATCH! amount:',out.value/1e8);
           saveTxid(tx.txid);return sender;
         }
@@ -1532,7 +1532,6 @@ function closeHelp(){
       <button class="acq-x" onclick="closeAcq()">&#10005;</button>
     </div>
     <div id="acqStatus"></div>
-    <div style="background:rgba(255,80,80,0.12);border:0.5px solid rgba(255,80,80,0.5);padding:6px 14px;margin-bottom:8px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#ff7777;text-align:center;">-- TEST MODE -- $5 THRESHOLD --</div>
     <div class="acq-body">
       <!-- STEP 1 -->
       <div>

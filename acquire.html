@@ -1418,7 +1418,7 @@ window._renderCollectors=function(entries){
   const n=entries.length;
   document.getElementById('clCount').textContent=n;
   const el=document.getElementById('clList');
-  el.innerHTML=n===0?'<div class="cl-empty">AWAITING<br>FIRST COLLECTOR<br><br>BE FIRST.</div>'
+  el.innerHTML=n===0?'<div class="cl-empty">AWAITING<br>FIRST COLLECTOR</div>'
     :entries.map((e,i)=>'<div class="cl-entry"><div class="cl-n">No.'+String(i+1).padStart(3,'0')+'</div><div class="cl-name">'+e.name.toUpperCase()+'</div><div class="cl-addr">'+e.xcp.slice(0,8)+'...'+e.xcp.slice(-6)+'</div></div>').join('');
   if(n>0)el.scrollTop=el.scrollHeight;
   const dots=document.getElementById('clDots');

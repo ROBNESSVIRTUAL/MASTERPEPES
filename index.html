@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MASTERPEPES</title>
+<link rel="icon" type="image/png" href="FAVICON.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cinzel+Decorative:wght@400&family=Tenor+Sans&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --deep:#060D06;--dark:#0A160A;--mid:#112011;--panel:#0D1A0D;
+  --gold:#C8901A;--gold2:#E8B030;--mut:#3A6A3A;--rl:#182E18;
+  --text:#C8DCA8;--dim:#4A7A4A;--white:#E8F0D8;
+}
+body{background:var(--deep);font-family:'Cinzel',serif;height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;position:relative;}
+
+.topbar{flex-shrink:0;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 32px 8px;background:linear-gradient(to bottom,rgba(180,20,10,0.6) 0%,rgba(180,20,10,0.0) 100%);gap:5px;z-index:5;}
+.topbar-logo{height:64px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(200,144,26,0.3));}
+.topbar-logos{display:flex;align-items:center;gap:12px;}
+.topbar-right{display:none;}
+.topbar-meta{display:none;}
+.topbar-x{font-size:9px;letter-spacing:0.15em;color:var(--gold);text-decoration:none;border:0.5px solid rgba(200,144,26,0.4);padding:4px 12px;transition:all 0.2s;}
+.topbar-x:hover{background:rgba(200,144,26,0.12);color:#FFD700;border-color:#FFD700;}
+.mm-btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;cursor:pointer;border:0.5px solid rgba(255,255,255,0.4);padding:5px 14px;transition:all 0.2s;text-transform:uppercase;background:none;color:rgba(255,255,255,0.7)}
+.mm-btn:hover{border-color:#fff;color:#fff}
+.mm-btn.connected{border-color:#fff;color:#fff;background:rgba(255,255,255,0.1)}
+
+.main{flex:1;display:flex;overflow:hidden;min-height:0;margin-top:-40px;position:relative;z-index:1;}
+
+/* LEFT */
+.left{flex:1 1 auto;min-width:0;position:relative;border-right:0.5px solid var(--rl);overflow:hidden;height:100%}
+
+/* BOOK VIEW */
+#bookView{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10;background:var(--deep);transition:opacity 0.4s;padding:16px 24px;overflow:hidden;height:100%;}
+#bookView>*:not(.bg-slide){position:relative;z-index:1;}
+#bookView.hidden{opacity:0;pointer-events:none}
+#canvasWrap{flex:1 1 auto;min-height:0;height:0;display:flex;align-items:center;justify-content:center;width:100%}
+#bookCanvas{display:block;cursor:grab}
+#bookCanvas:active{cursor:grabbing}
+.book-hint{font-size:9px;letter-spacing:0.25em;color:var(--mut);animation:blink 2s infinite;text-align:center}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes kryptonite{0%,100%{box-shadow:0 0 10px #39FF14,0 0 24px #39FF1488,0 0 42px #39FF1433;background:#39FF14}50%{box-shadow:0 0 18px #39FF14,0 0 40px #39FF14BB,0 0 70px #39FF1466,0 0 90px #39FF1422;background:#5FFF44}}
+.book-desc{max-width:min(340px,90%);width:100%;text-align:center;border-top:0.5px solid var(--rl);padding-top:12px}
+.book-desc-title{font-size:clamp(8px,0.9vw,11px);letter-spacing:0.3em;color:var(--white);margin-bottom:6px}
+.book-desc-text{font-size:clamp(6px,0.65vw,8px);font-family:'Cinzel',serif;font-weight:400;letter-spacing:0.12em;color:var(--dim);line-height:2.1;margin-bottom:8px;word-spacing:0.08em}
+.book-desc-link{font-size:clamp(8px,0.8vw,10px);letter-spacing:0.2em;color:var(--gold);text-decoration:none;border-bottom:0.5px solid rgba(200,144,26,0.4);padding-bottom:2px;transition:all 0.2s}
+.book-desc-link:hover{color:var(--gold2)}
+#bookLoading{font-size:9px;letter-spacing:0.2em;color:var(--mut);text-align:center}
+
+/* MUSEUM VIEW */
+#museumView{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;z-index:9;opacity:0;pointer-events:none;transition:opacity 0.4s;padding:80px 40px 14px}
+#museumView.visible{opacity:1;pointer-events:all}
+.museum-topbar{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:8px;flex-shrink:0}
+.museum-title{font-size:9px;letter-spacing:0.3em;color:var(--gold)}
+.back-btn{font-size:9px;letter-spacing:0.2em;color:var(--mut);cursor:pointer;border:0.5px solid var(--rl);padding:4px 12px;transition:all 0.2s;background:none;font-family:'Cinzel',serif;text-transform:uppercase}
+.back-btn:hover{border-color:var(--gold);color:var(--gold)}
+.map-wrap{flex:1;width:100%;position:relative;overflow:hidden;min-height:0;padding:6px}
+#museumSvg{width:100%;height:100%;display:block}
+.tooltip{position:absolute;background:rgba(4,8,4,0.96);border:0.5px solid var(--gold);padding:8px 12px;pointer-events:none;display:none;z-index:50;width:180px}
+.tt-num{font-size:8px;letter-spacing:0.2em;color:var(--gold);margin-bottom:2px}
+.tt-title{font-size:10px;letter-spacing:0.05em;color:var(--white);margin-bottom:2px;line-height:1.3}
+.tt-year{font-size:8px;letter-spacing:0.08em;color:var(--dim);text-transform:none}
+.asset-panel{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(4,8,4,0.97);border:0.5px solid var(--gold);padding:12px 16px;display:none;z-index:40;width:95%;flex-direction:row;gap:14px;align-items:center}
+.asset-panel.show{display:flex}
+.ap-num{font-size:10px;letter-spacing:0.2em;color:var(--gold);flex-shrink:0;min-width:24px}
+.ap-info{flex:1}
+.ap-title{font-size:12px;letter-spacing:0.06em;color:var(--white);margin-bottom:2px;line-height:1.3}
+.ap-year{font-size:9px;letter-spacing:0.08em;color:var(--dim)}
+.ap-asset{font-size:7px;letter-spacing:0.12em;color:var(--mut);margin-top:3px;text-transform:none}
+.ap-link{font-size:8px;letter-spacing:0.12em;color:var(--gold);text-decoration:none;border:0.5px solid var(--rl);padding:4px 10px;flex-shrink:0;transition:all 0.2s}
+.ap-link:hover{border-color:var(--gold2);color:var(--gold2)}
+.ap-close{font-size:8px;letter-spacing:0.15em;color:var(--mut);cursor:pointer;border:0.5px solid var(--rl);padding:4px 10px;flex-shrink:0;background:none;font-family:'Cinzel',serif;text-transform:uppercase;transition:all 0.2s}
+.ap-close:hover{border-color:var(--gold);color:var(--gold)}
+
+/* RIGHT */
+.right{flex:0 0 300px;background:var(--panel);display:flex;flex-direction:column;padding:20px 18px 16px;overflow-y:auto;position:relative}
+#rightGate{position:absolute;top:0;left:0;right:0;min-height:100%;height:auto;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;background:rgba(20,60,20,0);border:none;transition:background 0.35s,backdrop-filter 0.35s;cursor:default;pointer-events:all}
+#rightGate:hover,#rightGate.hover{background:rgba(20,80,20,0.72);backdrop-filter:blur(3px)}
+#rightGate-inner{opacity:0;transform:scale(0.94);transition:opacity 0.3s,transform 0.3s;pointer-events:none}
+#rightGate:hover #rightGate-inner,#rightGate.hover #rightGate-inner{opacity:1;transform:scale(1);pointer-events:all}
+.gate-msg{font-size:11px;line-height:1.9;letter-spacing:0.08em;color:#B8FFB8;text-shadow:0 0 18px rgba(57,255,20,0.6);margin-bottom:24px;font-family:'Cinzel',serif;text-transform:uppercase}
+.gate-ok{font-size:10px;letter-spacing:0.35em;color:#060D06;background:#39FF14;border:none;padding:10px 32px;cursor:pointer;font-family:'Cinzel',serif;text-transform:uppercase;box-shadow:0 0 16px #39FF14,0 0 32px #39FF1466;transition:all 0.2s;animation:kryptonite 1.8s ease-in-out infinite}
+.gate-ok:hover{background:#5FFF44;box-shadow:0 0 24px #39FF14,0 0 50px #39FF1488}
+.gate-glow-ring{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 40px rgba(57,255,20,0.0);transition:box-shadow 0.35s}
+#rightGate:hover .gate-glow-ring,#rightGate.hover .gate-glow-ring{box-shadow:inset 0 0 60px rgba(57,255,20,0.35)}
+.r-eye{font-size:9px;letter-spacing:0.3em;color:var(--gold);margin-bottom:12px}
+.r-title{font-family:'Cinzel Decorative',serif;font-size:clamp(18px,2vw,30px);color:var(--gold2);line-height:1.05;margin-bottom:8px}
+.r-logo{max-width:100%;height:auto;max-height:240px;object-fit:contain;object-position:left center;margin-bottom:8px;display:block}
+.r-sub{font-size:10px;letter-spacing:0.1em;color:var(--dim);margin-bottom:16px;padding-bottom:16px;border-bottom:0.5px solid var(--rl);line-height:2}
+.r-details{background:var(--mid);border:0.5px solid var(--rl);margin-bottom:16px}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:0.5px solid var(--rl)}
+.drow:last-child{border-bottom:none}
+.dl{font-size:9px;letter-spacing:0.15em;color:var(--dim)}
+.dv{font-size:10px;letter-spacing:0.1em;color:var(--white)}
+.sh{font-size:9px;letter-spacing:0.3em;color:var(--gold);margin-bottom:8px}
+.note{font-size:10px;letter-spacing:0.06em;color:var(--dim);margin-bottom:8px;line-height:1.8;text-transform:none}
+.inp{width:100%;padding:10px 13px;border:0.5px solid var(--rl);background:var(--dark);font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.08em;color:var(--text);outline:none;margin-bottom:6px;transition:border-color 0.2s;text-transform:none}
+.inp:focus{border-color:var(--gold)}
+.inp::placeholder{color:#1E3A1E;font-size:10px}
+.warn{font-size:9px;letter-spacing:0.06em;color:#5A6A1A;margin-bottom:12px;line-height:1.8;text-transform:none}
+.divl{height:0.5px;background:var(--rl);margin:12px 0}
+.wallet-status{background:var(--mid);border:0.5px solid var(--rl);padding:8px 14px;margin-bottom:10px;display:none;align-items:center;justify-content:space-between}
+.wallet-status.show{display:flex}
+.ws-addr{font-size:9px;letter-spacing:0.1em;color:var(--gold2);text-transform:none}
+.ws-network{font-size:8px;letter-spacing:0.12em;color:var(--dim)}
+.ws-disconnect{font-size:8px;cursor:pointer;border:none;background:none;font-family:'Cinzel',serif;text-transform:uppercase;color:var(--mut);transition:color 0.2s;letter-spacing:0.15em}
+.ws-disconnect:hover{color:var(--gold)}
+.pbox{background:var(--deep);border:0.5px solid var(--rl);padding:12px 18px;margin-bottom:10px;opacity:0.3;transition:opacity 0.3s}
+.pbox.on{opacity:1}
+.plbl{font-size:8px;letter-spacing:0.3em;color:var(--gold);margin-bottom:4px}
+.pnum{font-family:'Cinzel Decorative',serif;font-size:28px;color:var(--gold2);line-height:1;text-transform:none}
+.pusd{font-size:10px;letter-spacing:0.06em;color:var(--mut);margin-top:2px;text-transform:none}
+.btn-mm{width:100%;padding:12px;background:none;border:0.5px solid var(--gold);color:var(--gold);cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.3em;transition:all 0.3s;text-transform:uppercase}
+.btn-mm:hover{background:var(--gold);color:var(--deep)}
+.btn-bid{width:100%;padding:12px;background:var(--gold);color:var(--deep);border:none;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.3em;opacity:0.3;pointer-events:none;transition:all 0.3s;text-transform:uppercase}
+.btn-bid.on{opacity:1;pointer-events:all}
+.btn-bid.on:hover{background:var(--gold2)}
+.bsub{font-size:8px;letter-spacing:0.18em;color:var(--mut);text-align:center;margin-top:6px}
+.slots{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--rl)}
+.spot-grid{display:flex;flex-wrap:wrap;gap:2px;margin-top:8px;}
+.dot-live{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:blink 2s infinite;flex-shrink:0}
+.stxt{font-size:9px;letter-spacing:0.12em;color:var(--mut)}
+.scnt{color:var(--gold2)}
+
+/* COUNTDOWN */
+.countdown-wrap{max-width:min(340px,90%);width:100%;display:none;margin-top:4px}
+.countdown-wrap.visible{display:block}
+.countdown-label{font-size:clamp(8px,0.8vw,10px);letter-spacing:0.3em;color:var(--mut);text-align:center;margin-bottom:8px}
+.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cd-cell{background:var(--panel);border:0.5px solid var(--rl);padding:8px 4px;text-align:center}
+.cd-num{font-family:'Cinzel Decorative',serif;font-size:clamp(12px,1.8vw,22px);color:var(--gold2);line-height:1;text-transform:none}
+.cd-lbl{font-size:clamp(6px,0.6vw,8px);letter-spacing:0.25em;color:var(--dim);margin-top:3px}
+
+/* COLLECTOR SIDEBAR */
+#clSidebar{width:300px;flex-shrink:0;background:#040A04;border-right:0.5px solid #0E1E0E;display:flex;flex-direction:column;overflow:hidden}
+.cl-list{flex:1;overflow-y:auto;padding:4px 0}
+.cl-hdr{padding:10px 12px 6px;border-bottom:0.5px solid #0E2A0E;flex-shrink:0}
+.cl-ttl{font-size:6.5px;letter-spacing:0.3em;color:#39FF14;text-shadow:0 0 8px rgba(57,255,20,0.5)}
+.cl-cnt{font-size:10px;letter-spacing:0.12em;color:rgba(57,255,20,0.55);margin-top:2px}
+.cl-list{flex:1;overflow-y:auto;padding:4px 0}
+.cl-list::-webkit-scrollbar{width:2px}
+.cl-list::-webkit-scrollbar-thumb{background:#0E2A0E}
+.cl-entry{padding:10px 14px;border-bottom:0.5px solid #080F08;animation:clIn 0.5s ease forwards}
+@keyframes clIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+.cl-n{font-size:8px;letter-spacing:0.18em;color:rgba(57,255,20,0.35);margin-bottom:2px}
+.cl-name{font-size:12px;letter-spacing:0.08em;color:#39FF14;text-shadow:0 0 5px rgba(57,255,20,0.35);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl-addr{font-size:8px;letter-spacing:0.04em;color:rgba(57,255,20,0.35);text-transform:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl-empty{padding:16px 12px;font-size:9px;letter-spacing:0.15em;color:#0E2A0E;line-height:2.2;text-align:center}
+.cl-dot{width:5px;height:5px;border-radius:50%;background:#0A140A;border:0.5px solid #0E1E0E;transition:all 0.3s}.cl-dot.on{background:#39FF14;border-color:#39FF14;box-shadow:0 0 4px rgba(57,255,20,0.7)}
+.cl-dot{width:5px;height:5px;border-radius:50%;background:#0A140A;border:0.5px solid #0E1E0E;transition:all 0.3s}
+.cl-dot.on{background:#39FF14;border-color:#39FF14;box-shadow:0 0 4px rgba(57,255,20,0.7)}
+
+/* ACQUIRE BUTTON */
+.btn-acquire{width:100%;padding:13px;background:var(--gold);color:#040804;border:none;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:12px;box-shadow:0 0 12px rgba(255,215,0,1),0 0 30px rgba(255,215,0,0.8),0 0 60px rgba(255,215,0,0.5),0 0 90px rgba(255,215,0,0.3);animation:qlBlaze 1.2s ease-in-out infinite;transition:all 0.2s}
+.btn-acquire:hover{background:var(--gold2);box-shadow:0 0 24px rgba(200,144,26,0.6)}
+
+/* ACQUIRE MODAL */
+#acqModal{display:none;position:fixed;inset:0;z-index:999;background:rgba(4,8,4,0.93);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px}
+#acqModal.open{display:flex}
+.acq-box{background:#070F07;border:0.5px solid rgba(200,144,26,0.45);border-radius:3px;width:100%;max-width:760px;max-height:96vh;overflow-y:auto;box-shadow:0 0 40px rgba(200,144,26,0.12)}
+.acq-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:0.5px solid rgba(200,144,26,0.2)}
+.acq-ttl{font-size:9px;letter-spacing:0.35em;color:var(--gold2)}
+.acq-x{width:26px;height:26px;border-radius:50%;border:0.5px solid rgba(200,144,26,0.35);background:rgba(200,144,26,0.06);color:var(--gold);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.acq-x:hover{background:rgba(200,144,26,0.18)}
+.acq-body{padding:14px 24px;display:flex;flex-direction:column;gap:10px;}
+.acq-lbl{font-size:7.5px;letter-spacing:0.28em;color:var(--gold);margin-bottom:5px}
+.acq-inp{width:100%;padding:10px 13px;background:rgba(200,144,26,0.04);border:0.5px solid rgba(200,144,26,0.22);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:0.06em;color:var(--text);outline:none;transition:border-color 0.2s;text-transform:none}
+.acq-inp:focus{border-color:var(--gold)}
+.acq-inp::placeholder{color:rgba(200,144,26,0.2);font-size:8.5px}
+.acq-note{font-size:7px;letter-spacing:0.08em;color:var(--dim);line-height:1.9;text-transform:none;margin-top:8px;margin-bottom:4px}
+.acq-hr{height:0.5px;background:rgba(200,144,26,0.15)}
+.acq-price{background:rgba(200,144,26,0.04);border:0.5px solid rgba(200,144,26,0.18);padding:10px 16px;display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:8px}
+.acq-pi{text-align:center}
+.acq-pl{font-size:7px;letter-spacing:0.22em;color:var(--dim);margin-bottom:2px}
+.acq-pv{font-size:13px;letter-spacing:0.08em;color:var(--gold2)}
+.acq-qrs{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.acq-qb{display:flex;flex-direction:column;align-items:center;gap:7px;flex:1;min-width:190px}
+.acq-ql{font-size:11px;letter-spacing:0.28em;color:#FFD700;text-shadow:0 0 8px rgba(255,215,0,1),0 0 20px rgba(255,215,0,0.9),0 0 40px rgba(255,215,0,0.7),0 0 80px rgba(255,215,0,0.4);animation:qlBlaze 1.2s ease-in-out infinite;}
+@keyframes qlBlaze{
+  0%,100%{text-shadow:0 0 8px rgba(255,215,0,1),0 0 20px rgba(255,215,0,0.9),0 0 40px rgba(255,215,0,0.7),0 0 80px rgba(255,215,0,0.4);}
+  50%{text-shadow:0 0 12px rgba(255,255,100,1),0 0 30px rgba(255,215,0,1),0 0 60px rgba(255,215,0,0.8),0 0 100px rgba(255,215,0,0.5);}
+}
+.acq-qw{padding:8px;background:#FFF;border-radius:2px;box-shadow:0 0 14px rgba(200,144,26,0.2)}
+.acq-qa{font-size:6.5px;letter-spacing:0.03em;color:var(--dim);text-transform:none;word-break:break-all;text-align:center;max-width:175px;line-height:1.7}
+.acq-cp{font-size:7px;letter-spacing:0.15em;color:var(--gold);cursor:pointer;border:0.5px solid rgba(200,144,26,0.28);padding:3px 10px;background:none;font-family:'Cinzel',serif;transition:all 0.2s;text-transform:uppercase}
+.acq-cp:hover{background:rgba(200,144,26,0.1)}
+.acq-sub{width:100%;padding:12px;background:var(--gold);color:#040804;border:none;cursor:pointer;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:0.3em;text-transform:uppercase;transition:all 0.2s;opacity:0.35;pointer-events:none}
+.acq-sub.on{opacity:1;pointer-events:all}
+.acq-sub.on:hover{background:var(--gold2)}
+.acq-poll{display:none;padding:14px 20px;border-top:0.5px solid rgba(200,144,26,0.18);text-align:center;font-size:8px;letter-spacing:0.2em}
+.acq-poll.scanning{color:var(--gold);animation:blink 1.4s infinite}
+.acq-poll.confirmed{color:#39FF14;text-shadow:0 0 10px rgba(57,255,20,0.5)}
+.acq-poll small{display:block;font-size:7px;letter-spacing:0.1em;color:rgba(57,255,20,0.65);line-height:1.9;margin-top:8px;text-transform:none}
+.scan-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);animation:blink 1s infinite;margin-right:6px;vertical-align:middle}
+
+/* STATUS HEADER at top of acquire modal */
+#acqStatus{
+  display:none;padding:14px 20px;
+  background:rgba(255,200,0,0.12);
+  border-bottom:2px solid rgba(255,200,0,0.6);
+  border-top:2px solid rgba(255,200,0,0.6);
+  text-align:center;font-size:9px;letter-spacing:0.22em;
+  color:#FFD700;flex-shrink:0;
+  text-shadow:0 0 16px rgba(255,215,0,0.9),0 0 32px rgba(255,215,0,0.5);
+  box-shadow:0 0 20px rgba(255,200,0,0.15) inset;
+}
+#acqStatus.scanning{
+  color:#FFD700;
+  animation:statusPulse 1s ease-in-out infinite;
+  text-shadow:0 0 16px rgba(255,215,0,0.9),0 0 32px rgba(255,215,0,0.5);
+}
+@keyframes statusPulse{
+  0%,100%{background:rgba(255,200,0,0.12);text-shadow:0 0 16px rgba(255,215,0,0.9),0 0 32px rgba(255,215,0,0.5);}
+  50%{background:rgba(255,200,0,0.22);text-shadow:0 0 24px rgba(255,215,0,1),0 0 48px rgba(255,215,0,0.7);}
+}
+#acqStatus.confirmed{
+  color:#39FF14;background:rgba(57,255,20,0.1);
+  border-color:rgba(57,255,20,0.6);
+  text-shadow:0 0 16px rgba(57,255,20,0.9);
+}
+
+/* CELEBRATION MODAL */
+#celebModal{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(4,8,4,0.96);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:20px;
+}
+#celebModal.open{display:flex;}
+.celeb-box{
+  background:#070F07;border:1px solid rgba(255,200,0,0.6);
+  border-radius:4px;width:100%;max-width:500px;
+  box-shadow:0 0 60px rgba(255,200,0,0.25),0 0 120px rgba(255,200,0,0.1);
+  display:flex;flex-direction:column;align-items:center;
+  padding:32px 28px;gap:20px;text-align:center;
+  animation:celebIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes celebIn{
+  from{opacity:0;transform:scale(0.85);}
+  to{opacity:1;transform:scale(1);}
+}
+.celeb-title{
+  font-size:13px;letter-spacing:0.35em;
+  color:#FFD700;
+  text-shadow:0 0 20px rgba(255,215,0,0.8),0 0 40px rgba(255,215,0,0.4);
+  animation:goldPulse 2s ease-in-out infinite;
+}
+@keyframes goldPulse{
+  0%,100%{text-shadow:0 0 20px rgba(255,215,0,0.8),0 0 40px rgba(255,215,0,0.4);}
+  50%{text-shadow:0 0 30px rgba(255,215,0,1),0 0 60px rgba(255,215,0,0.6),0 0 80px rgba(255,215,0,0.2);}
+}
+#celebCanvas{
+  border-radius:50%;
+  box-shadow:0 0 30px rgba(255,200,0,0.6),0 0 60px rgba(255,200,0,0.3),0 0 90px rgba(255,200,0,0.1);
+  background:radial-gradient(circle,rgba(255,200,0,0.08) 0%,transparent 70%);
+}
+.celeb-msg{
+  font-size:8px;letter-spacing:0.15em;color:rgba(255,215,0,0.75);
+  line-height:2.2;max-width:400px;
+}
+.celeb-msg strong{color:#FFD700;font-size:9px;letter-spacing:0.2em;}
+.celeb-close{
+  font-size:8px;letter-spacing:0.25em;color:rgba(255,215,0,0.4);
+  cursor:pointer;border:0.5px solid rgba(255,215,0,0.25);
+  padding:8px 24px;background:none;font-family:'Cinzel',serif;
+  text-transform:uppercase;transition:all 0.2s;margin-top:4px;
+}
+.celeb-close:hover{color:#FFD700;border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,0.3);}
+
+@media(max-width:768px){
+  body{height:auto;min-height:100dvh;overflow-y:auto;overflow-x:hidden;}
+
+  /* Topbar */
+  .topbar{padding:8px 16px;gap:4px;}.topbar-logo{height:44px;}
+  .topbar-right{display:none;}
+
+  /* Stack layout vertically */
+  .main{flex-direction:column;overflow-y:auto;height:auto;}
+
+  /* Collector strip — fixed height so it doesn't push book */
+  #clSidebar{
+    width:100%;height:64px;flex-direction:row;
+    border-right:none;border-bottom:0.5px solid #0E1E0E;
+    flex-shrink:0;overflow:hidden;
+  }
+  .cl-hdr{flex-shrink:0;padding:8px 12px;border-bottom:none;border-right:0.5px solid #0E2A0E;display:flex;flex-direction:column;justify-content:center;}
+  .cl-list{
+    flex:1;overflow-x:auto;overflow-y:hidden;
+    display:flex;flex-direction:row;padding:0;
+    height:64px;
+  }
+  .cl-entry{
+    flex-shrink:0;width:130px;
+    border-bottom:none;border-right:0.5px solid #080F08;
+    padding:6px 10px;display:flex;flex-direction:column;justify-content:center;
+  }
+  .cl-empty{white-space:nowrap;display:flex;align-items:center;padding:0 14px;font-size:8px;line-height:1.5;}
+  .cl-dots{display:none;}
+
+  /* Book panel full width */
+  .left{
+    width:100%;
+    height:calc(100dvh - 52px - 64px);
+    min-height:300px;max-height:480px;
+    flex:none;border-right:none;border-bottom:0.5px solid var(--rl);
+  }
+
+  /* Right panel full width, auto height */
+  .right{
+    width:100%;flex:none;
+    padding:16px;height:auto;
+    border-left:none;
+  }
+  .r-logo{max-height:60px;margin-bottom:8px;}
+  .r-details{margin-bottom:12px;}
+  .btn-acquire{padding:14px;font-size:11px;}
+  .spot-grid{display:flex;gap:2px;flex-wrap:wrap;margin-top:6px;}
+
+  /* Modal full screen on phone */
+  #acqModal{padding:0;align-items:flex-end;}
+  .acq-box{max-width:100%;max-height:90dvh;border-radius:12px 12px 0 0;}
+  .acq-qrs{flex-direction:column;}
+  .acq-qb{min-width:unset;width:100%;}
+
+  /* Celeb modal */
+  .celeb-box{padding:20px 16px;}
+}
+@supports(height: 100dvh){
+  body{height:100dvh;}
+}
+body{padding-bottom:env(safe-area-inset-bottom);}
+
+/* SOLD OUT OVERLAY — right panel only */
+#soldOverlay{
+  display:none;position:absolute;inset:0;z-index:100;
+  background:rgba(7,9,3,0.97);
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;padding:24px;text-align:center;
+  border-left:1px solid rgba(255,215,0,0.3);
+  box-shadow:inset 0 0 60px rgba(255,215,0,0.08);
+  animation:soldIn 0.6s ease forwards;
+}
+#soldOverlay.show{display:flex;}
+@keyframes soldIn{from{opacity:0;}to{opacity:1;}}
+.sold-title{
+  font-size:11px;letter-spacing:0.3em;color:#FFD700;
+  text-shadow:0 0 20px rgba(255,215,0,0.8),0 0 40px rgba(255,215,0,0.4);
+  animation:goldPulse 2s ease-in-out infinite;
+  line-height:1.8;
+}
+.sold-sub{
+  font-size:8px;letter-spacing:0.2em;color:rgba(255,215,0,0.6);
+  line-height:2;
+}
+#soldCanvas{
+  border-radius:50%;
+  box-shadow:0 0 30px rgba(255,200,0,0.6),0 0 60px rgba(255,200,0,0.3);
+}
+.sold-dots{
+  display:flex;flex-wrap:wrap;gap:2px;
+  justify-content:center;max-width:260px;
+}
+.sold-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:#FFD700;
+  box-shadow:0 0 3px rgba(255,215,0,0.6);
+}
+.sold-link{
+  font-size:7.5px;letter-spacing:0.2em;color:rgba(255,215,0,0.5);
+  text-decoration:none;border:0.5px solid rgba(255,215,0,0.25);
+  padding:7px 20px;transition:all 0.2s;margin-top:4px;
+}
+.sold-link:hover{color:#FFD700;border-color:#FFD700;box-shadow:0 0 10px rgba(255,215,0,0.3);}
+
+/* HELP BUTTONS */
+.help-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;border-radius:50%;
+  background:rgba(57,255,20,0.12);border:0.5px solid rgba(57,255,20,0.5);
+  color:#39FF14;font-size:9px;cursor:pointer;
+  font-family:'Cinzel',serif;font-weight:bold;
+  margin-left:7px;vertical-align:middle;
+  transition:all 0.2s;flex-shrink:0;line-height:1;
+}
+.help-btn:hover{background:rgba(57,255,20,0.25);box-shadow:0 0 8px rgba(57,255,20,0.5);}
+
+/* HELP MODAL */
+#helpModal{
+  display:none;position:fixed;inset:0;z-index:1100;
+  background:rgba(4,8,4,0.88);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;padding:20px;
+}
+#helpModal.open{display:flex;}
+.help-box{
+  background:#040D04;
+  border:1px solid rgba(57,255,20,0.6);
+  border-radius:4px;width:100%;max-width:420px;
+  box-shadow:0 0 30px rgba(57,255,20,0.2),0 0 60px rgba(57,255,20,0.08);
+  padding:24px 26px;display:flex;flex-direction:column;gap:14px;
+  animation:helpIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes helpIn{
+  from{opacity:0;transform:scale(0.92);}
+  to{opacity:1;transform:scale(1);}
+}
+.help-icon{font-size:20px;text-align:center;}
+.help-text{
+  font-size:10px;letter-spacing:0.1em;color:#39FF14;
+  line-height:2.2;text-transform:none;
+  text-shadow:0 0 8px rgba(57,255,20,0.3);
+}
+.help-text a{color:#39FF14;text-decoration:underline;}
+.help-text strong{color:#AAFFAA;letter-spacing:0.15em;}
+.help-close{
+  font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.3em;
+  color:#39FF14;border:0.5px solid rgba(57,255,20,0.4);
+  background:none;cursor:pointer;padding:9px;
+  text-transform:uppercase;transition:all 0.2s;
+  box-shadow:0 0 8px rgba(57,255,20,0.1);
+}
+.help-close:hover{background:rgba(57,255,20,0.1);box-shadow:0 0 14px rgba(57,255,20,0.3);}
+
+@media(max-width:768px){
+  .acq-body{grid-template-columns:1fr;gap:16px;}
+  .acq-inp{font-size:14px;padding:13px;}
+  .acq-inp::placeholder{font-size:12px;}
+  .acq-lbl{font-size:11px;letter-spacing:0.15em;}
+  .acq-note{font-size:10px;line-height:2;}
+  .acq-ql{font-size:13px;}
+  .acq-qa{font-size:9px;}
+  .acq-cp{font-size:10px;padding:8px 14px;}
+  .acq-pl{font-size:10px;}
+  .acq-pv{font-size:16px;}
+  .acq-ttl{font-size:12px;}
+  #acqStatus{font-size:11px;padding:16px 20px;}
+  .help-text{font-size:13px;line-height:2.4;}
+  .help-close{font-size:11px;padding:12px;}
+}
+
+/* ── BOOK PANEL BACKGROUND SLIDESHOW ──────────────────────────────────────── */
+.bg-slide{
+  position:absolute;inset:0;z-index:0;
+  opacity:0;transition:opacity 2s ease-in-out;
+  background-size:cover;background-position:center;
+}
+.bg-slide.on{opacity:1;}
+.bg-slide::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(6,13,6,0.80);
+}
+
+.acq-step{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.acq-step-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:rgba(200,144,26,0.15);border:0.5px solid rgba(200,144,26,0.5);color:var(--gold2);font-size:10px;letter-spacing:0;display:flex;align-items:center;justify-content:center;font-weight:bold;}
+.acq-step-lbl{font-size:10px;letter-spacing:0.22em;color:var(--gold);}
+#step4{opacity:0.2;pointer-events:none;transition:opacity 0.6s ease,filter 0.6s ease;filter:blur(1px);}
+#step4.revealed{opacity:1;pointer-events:all;filter:blur(0);}
+</style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KTL6JDNCD6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-KTL6JDNCD6');
+</script>
+<!-- QR Code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Firebase compat SDK (no modules, no eval issues) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey:"AIzaSyDwK8A1MwyvskfC9BuWzs7oGmRz31QtZTQ",
+    authDomain:"masterpepes-408c1.firebaseapp.com",
+    databaseURL:"https://masterpepes-408c1-default-rtdb.firebaseio.com",
+    projectId:"masterpepes-408c1",
+    storageBucket:"masterpepes-408c1.firebasestorage.app",
+    messagingSenderId:"475838814600",
+    appId:"1:475838814600:web:c8bad58127b6a705a9c23d"
+  });
+  const _db = firebase.database();
+  window._fbPush = (data) => _db.ref('collectors').push(data);
+  _db.ref('collectors').on('value', snap => {
+    const entries = snap.val() ? Object.values(snap.val()).sort((a,b)=>a.ts-b.ts) : [];
+    window._renderCollectors && window._renderCollectors(entries);
+  });
+</script>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="MASTERPEPES%20LOGO%20GOLD%20HI%20RES.png" class="topbar-logo" alt="MASTERPEPES" onerror="this.outerHTML='<span style=&quot;font-family:Cinzel Decorative,serif;font-size:20px;color:#C8901A;letter-spacing:0.15em&quot;>MASTERPEPES</span>'">
+  <div class="topbar-logos">
+    <a href="https://bitcoin.org" target="_blank" rel="noopener" style="display:flex;align-items:center;">
+      <img src="BITCOIN.png" alt="Bitcoin" style="height:20px;width:auto;" onerror="this.outerHTML='<span style=&quot;font-size:9px;letter-spacing:0.2em;color:rgba(200,144,26,0.7)&quot;>BITCOIN</span>'">
+    </a>
+    <span style="color:rgba(200,144,26,0.3);font-size:10px;">&middot;</span>
+    <a href="https://counterparty.io" target="_blank" rel="noopener" style="display:flex;align-items:center;">
+      <img src="COUNTERPARTYGOLD.png" alt="Counterparty" style="height:14px;width:auto;" onerror="this.outerHTML='<span style=&quot;font-size:9px;letter-spacing:0.2em;color:rgba(200,144,26,0.7)&quot;>COUNTERPARTY</span>'">
+    </a>
+  </div>
+</div>
+
+<div class="main">
+<div id="clSidebar">
+  <div class="cl-hdr">
+    <div class="cl-ttl">&#9670; COLLECTORS &#9670;</div>
+    <div class="cl-cnt"><span id="clCount">0</span> / 300 SPOTS</div>
+  </div>
+  <div class="cl-list" id="clList">
+    <div class="cl-empty">AWAITING<br>FIRST COLLECTOR</div>
+  </div>
+</div>
+  <div class="left">
+
+    <!-- BOOK VIEW -->
+    <div id="bookView">
+      <div class="bg-slide on"  style="background-image:url('DSC05539.JPG')"></div>
+      <div class="bg-slide"     style="background-image:url('DSC05570.JPG')"></div>
+      <div class="bg-slide"     style="background-image:url('DSC05579.JPG')"></div>
+      <div class="bg-slide"     style="background-image:url('DSC05614.JPG')"></div>
+      <div class="bg-slide"     style="background-image:url('DSC05619.JPG')"></div>
+      <div id="bookLoading">Loading Book...</div>
+      <div id="canvasWrap"><canvas id="bookCanvas"></canvas></div>
+      <a href="museum3d.html" style="text-decoration:none;display:inline-block;background:#39FF14;color:#060D06;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.3em;text-transform:uppercase;padding:5px 14px;font-weight:bold;box-shadow:0 0 8px #39FF14,0 0 18px #39FF1488,0 0 32px #39FF1433;animation:kryptonite 1.8s ease-in-out infinite">&#9654; Enter 3D Museum</a>
+      <div class="book-hint" id="bookHint" style="display:none">Drag to rotate &nbsp;&middot;&nbsp; Click to view floor plan</div>
+      <div class="book-desc">
+        <div class="book-desc-title">About the Book</div>
+        <div class="book-desc-text">150 MASTERWORKS REIMAGINED AS PEPE &mdash; FROM THE STONE AGE TO THE BLOCKCHAIN. EACH PAGE IS A LIVE NFT ON BITCOIN. A TRIBUTE TO THE FAKE AND DANK BY ROBNESS.</div>
+        <a href="https://www.amazon.com/dp/B0GVGLZ69F" target="_blank" rel="noopener" class="book-desc-link">Order the Physical Book &rarr;</a>
+      </div>
+      <div class="countdown-wrap" id="cdWrap">
+        <div class="countdown-label">Drop Opens In</div>
+        <div class="countdown-grid">
+          <div class="cd-cell"><div class="cd-num" id="cdD">00</div><div class="cd-lbl">Days</div></div>
+          <div class="cd-cell"><div class="cd-num" id="cdH">00</div><div class="cd-lbl">Hours</div></div>
+          <div class="cd-cell"><div class="cd-num" id="cdM">00</div><div class="cd-lbl">Mins</div></div>
+          <div class="cd-cell"><div class="cd-num" id="cdS">00</div><div class="cd-lbl">Secs</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MUSEUM VIEW -->
+    <div id="museumView">
+      <div class="museum-topbar" style="display:none;"></div>
+      <!-- Buttons below map -->
+      <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-shrink:0;padding:8px 0;">
+        <button onclick="showBook()" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.15em;color:var(--gold);background:rgba(6,13,6,0.92);border:0.5px solid rgba(200,144,26,0.5);padding:9px 16px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold2)';this.style.color='var(--gold2)'" onmouseout="this.style.borderColor='rgba(200,144,26,0.5)';this.style.color='var(--gold)'">&larr; BACK TO BOOK</button>
+        <a href="museum3d.html" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.15em;color:#060D06;background:#39FF14;border:none;padding:9px 16px;text-decoration:none;text-transform:uppercase;font-weight:bold;box-shadow:0 0 10px #39FF14,0 0 20px #39FF1466;animation:kryptonite 1.8s ease-in-out infinite;display:block;">&#9654; ENTER 3D MUSEUM</a>
+      </div>
+      <div class="map-wrap" style="position:relative;">
+                <svg id="museumSvg" viewBox="0 0 180 787.8" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <rect x="0" y="0" width="180" height="787.8" fill="#060D06"/>
+  <rect x="66.0" y="0" width="48.0" height="787.8" fill="#0A1C0A" stroke="#1A3A1A" stroke-width="0.5"/>
+  <rect x="0" y="675.3" width="180" height="48.2" fill="#0D2A0D" stroke="#1E3A1E" stroke-width="1"/>
+  <text x="90.0" y="696.4" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER I</text>
+  <text x="90.0" y="705.4" fill="#1A3A1A" font-family="Cinzel,serif" font-size="5" text-anchor="middle" letter-spacing="1">BOOK OF MASTERPEPES</text>
+  <rect x="0" y="530.6" width="180" height="48.2" fill="#0D2A0D" stroke="#1E3A1E" stroke-width="1"/>
+  <text x="90.0" y="551.7" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER II</text>
+  <text x="90.0" y="560.7" fill="#1A3A1A" font-family="Cinzel,serif" font-size="5" text-anchor="middle" letter-spacing="1">ROBNESS</text>
+  <rect x="0" y="385.9" width="180" height="48.2" fill="#0D2A0D" stroke="#1E3A1E" stroke-width="1"/>
+  <text x="90.0" y="407.0" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER III</text>
+  <text x="90.0" y="416.0" fill="#1A3A1A" font-family="Cinzel,serif" font-size="5" text-anchor="middle" letter-spacing="1">NU PEPE DESU</text>
+  <rect x="0" y="241.2" width="180" height="48.2" fill="#0D2A0D" stroke="#1E3A1E" stroke-width="1"/>
+  <text x="90.0" y="262.3" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER IV</text>
+  <text x="90.0" y="271.3" fill="#1A3A1A" font-family="Cinzel,serif" font-size="5" text-anchor="middle" letter-spacing="1">LORD KEK</text>
+  <rect x="0" y="96.5" width="180" height="48.2" fill="#0D2A0D" stroke="#1E3A1E" stroke-width="1"/>
+  <text x="90.0" y="117.6" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle" letter-spacing="1.5">CHAMBER V</text>
+  <text x="90.0" y="126.6" fill="#1A3A1A" font-family="Cinzel,serif" font-size="5" text-anchor="middle" letter-spacing="1">DSSL</text>
+  <rect x="0" y="0" width="180" height="787.8" fill="none" stroke="#1A3A1A" stroke-width="2"/>
+  <line x1="66.0" y1="723.5" x2="66.0" y2="787.8" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="723.5" x2="114.0" y2="787.8" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="66.0" y1="578.8" x2="66.0" y2="675.3" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="578.8" x2="114.0" y2="675.3" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="66.0" y1="434.1" x2="66.0" y2="530.6" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="434.1" x2="114.0" y2="530.6" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="66.0" y1="289.4" x2="66.0" y2="385.9" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="289.4" x2="114.0" y2="385.9" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="66.0" y1="144.7" x2="66.0" y2="241.2" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="144.7" x2="114.0" y2="241.2" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="66.0" y1="0.0" x2="66.0" y2="96.5" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="0.0" x2="114.0" y2="96.5" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="0" y1="723.5" x2="66.0" y2="723.5" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="723.5" x2="180" y2="723.5" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="0" y1="675.3" x2="66.0" y2="675.3" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="675.3" x2="180" y2="675.3" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="0" y1="578.8" x2="66.0" y2="578.8" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="578.8" x2="180" y2="578.8" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="0" y1="530.6" x2="66.0" y2="530.6" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="530.6" x2="180" y2="530.6" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="0" y1="434.1" x2="66.0" y2="434.1" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="434.1" x2="180" y2="434.1" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="0" y1="385.9" x2="66.0" y2="385.9" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="385.9" x2="180" y2="385.9" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="0" y1="289.4" x2="66.0" y2="289.4" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="289.4" x2="180" y2="289.4" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="0" y1="241.2" x2="66.0" y2="241.2" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="241.2" x2="180" y2="241.2" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="0" y1="144.7" x2="66.0" y2="144.7" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="144.7" x2="180" y2="144.7" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="0" y1="96.5" x2="66.0" y2="96.5" stroke="#1E3A1E" stroke-width="1.5"/>
+  <line x1="114.0" y1="96.5" x2="180" y2="96.5" stroke="#1E3A1E" stroke-width="1.5"/>
+  <text x="90.0" y="784.8" fill="#1A3A1A" font-family="Cinzel,serif" font-size="6" text-anchor="middle" letter-spacing="2">ENTRANCE</text>
+  <polygon points="86,773.8 94,773.8 90,780.8" fill="#1A3A1A"/>
+  <text x="160" y="28" fill="#2A5A2A" font-family="Cinzel,serif" font-size="7" text-anchor="middle">N</text>
+  <line x1="160" y1="32" x2="160" y2="20" stroke="#C8901A" stroke-width="1.2"/>
+  <circle cx="160" cy="35" r="2" fill="#C8901A"/>
+  <g id="dotsLayer"></g>
+</svg>
+        <div class="tooltip" id="tooltip">
+          <div class="tt-num" id="ttNum"></div>
+          <div class="tt-title" id="ttTitle"></div>
+          <div class="tt-year" id="ttYear"></div>
+          <canvas id="ttCanvas" style="display:none;width:100%;margin-top:8px;border:0.5px solid var(--rl)"></canvas>
+          <div id="ttLoading" style="display:none;font-size:8px;letter-spacing:0.15em;color:var(--mut);margin-top:8px;text-align:center">Loading page...</div>
+        </div>
+      </div>
+      <div class="asset-panel" id="assetPanel">
+        <div class="ap-num" id="apNum"></div>
+        <div class="ap-info">
+          <div class="ap-title" id="apTitle"></div>
+          <div class="ap-year" id="apYear"></div>
+          <div class="ap-asset" id="apAsset"></div>
+        </div>
+        <button class="ap-link" onclick="openPdfPanel()">Open in Book</button>
+        <a class="ap-link" id="apLink" href="#" target="_blank">View on Chain &rarr;</a>
+        <button class="ap-close" onclick="closePanel()">Close &times;</button>
+      </div>
+
+      <!-- INLINE PDF VIEWER -->
+      <div id="pdfPanel" style="position:absolute;inset:0;background:rgba(4,8,4,0.98);display:none;flex-direction:column;z-index:60;padding:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0">
+          <span style="font-size:9px;letter-spacing:0.3em;color:var(--gold)" id="pdfPanelTitle"></span>
+          <button onclick="closePdfPanel()" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.2em;color:var(--gold);cursor:pointer;border:0.5px solid var(--rl);padding:5px 14px;background:none;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='var(--gold)';this.style.color='var(--deep)'" onmouseout="this.style.background='none';this.style.color='var(--gold)'">Close &times;</button>
+        </div>
+        <iframe id="pdfFrame" src="" style="flex:1;width:100%;border:0.5px solid var(--rl);background:#111"></iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right" style="position:relative;">
+    <div id="soldOverlay">
+      <div class="sold-title">&#9670; COLLECTION SOLD OUT &#9670;<br>CRYPTOART LIVES!</div>
+      <canvas id="soldCanvas" width="220" height="220"></canvas>
+      <div class="sold-sub">ALL 300 COLLECTOR SPOTS<br>HAVE BEEN CLAIMED.<br>THE COLLECTION IS COMPLETE.</div>
+      <div class="sold-dots" id="soldDots"></div>
+      <a href="https://x.com/robnessofficial" target="_blank" class="sold-link">FOLLOW @ROBNESSOFFICIAL</a>
+    </div>
+    <div class="r-details">
+      <div class="drow"><span class="dl">COLLECTOR SPOTS</span><span class="dv">300</span></div>
+      <div class="drow"><span class="dl">WORKS PER SPOT</span><span class="dv">ALL 150</span></div>
+      <div class="drow"><span class="dl">EDITIONS PER WORK</span><span class="dv">300</span></div>
+      <div class="drow"><span class="dl">CHAIN</span><span class="dv">BITCOIN / XCP</span></div>
+      <div class="drow"><span class="dl">PRICE</span><span class="dv">1 ETH OR BTC</span></div>
+      <div class="drow"><span class="dl">USD VALUE</span><span class="dv" id="usd" style="font-size:9px">Loading...</span></div>
+    </div>
+    <button class="btn-acquire" onclick="openAcq()">&#9670; ACQUIRE MASTERPEPES &#9670;</button>
+    <div class="slots" style="margin-top:12px;">
+      <div class="dot-live"></div>
+      <span class="stxt"><span class="scnt" id="slots">300</span> SPOTS REMAINING</span>
+    </div>
+    <div class="spot-grid" id="clDots"></div>
+    <div style="margin-top:auto;padding-top:16px;border-top:0.5px solid var(--rl);">
+      <p class="note" style="font-size:8px;line-height:2;color:var(--dim);text-transform:none;letter-spacing:0.06em;">
+        Each spot grants all 150 Masterpepes works — 300 editions per work — minted on Bitcoin via Counterparty. Pay in ETH or BTC equivalent. Works sent manually to your XCP address after the drop concludes.
+      </p>
+    </div>
+    <div style="text-align:center;padding-top:10px;border-top:0.5px solid var(--rl);margin-top:8px;">
+      <a href="https://x.com/robnessofficial" target="_blank" style="font-size:9px;letter-spacing:0.2em;color:var(--gold);text-decoration:none;border:0.5px solid rgba(200,144,26,0.35);padding:6px 16px;display:inline-block;transition:all 0.2s;margin-bottom:10px;" onmouseover="this.style.color='#FFD700';this.style.borderColor='#FFD700'" onmouseout="this.style.color='var(--gold)';this.style.borderColor='rgba(200,144,26,0.35)'">&#9670; @ROBNESSOFFICIAL &#9670;</a>
+    </div>
+    <div style="text-align:center;padding-top:8px;">
+      <img src="SIGNATURE_GOLD.png" alt="Robness Signature" style="max-width:100%;height:auto;max-height:60px;object-fit:contain;opacity:0.85;display:inline-block;" onerror="this.style.display='none'">
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const SHOW_COUNTDOWN = true;
+const DROP_DATE = '2026-05-01T19:00:00Z'; // 12:00 PM PST = 19:00 UTC
+const PAGES = [{"num": 1, "t": "PEPE OF WILLENDORF", "y": "24000 BC", "mat": "LIMESTONE, HAND-CARVED FIGURE", "asset": "MSTRPEPES.PEPEOFWILLENDORF"}, {"num": 2, "t": "KARAHAN PEPE", "y": "10000 BC", "mat": "SANDSTONE MONOLITH", "asset": "MSTRPEPES.KARAHANPEPE"}, {"num": 3, "t": "FROG HAND STENCILS", "y": "9400 BC", "mat": "PIGMENT ON CAVE WALL", "asset": "MSTRPEPES.FROGHANDSTENCILS"}, {"num": 4, "t": "HONGSHAN PEPE PENDANT", "y": "3000 BC", "mat": "CARVED JADE", "asset": "MSTRPEPES.HONGSHANPEPEPENDANT"}, {"num": 5, "t": "LYRE WITH PEPE\u2019S HEAD", "y": "2550 BC", "mat": "WOOD WITH SHELL INLAY", "asset": "MSTRPEPES.LYREWITHPEPESHEAD"}, {"num": 6, "t": "PEPE OF AKKAD (PEPEKKADIAN)", "y": "2400 BC", "mat": "CARVED DIORITE", "asset": "MSTRPEPES.PEPEOFAKKAD"}, {"num": 7, "t": "VICTORY STELE OF NARAM-PEPE", "y": "2350 BC", "mat": "BASALT RELIEF", "asset": "MSTRPEPES.VICTORYSTELEOFNARAMPEPE"}, {"num": 8, "t": "WARRIOR PEPE FIGURE", "y": "1200 BC", "mat": "CARVED SERPENTINE WITH PIGMENT", "asset": "MSTRPEPES.WARRIORPEPEFIGURE"}, {"num": 9, "t": "DANKQING DYNASTY JADE", "y": "1700 BC", "mat": "POLISHED JADE", "asset": "MSTRPEPES.DANKQINGDYNASTYJADE"}, {"num": 10, "t": "MINOAN PEPE SNAKE GODDESS", "y": "1650 BC", "mat": "PAINTED FAIENCE", "asset": "MSTRPEPES.MINOANPEPESNAKEGODDESS"}, {"num": 11, "t": "THE GOLDEN VESSEL OF THE FROG-KIN HERDSMEN", "y": "1500 BC", "mat": "GOLD REPOUSS\u00c9 WITH FINE CHASING", "asset": "MSTRPEPES.THEGOLDENVESSELOFTHEFROGKINHERDSMEN"}, {"num": 12, "t": "PEPE HARVESTER VASE", "y": "1550 BC", "mat": "TERRACOTTA VESSEL", "asset": "MSTRPEPES.PEPEHARVESTERVASE"}, {"num": 13, "t": "PEPE GATE OF HATTUSSA", "y": "1400 BC", "mat": "BASALT RELIEF", "asset": "MSTRPEPES.PEPEGATEOFHATTUSSA"}, {"num": 14, "t": "PEPEKNHATAN INSCRIPTION", "y": "1353 BC", "mat": "LIMESTONE STELE", "asset": "MSTRPEPES.PEPEKNHATANINSCRIPTION"}, {"num": 15, "t": "BUST OF NEFERPEPE", "y": "1345 BC", "mat": "PAINTED LIMESTONE", "asset": "MSTRPEPES.BUSTOFNEFERPEPE"}, {"num": 16, "t": "KEKENKHAMUN", "y": "1300 BC", "mat": "GILDED WOOD MASK", "asset": "MSTRPEPES.KEKENKHAMUN"}, {"num": 17, "t": "PEPE GATE OF MYCENAE", "y": "1300 BC", "mat": "GREY LIMESTONE RELIEF", "asset": "MSTRPEPES.PEPEGATEOFMYCENAE"}, {"num": 18, "t": "FELINE-PEPE RITUAL VESSEL", "y": "1150 BC", "mat": "CAST BRONZE WITH INCISED PATTERNS", "asset": "MSTRPEPES.FELINEPEPERITUALVESSEL"}, {"num": 19, "t": "THE OLMEC PEPE HEAD", "y": "900 BC", "mat": "CARVED BASALT BOULDER", "asset": "MSTRPEPES.THEOLMECPEPEHEAD"}, {"num": 20, "t": "PEPIONESS DEVOURING A LION", "y": "900 BC", "mat": "LIMESTONE RELIEF", "asset": "MSTRPEPES.PEPIONESSDEVOURINGALION"}, {"num": 21, "t": "PEPASSU", "y": "883 BC", "mat": "BASALT SCULPTURE", "asset": "MSTRPEPES.PEPASSU"}, {"num": 22, "t": "PEPE KOUROS", "y": "640 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.PEPEKOUROS"}, {"num": 23, "t": "SEATED PEPE BUDDHAS", "y": "618 BC", "mat": "CARVED LIMESTONE", "asset": "MSTRPEPES.SEATEDPEPEBUDDHAS"}, {"num": 24, "t": "PEPIAN SPHINX OF DELPHI", "y": "580 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.PEPIANSPHINXOFDELPHI"}, {"num": 25, "t": "PEPETAR GATE CREATURE", "y": "575 BC", "mat": "GLAZED BRICK RELIEF", "asset": "MSTRPEPES.PEPETARGATECREATURE"}, {"num": 26, "t": "KORE OF THE PEPEMAYES GROUP", "y": "570 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.KOREOFTHEPEPEMAYESGROUP"}, {"num": 27, "t": "PEPE SCHOPHOROS", "y": "560 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.PEPESCHOPHOROS"}, {"num": 28, "t": "KEKOPHAGUS OF THE SPOUSES", "y": "530 BC", "mat": "TERRACOTTA SARCOPHAGUS", "asset": "MSTRPEPES.KEKOPHAGUSOFTHESPOUSES"}, {"num": 29, "t": "RELIEF SCULPTURES OF PEPEPOLIS", "y": "518 BC", "mat": "SANDSTONE RELIEFS", "asset": "MSTRPEPES.RELIEFSCULPTURESOFPEPEPOLIS"}, {"num": 30, "t": "THE PEPE KRATER", "y": "515 BC", "mat": "BLACK-FIGURE TERRACOTTA", "asset": "MSTRPEPES.THEPEPEKRATER"}, {"num": 31, "t": "SEATED PEPE OF THE KEKNOK CULTURE", "y": "500 BC", "mat": "TERRACOTTA FIGURE", "asset": "MSTRPEPES.SEATEDPEPEOFTHEKEKNOKCULTURE"}, {"num": 32, "t": "PEPODIUS & KEKISTOGEITON", "y": "500 BC", "mat": "BASALT SCULPTURE", "asset": "MSTRPEPES.PEPODIUSANDKEKISTOGEITON"}, {"num": 33, "t": "PEPA AND THE SWAN", "y": "500 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.PEPAANDTHESWAN"}, {"num": 34, "t": "CHARIOTEER OF KEKELPHI", "y": "500 BC", "mat": "CAST BRONZE", "asset": "MSTRPEPES.CHARIOTEEROFKEKELPHI"}, {"num": 35, "t": "KEK BOY", "y": "480 BC", "mat": "LIMESTONE STATUE", "asset": "MSTRPEPES.KEKBOY"}, {"num": 36, "t": "KEKEUS OF OLYMPEPIA", "y": "466 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.KEKEUSOFOLYMPEPIA"}, {"num": 37, "t": "ZEUSPEPE OF KEKEMIS", "y": "460 BC", "mat": "BRONZE SCULPTURE", "asset": "MSTRPEPES.ZEUSPEPEOFKEKEMIS"}, {"num": 38, "t": "PEPOVISI THRONE", "y": "460 BC", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.PEPOVISITHRONE"}, {"num": 39, "t": "PEPIACE BRONZE", "y": "459 BC", "mat": "CAST BRONZE", "asset": "MSTRPEPES.PEPIACEBRONZE"}, {"num": 40, "t": "PEPETHON MARBLES", "y": "447 BC", "mat": "MARBLE RELIEFS", "asset": "MSTRPEPES.PEPETHONMARBLES"}, {"num": 41, "t": "PORTRAIT OF PEPECLES", "y": "425 BC", "mat": "MARBLE BUST", "asset": "MSTRPEPES.PORTRAITOFPEPECLES"}, {"num": 42, "t": "RAREPEPE DIRECTORIAL TEMPLATE TABLET", "y": "420 BC", "mat": "STONE TABLET", "asset": "MSTRPEPES.RAREPEPEDIRECTORIALTEMPLATETABLET"}, {"num": 43, "t": "NIKE OF PEPENIOS", "y": "420 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.NIKEOFPEPENIOS"}, {"num": 44, "t": "KEKMERA", "y": "400 BC", "mat": "CARVED STONE", "asset": "MSTRPEPES.KEKMERA"}, {"num": 45, "t": "FARNESE KEKULES", "y": "370 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.FARNESEKEKULES"}, {"num": 46, "t": "KEKEZON FRIEZE", "y": "357 BC", "mat": "MARBLE RELIEF", "asset": "MSTRPEPES.KEKEZONFRIEZE"}, {"num": 47, "t": "PEPERMES AND A WOMAN", "y": "350 BC", "mat": "MARBLE GROUP", "asset": "MSTRPEPES.PEPERMESANDAWOMAN"}, {"num": 48, "t": "APHROPEPA OF KEKDOS", "y": "350 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.APHROPEPAOFKEKDOS"}, {"num": 49, "t": "PEPOLLO BELVEDERE", "y": "330 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.PEPOLLOBELVEDERE"}, {"num": 50, "t": "PEPE STAG HUNTERS", "y": "300 BC", "mat": "MOSAIC", "asset": "MSTRPEPES.PEPESTAGHUNTERS"}, {"num": 51, "t": "PEPATOLINE VENUS", "y": "300 BC", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.PEPATOLINEVENUS"}, {"num": 52, "t": "PEPECOTTA ARMY", "y": "246 BC", "mat": "TERRACOTTA FIGURES", "asset": "MSTRPEPES.PEPECOTTAARMY"}, {"num": 53, "t": "DYING GAULPEPE", "y": "230 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.DYINGGAULPEPE"}, {"num": 54, "t": "THE EYE OF PEPE", "y": "220 BC", "mat": "CARVED STONE", "asset": "MSTRPEPES.THEEYEOFPEPE"}, {"num": 55, "t": "PEPAJANTA CAVE MURAL", "y": "200 BC", "mat": "PIGMENT ON STONE", "asset": "MSTRPEPES.PEPAJANTACAVEMURAL"}, {"num": 56, "t": "NAZCAPEPE LINES", "y": "200 BC", "mat": "EARTHWORK GEOGLYPH", "asset": "MSTRPEPES.NAZCAPEPELINES"}, {"num": 57, "t": "PEPECOON AND HIS SONS", "y": "42 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.PEPECOONANDHISSONS"}, {"num": 58, "t": "PEPEUSTUS OF KEKA PORTA", "y": "20 BC", "mat": "MARBLE STATUE", "asset": "MSTRPEPES.PEPEUSTUSOFKEKAPORTA"}, {"num": 59, "t": "COLOSSAL HEAD OF PEPE", "y": "312 AD", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.COLLOSALHEADOFPEPE"}, {"num": 60, "t": "PEPE BUDDHA GROTTO", "y": "500 AD", "mat": "CARVED STONE", "asset": "MSTRPEPES.PEPEBUDDHAGROTTO"}, {"num": 61, "t": "EMPEROR PEPE AND HIS ATTENDANTS", "y": "526 AD", "mat": "MOSAIC", "asset": "MSTRPEPES.EMPERORPEPEANDHISATTENDANTS"}, {"num": 62, "t": "GOSPEL ILLUMINATIONS OF DANKNESS", "y": "700 AD", "mat": "INK AND GOLD ON VELLUM", "asset": "MSTRPEPES.GOSPELILLUMINATIONSOFDANKNESS"}, {"num": 63, "t": "PEPEBUDUR TEMPLE RELIEF", "y": "800 AD", "mat": "STONE RELIEF", "asset": "MSTRPEPES.PEPEBUDURTEMPLERELIEF"}, {"num": 64, "t": "BRONZE SHIVA KEKARAJA", "y": "900 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.BRONZESHIVAKEKARAJA"}, {"num": 65, "t": "PEPECOTTA HEADS", "y": "1000 AD", "mat": "PEPECOTTA BUST", "asset": "MSTRPEPES.PEPECOTTAHEADS"}, {"num": 66, "t": "PEPEUX TAPESTRY", "y": "1015 AD", "mat": "EMBROIDERED TEXTILE", "asset": "MSTRPEPES.PEPEUXTAPESTRY"}, {"num": 67, "t": "PEPERWICK KING", "y": "1175 AD", "mat": "CARVED IVORY", "asset": "MSTRPEPES.PEPERWICKKING"}, {"num": 68, "t": "PEPETRES CATHEDRAL STAINED GLASS", "y": "1220 AD", "mat": "STAINED GLASS", "asset": "MSTRPEPES.PEPETRESCATHEDRALSTAINEDGLASS"}, {"num": 69, "t": "GUARDIAN OF KEKNARK SUN TEMPLE", "y": "1250 AD", "mat": "CARVED STONE", "asset": "MSTRPEPES.GUARDIANSOFKEKNARKSUNTEMPLE"}, {"num": 70, "t": "LAMENTATION OF PEPE", "y": "1305 AD", "mat": "FRESCO", "asset": "MSTRPEPES.LAMENTATIONOFPEPE"}, {"num": 71, "t": "ANNUNCIATION PEPES", "y": "1325 AD", "mat": "GILDED PANEL", "asset": "MSTRPEPES.ANNUNCIATIONPEPES"}, {"num": 72, "t": "KHMER BRONZE PEPETIKESHVARA", "y": "1350 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.KHMERBRONZEPEPETIKESHVARA"}, {"num": 73, "t": "PEPE DIPTYCH", "y": "1390 AD", "mat": "TEMPERA AND GOLD PANEL", "asset": "MSTRPEPES.PEPEDIPTYCH"}, {"num": 74, "t": "LES TR\u00c8S PEPES", "y": "1400 AD", "mat": "ILLUMINATED MANUSCRIPT", "asset": "MSTRPEPES.LESTRESPEPES"}, {"num": 75, "t": "ST. GEORGE PEPE", "y": "1411 AD", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.STGEORGEPEPE"}, {"num": 76, "t": "THE ADORATION OF THE PEPE", "y": "1425 AD", "mat": "PANEL PAINTING", "asset": "MSTRPEPES.THEADORATIONOFTHEPEPE"}, {"num": 77, "t": "PEPETELLO\u2019S DAVIDPEPE", "y": "1430 AD", "mat": "MARBLE SCULPTURE", "asset": "MSTRPEPES.PEPETELLOSDAVIDPEPE"}, {"num": 78, "t": "PORTRAIT OF A HAIRPEPE", "y": "1433 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.PORTRAITOFAHAIRPEPE"}, {"num": 79, "t": "PEPEFINI PORTRAIT", "y": "1434 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.PEPEFINIPORTRAIT"}, {"num": 80, "t": "DESCENT OF PEPE", "y": "1440 AD", "mat": "PANEL PAINTING", "asset": "MSTRPEPES.DESCENTOFPEPE"}, {"num": 81, "t": "EQUESTRIAN STATUE OF PEPELATA", "y": "1440 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.EQUESTRIANSTATUEOFPEPELATA"}, {"num": 82, "t": "AZTEC KEKATLIQUE STATUE", "y": "1450 AD", "mat": "CARVED STONE", "asset": "MSTRPEPES.AZTECKEKATLIQUESTATUE"}, {"num": 83, "t": "AZTEC PEPE", "y": "1450 AD", "mat": "STONE SCULPTURE", "asset": "MSTRPEPES.AZTECPEPE"}, {"num": 84, "t": "PEPEPORTINARI ALTARPIECE", "y": "1460 AD", "mat": "TEMPERA ON PANEL", "asset": "MSTRPEPES.PEPEPORTINARIALTARPIECE"}, {"num": 85, "t": "PEPEONI EQUESTRIAN STATUE", "y": "1475 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.PEPEONIEQUESTRIANSTATUE"}, {"num": 86, "t": "PEPEVERA", "y": "1480 AD", "mat": "TEMPERA ON PANEL", "asset": "MSTRPEPES.PEPEVERA"}, {"num": 87, "t": "DANK JUICE CERAMIC PEPE", "y": "1490 AD", "mat": "PAINTED CERAMIC", "asset": "MSTRPEPES.DANKJUICECERAMICPEPE"}, {"num": 88, "t": "INCAKEK FIGURES", "y": "1490 AD", "mat": "STONE FIGURES", "asset": "MSTRPEPES.INCAKEKFIGURES"}, {"num": 89, "t": "THE LAST DANK SUPPER", "y": "1498 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.THELASTDANKSUPPER"}, {"num": 90, "t": "PEPE D\u00dcRER SELF PORTRAIT", "y": "1500 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.PEPEDURERSELFPORTRAIT"}, {"num": 91, "t": "PEPEDAVID", "y": "1501 AD", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.PEPEDAVID"}, {"num": 92, "t": "THE MONA LISA PEPE", "y": "1503 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.THEMONALISAPEPE"}, {"num": 93, "t": "PEPE\u2019S LAST JUDGEMENT", "y": "1508 AD", "mat": "FRESCO", "asset": "MSTRPEPES.PEPESLASTJUDGEMENT"}, {"num": 94, "t": "MOSESPEPE", "y": "1513 AD", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.MOSESPEPE"}, {"num": 95, "t": "PEPPHUS AND PEPADNE", "y": "1520 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.PEPPHUSANDPEPADNE"}, {"num": 96, "t": "THE PEPE EMBASSADORS", "y": "1530 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.THEPEPEEMBASSADORS"}, {"num": 97, "t": "PEPERSEUS WITH THE HEAD OF A NORMIE", "y": "1554 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.PEPERSEUSWITHTHEHEADOFANORMIE"}, {"num": 98, "t": "PEPES IN THE SNOW", "y": "1564 AD", "mat": "OIL ON PANEL", "asset": "MSTRPEPES.PEPESINTHESNOW"}, {"num": 99, "t": "CALLING OF MATTHEWPEPE", "y": "1599 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.CALLINGOFMATTHEWPEPE"}, {"num": 100, "t": "SUPPER AT PEPEMMAUS", "y": "1601 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.SUPPERATPEPEMMAUS"}, {"num": 101, "t": "MANNEKEK PEPIS", "y": "1619 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.MANNEKEKPEPIS"}, {"num": 102, "t": "PEPOLLO AND PEPAPHNE", "y": "1622 AD", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.PEPOLLOANDPEPAPHNE"}, {"num": 103, "t": "SELF PORTRAIT OF GIANLORENZO PEPERNINI", "y": "1623 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.SELFPORTRAITOFGIANLORENZOPEPERNINI"}, {"num": 104, "t": "STORM ON THE SEA OF PEPELEE", "y": "1633 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.STORMONTHESEAOFPEPELEE"}, {"num": 105, "t": "NIGHT WATCH PEPES", "y": "1642 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.NIGHTWATCHPEPES"}, {"num": 106, "t": "PEPE SWINGER", "y": "1748 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPESWINGER"}, {"num": 107, "t": "PEPUIN KEKAKU", "y": "1750 AD", "mat": "INK AND WASH ON PAPER", "asset": "MSTRPEPES.PEPUINKEKAKU"}, {"num": 108, "t": "DEATH OF GENERAL WOLFEPEPE", "y": "1770 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.DEATHOFGENERALWOLFEPEPE"}, {"num": 109, "t": "OATH OF THE PEPES", "y": "1784 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.OATHOFTHEPEPES"}, {"num": 110, "t": "THE DEATH OF A SHITPOSTER", "y": "1793 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.THEDEATHOFASHITPOSTER"}, {"num": 111, "t": "THE FIGHTING PEPERAIRE", "y": "1798 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.THEFIGHTINGPEPERAIRE"}, {"num": 112, "t": "PEPAULINE AS VENUS", "y": "1805 AD", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.PEPAULINEASVENUS"}, {"num": 113, "t": "A PEPE WAIN", "y": "1814 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.APEPEWAIN"}, {"num": 114, "t": "PEPE ABOVE THE SEA OF FOG", "y": "1818 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEABOVETHESEAOFFOG"}, {"num": 115, "t": "RAFT OF THE MEMES", "y": "1819 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.RAFTOFTHEMEMES"}, {"num": 116, "t": "LIBERTY LEADING THE PEPES", "y": "1830 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.LIBERTYLEADINGTHEPEPES"}, {"num": 117, "t": "PEPEGOLINO AND HIS SONS", "y": "1830 AD", "mat": "CARVED MARBLE", "asset": "MSTRPEPES.PEPEGOLINOANDHISSONS"}, {"num": 118, "t": "A BURIAL WITH PEPES", "y": "1850 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.ABURIALWITHPEPES"}, {"num": 119, "t": "D\u00c9JEUNER AVEC RAREPEPES", "y": "1862 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.DEJEUNERAVECRAREPEPES"}, {"num": 120, "t": "LES GENS GRENOUILLES DU MOULIN DE LA GALETTE", "y": "1876 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.LESGENSGRENOUILLESDUMOULINDELAGALETTE"}, {"num": 121, "t": "THINKERPEPE", "y": "1880 AD", "mat": "CAST BRONZE", "asset": "MSTRPEPES.THINKERPEPE"}, {"num": 122, "t": "A SUNDAY AFTERNOON ON PEPE ISLAND", "y": "1884 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.ASUNDAYAFTERNOONONPEPEISLAND"}, {"num": 123, "t": "PEPE WITH BANDAGED EAR", "y": "1889 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEWITHBANDAGEDEAR"}, {"num": 124, "t": "THE PEPE SCREAM", "y": "1893 AD", "mat": "OIL, TEMPERA, PASTEL AND CRAYON ON CARDBOARD", "asset": "MSTRPEPES.THEPEPESCREAM"}, {"num": 125, "t": "PEPE\u2019S KISS", "y": "1907 AD", "mat": "OIL AND GOLD LEAF", "asset": "MSTRPEPES.PEPESKISS"}, {"num": 126, "t": "PEPEDANCE", "y": "1910 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEDANCE"}, {"num": 127, "t": "PEPE FOUNTAIN", "y": "1917 AD", "mat": "PORCELAIN READYMADE", "asset": "MSTRPEPES.PEPEFOUNTAIN"}, {"num": 128, "t": "PEPES SWIMMING BY WATER LILLIES", "y": "1919 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPESSWIMMINGBYWATERLILLIES"}, {"num": 129, "t": "PEPE GOTHIC", "y": "1930 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEGOTHIC"}, {"num": 130, "t": "PEPE AU B\u00c9RET ET \u00c0 LA ROBE QUADRILL\u00c9E", "y": "1937 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEAUBERETETALAROBEQUADRILLE"}, {"num": 131, "t": "PEPE BOOGIE WOOGIE", "y": "1942 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPEBOOGIEWOOGIE"}, {"num": 132, "t": "PEPE\u2019S MORNING SUN", "y": "1952 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPESMORNINGSUN"}, {"num": 133, "t": "PEPE CRUCIFIXION", "y": "1954 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PEPECRUCIFIXION"}, {"num": 134, "t": "LUCIANPEPE SELF PORTRAIT", "y": "1965 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.LUCIANPEPESELFPORTRAIT"}, {"num": 135, "t": "PEPE MARILYN", "y": "1967 AD", "mat": "SILKSCREEN ON CANVAS", "asset": "MSTRPEPES.PEPEMARILYN"}, {"num": 136, "t": "PORTRAIT OF PEPEDYER AND PEPEFREUD", "y": "1967 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.PORTRAITOFPEPEDYERANDPEPEFREUD"}, {"num": 137, "t": "POOL WITH TWO PEPES", "y": "1972 AD", "mat": "ACRYLIC ON CANVAS", "asset": "MSTRPEPES.POOLWITHTWOPEPES"}, {"num": 138, "t": "TELEVISION PEPE", "y": "1974 AD", "mat": "MIXED MEDIA AND VIDEO", "asset": "MSTRPEPES.TELEVISIONPEPE"}, {"num": 139, "t": "DREAMPEPE", "y": "1979 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.DREAMPEPE"}, {"num": 140, "t": "THE PHYSICAL IMPOSSIBILITY OF PEPE WITHIN THE MIND", "y": "1991 AD", "mat": "MIXED MEDIA INSTALLATION", "asset": "MSTRPEPES.THEPHYSICALIMPOSSIBILITYOFPEPEWITHINTHEMIND"}, {"num": 141, "t": "HAN DYNASTY URN WITH PEPE LOGO", "y": "1993 AD", "mat": "PAINTED CERAMIC", "asset": "MSTRPEPES.HANDYNASTYURNWITHPEPELOGO"}, {"num": 142, "t": "BALLOON PEPE", "y": "1994 AD", "mat": "POLISHED STAINLESS STEEL", "asset": "MSTRPEPES.BALLOONPEPE"}, {"num": 143, "t": "THE CRACKED PEPE", "y": "2001 AD", "mat": "OIL ON CANVAS", "asset": "MSTRPEPES.THECRACKEDPEPE"}, {"num": 144, "t": "PEPE WITH GREEN BALLOON", "y": "2002 AD", "mat": "SPRAY PAINT AND STENCIL", "asset": "MSTRPEPES.PEPEWITHGREENBALLOON"}, {"num": 145, "t": "PEPETATO #345", "y": "2010 AD", "mat": "PHOTOGRAPHY", "asset": "MSTRPEPES.PEPETATO"}, {"num": 146, "t": "PEPE COMPANION", "y": "2011 AD", "mat": "PAINTED SCULPTURAL FIGURE", "asset": "MSTRPEPES.PEPECOMPANION"}, {"num": 147, "t": "PEPEPUNK #2317", "y": "2016 AD", "mat": "DIGITAL NFT", "asset": "MSTRPEPES.PEPEPUNK2317"}, {"num": 148, "t": "SIX MAGICK PEPES", "y": "2016 AD", "mat": "MIXED MEDIA INSTALLATION", "asset": "MSTRPEPES.SIXMAGICKPEPES"}, {"num": 149, "t": "RIGHT-CLICK AND SAVE AS PEPE", "y": "2018 AD", "mat": "DIGITAL NFT", "asset": "MSTRPEPES.RIGHTCLICKANDSAVEASPEPE"}, {"num": 150, "t": "64 GALLON PEPE", "y": "2020 AD", "mat": "DIGITAL NFT", "asset": "MSTRPEPES.64GALLONPEPE"}];
+const DOTS = [{"i": 0, "x": 50.0, "y": 781.4}, {"i": 1, "x": 130.0, "y": 781.4}, {"i": 2, "x": 50.0, "y": 768.5}, {"i": 3, "x": 130.0, "y": 768.5}, {"i": 4, "x": 50.0, "y": 755.6}, {"i": 5, "x": 130.0, "y": 755.6}, {"i": 6, "x": 50.0, "y": 742.8}, {"i": 7, "x": 130.0, "y": 742.8}, {"i": 8, "x": 50.0, "y": 729.9}, {"i": 9, "x": 130.0, "y": 729.9}, {"i": 10, "x": 50.0, "y": 669.2}, {"i": 11, "x": 130.0, "y": 669.2}, {"i": 12, "x": 50.0, "y": 657.2}, {"i": 13, "x": 130.0, "y": 657.2}, {"i": 14, "x": 50.0, "y": 645.1}, {"i": 15, "x": 130.0, "y": 645.1}, {"i": 16, "x": 50.0, "y": 633.1}, {"i": 17, "x": 130.0, "y": 633.1}, {"i": 18, "x": 50.0, "y": 621.0}, {"i": 19, "x": 130.0, "y": 621.0}, {"i": 20, "x": 50.0, "y": 608.9}, {"i": 21, "x": 130.0, "y": 608.9}, {"i": 22, "x": 50.0, "y": 596.9}, {"i": 23, "x": 130.0, "y": 596.9}, {"i": 24, "x": 50.0, "y": 584.8}, {"i": 25, "x": 130.0, "y": 584.8}, {"i": 26, "x": 50.0, "y": 524.5}, {"i": 27, "x": 130.0, "y": 524.5}, {"i": 28, "x": 50.0, "y": 512.5}, {"i": 29, "x": 130.0, "y": 512.5}, {"i": 30, "x": 50.0, "y": 500.4}, {"i": 31, "x": 130.0, "y": 500.4}, {"i": 32, "x": 50.0, "y": 488.4}, {"i": 33, "x": 130.0, "y": 488.4}, {"i": 34, "x": 50.0, "y": 476.3}, {"i": 35, "x": 130.0, "y": 476.3}, {"i": 36, "x": 50.0, "y": 464.2}, {"i": 37, "x": 130.0, "y": 464.2}, {"i": 38, "x": 50.0, "y": 452.2}, {"i": 39, "x": 130.0, "y": 452.2}, {"i": 40, "x": 50.0, "y": 440.1}, {"i": 41, "x": 130.0, "y": 440.1}, {"i": 42, "x": 50.0, "y": 379.8}, {"i": 43, "x": 130.0, "y": 379.8}, {"i": 44, "x": 50.0, "y": 367.8}, {"i": 45, "x": 130.0, "y": 367.8}, {"i": 46, "x": 50.0, "y": 355.7}, {"i": 47, "x": 130.0, "y": 355.7}, {"i": 48, "x": 50.0, "y": 343.7}, {"i": 49, "x": 130.0, "y": 343.7}, {"i": 50, "x": 50.0, "y": 331.6}, {"i": 51, "x": 130.0, "y": 331.6}, {"i": 52, "x": 50.0, "y": 319.5}, {"i": 53, "x": 130.0, "y": 319.5}, {"i": 54, "x": 50.0, "y": 307.5}, {"i": 55, "x": 130.0, "y": 307.5}, {"i": 56, "x": 50.0, "y": 295.4}, {"i": 57, "x": 130.0, "y": 295.4}, {"i": 58, "x": 50.0, "y": 235.1}, {"i": 59, "x": 130.0, "y": 235.1}, {"i": 60, "x": 50.0, "y": 223.1}, {"i": 61, "x": 130.0, "y": 223.1}, {"i": 62, "x": 50.0, "y": 211.0}, {"i": 63, "x": 130.0, "y": 211.0}, {"i": 64, "x": 50.0, "y": 199.0}, {"i": 65, "x": 130.0, "y": 199.0}, {"i": 66, "x": 50.0, "y": 186.9}, {"i": 67, "x": 130.0, "y": 186.9}, {"i": 68, "x": 50.0, "y": 174.8}, {"i": 69, "x": 130.0, "y": 174.8}, {"i": 70, "x": 50.0, "y": 162.8}, {"i": 71, "x": 130.0, "y": 162.8}, {"i": 72, "x": 50.0, "y": 150.7}, {"i": 73, "x": 130.0, "y": 150.7}, {"i": 74, "x": 50.0, "y": 90.4}, {"i": 75, "x": 130.0, "y": 90.4}, {"i": 76, "x": 50.0, "y": 78.4}, {"i": 77, "x": 130.0, "y": 78.4}, {"i": 78, "x": 50.0, "y": 66.3}, {"i": 79, "x": 130.0, "y": 66.3}, {"i": 80, "x": 50.0, "y": 54.3}, {"i": 81, "x": 130.0, "y": 54.3}, {"i": 82, "x": 50.0, "y": 42.2}, {"i": 83, "x": 130.0, "y": 42.2}, {"i": 84, "x": 50.0, "y": 30.1}, {"i": 85, "x": 130.0, "y": 30.1}, {"i": 86, "x": 50.0, "y": 18.1}, {"i": 87, "x": 130.0, "y": 18.1}, {"i": 88, "x": 50.0, "y": 6.0}, {"i": 89, "x": 130.0, "y": 6.0}, {"i": 90, "x": 0.0, "y": 717.5}, {"i": 91, "x": 180.0, "y": 717.5}, {"i": 92, "x": 0.0, "y": 705.4}, {"i": 93, "x": 180.0, "y": 705.4}, {"i": 94, "x": 0.0, "y": 693.3}, {"i": 95, "x": 180.0, "y": 693.3}, {"i": 96, "x": 0.0, "y": 681.3}, {"i": 97, "x": 180.0, "y": 681.3}, {"i": 98, "x": 0.0, "y": 572.8}, {"i": 99, "x": 180.0, "y": 572.8}, {"i": 100, "x": 0.0, "y": 560.7}, {"i": 101, "x": 180.0, "y": 560.7}, {"i": 102, "x": 0.0, "y": 548.6}, {"i": 103, "x": 180.0, "y": 548.6}, {"i": 104, "x": 0.0, "y": 536.6}, {"i": 105, "x": 180.0, "y": 536.6}, {"i": 106, "x": 0.0, "y": 428.1}, {"i": 107, "x": 180.0, "y": 428.1}, {"i": 108, "x": 0.0, "y": 416.0}, {"i": 109, "x": 180.0, "y": 416.0}, {"i": 110, "x": 0.0, "y": 403.9}, {"i": 111, "x": 180.0, "y": 403.9}, {"i": 112, "x": 0.0, "y": 391.9}, {"i": 113, "x": 180.0, "y": 391.9}, {"i": 114, "x": 0.0, "y": 283.4}, {"i": 115, "x": 180.0, "y": 283.4}, {"i": 116, "x": 0.0, "y": 271.3}, {"i": 117, "x": 180.0, "y": 271.3}, {"i": 118, "x": 0.0, "y": 259.3}, {"i": 119, "x": 180.0, "y": 259.3}, {"i": 120, "x": 0.0, "y": 247.2}, {"i": 121, "x": 180.0, "y": 247.2}, {"i": 122, "x": 0.0, "y": 138.7}, {"i": 123, "x": 180.0, "y": 138.7}, {"i": 124, "x": 0.0, "y": 126.6}, {"i": 125, "x": 180.0, "y": 126.6}, {"i": 126, "x": 0.0, "y": 114.6}, {"i": 127, "x": 180.0, "y": 114.6}, {"i": 128, "x": 0.0, "y": 102.5}, {"i": 129, "x": 180.0, "y": 102.5}];
+let walletAddress = null;
+let selectedIdx   = null;
+
+// ── RIGHT PANEL GATE ──────────────────────────────────────
+function dismissGate(){
+  const gate = document.getElementById('rightGate');
+  gate.style.transition='opacity 0.4s';
+  gate.style.opacity='0';
+  gate.style.pointerEvents='none';
+  setTimeout(()=>gate.style.display='none', 420);
+}
+
+// On touch devices: show gate immediately (no hover available)
+// On desktop: gate appears on hover via CSS
+if('ontouchstart' in window){
+  const gate = document.getElementById('rightGate');
+  const inner = document.getElementById('rightGate-inner');
+  if(gate && inner){
+    gate.classList.add('hover'); // trigger the hover CSS state permanently
+  }
+}
+
+// ── VIEW SWITCHING ──────────────────────────────────────
+function showMuseum() {
+  document.getElementById('bookView').classList.add('hidden');
+  document.getElementById('museumView').classList.add('visible');
+  buildDots();
+}
+function showBook() {
+  document.getElementById('museumView').classList.remove('visible');
+  document.getElementById('bookView').classList.remove('hidden');
+}
+
+// ── THREE.JS BOOK ───────────────────────────────────────
+const canvas = document.getElementById('bookCanvas');
+const canvasWrap = document.getElementById('canvasWrap');
+const leftPanel  = document.querySelector('.left');
+const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(0, -0.1, 3.5);
+
+function resizeBookCanvas() {
+  const pw = leftPanel.offsetWidth;
+  const ph = leftPanel.offsetHeight;
+  if (!pw || !ph) return;
+  const sz = Math.floor(Math.min(pw * 0.58, ph * 0.52));
+  if (sz < 10) return;
+  renderer.setSize(sz, sz);
+  camera.aspect = 1;
+  camera.updateProjectionMatrix();
+}
+
+// ResizeObserver is the only reliable way — fires whenever .left actually changes size
+const ro = new ResizeObserver(() => resizeBookCanvas());
+ro.observe(leftPanel);
+resizeBookCanvas(); // also call immediately
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dl = new THREE.DirectionalLight(0xfff5e0, 1.2);
+dl.position.set(3,5,3); scene.add(dl);
+const fl = new THREE.DirectionalLight(0xc8dca8, 0.4);
+fl.position.set(-3,0,-2); scene.add(fl);
+
+let bookModel = null;
+let autoRotate = true;
+let isDragging = false, mouseDownX = 0, mouseDownY = 0;
+let rotX = 0.15, rotY = 0.3, velX = 0, velY = 0.004;
+let mouseDownTime = 0, dragDist = 0;
+
+const GLTFScript = document.createElement('script');
+GLTFScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+GLTFScript.onload = () => {
+  new THREE.GLTFLoader().load('masterpepes_book.glb',
+    gltf => {
+      bookModel = gltf.scene;
+
+      // Log all mesh names so we can identify exact targets
+      console.log('=== GLB MESH NAMES ===');
+      bookModel.traverse(child => {
+        if(child.isMesh) console.log('MESH:', child.name);
+      });
+
+      // UV-space vertical flip for cover/back/spine faces.
+      // These faces have their UV origin at the wrong corner in the GLB export.
+      // repeat.y = -1 + offset.y = 1 flips the texture vertically in UV space,
+      // which is different from flipY (which affects WebGL memory layout).
+      const FLIP_TARGETS = ['cover','back','spine','front','jacket','binding'];
+      const fixedTex = new Set();
+      bookModel.traverse(child => {
+        if(!child.isMesh) return;
+        const meshName = (child.name || '').toLowerCase();
+        const shouldFlip = FLIP_TARGETS.some(t => meshName.includes(t));
+        console.log(child.name, '→ flip:', shouldFlip);
+        if(!shouldFlip) return;
+        const mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach(mat => {
+          ['map','normalMap','roughnessMap','metalnessMap','emissiveMap','aoMap','bumpMap','alphaMap'].forEach(key => {
+            const tex = mat[key];
+            if(tex && !fixedTex.has(tex.uuid)) {
+              tex.repeat.set(1, -1);
+              tex.offset.set(0, 1);
+              tex.needsUpdate = true;
+              fixedTex.add(tex.uuid);
+            }
+          });
+        });
+      });
+
+      const box = new THREE.Box3().setFromObject(bookModel);
+      const center = box.getCenter(new THREE.Vector3());
+      const size   = box.getSize(new THREE.Vector3());
+      const scale  = 2.0 / Math.max(size.x, size.y, size.z);
+      bookModel.scale.setScalar(scale);
+      bookModel.position.sub(center.multiplyScalar(scale));
+      scene.add(bookModel);
+      document.getElementById('bookLoading').style.display = 'none';
+      document.getElementById('bookHint').style.display = 'block';
+    },
+    p => { document.getElementById('bookLoading').textContent = 'Loading ' + Math.round(p.loaded/p.total*100) + '%'; },
+    () => {
+      // fallback box
+      const geo = new THREE.BoxGeometry(1, 1.4, 0.18);
+      const mat = new THREE.MeshStandardMaterial({color:0x1A3A0A, roughness:0.7});
+      bookModel = new THREE.Mesh(geo, mat);
+      scene.add(bookModel);
+      document.getElementById('bookLoading').style.display = 'none';
+      document.getElementById('bookHint').style.display = 'block';
+    }
+  );
+};
+document.head.appendChild(GLTFScript);
+
+// Mouse/touch for book
+canvas.addEventListener('mousedown', e => {
+  isDragging = true; autoRotate = false;
+  mouseDownX = e.clientX; mouseDownY = e.clientY;
+  mouseDownTime = Date.now(); dragDist = 0;
+  velX = 0; velY = 0;
+});
+canvas.addEventListener('mousemove', e => {
+  if(!isDragging) return;
+  const dx = e.clientX - mouseDownX;
+  const dy = e.clientY - mouseDownY;
+  dragDist += Math.abs(dx) + Math.abs(dy);
+  rotY += dx * 0.005; rotX += dy * 0.005;
+  rotX = Math.max(-0.9, Math.min(0.9, rotX));
+  velY = dx * 0.005; velX = dy * 0.005;
+  mouseDownX = e.clientX; mouseDownY = e.clientY;
+});
+canvas.addEventListener('mouseup', () => {
+  isDragging = false;
+  if(dragDist < 5 && Date.now() - mouseDownTime < 400) {
+    showMuseum();
+  } else {
+    setTimeout(() => { autoRotate = true; }, 1800);
+  }
+});
+canvas.addEventListener('mouseleave', () => {
+  if(isDragging) { isDragging = false; setTimeout(() => { autoRotate = true; }, 1800); }
+});
+canvas.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  isDragging = true; autoRotate = false;
+  mouseDownX = t.clientX; mouseDownY = t.clientY;
+  mouseDownTime = Date.now(); dragDist = 0;
+}, {passive:true});
+canvas.addEventListener('touchmove', e => {
+  if(!isDragging) return;
+  const t = e.touches[0];
+  const dx = t.clientX - mouseDownX, dy = t.clientY - mouseDownY;
+  dragDist += Math.abs(dx) + Math.abs(dy);
+  rotY += dx * 0.005; rotX += dy * 0.005;
+  rotX = Math.max(-0.9, Math.min(0.9, rotX));
+  mouseDownX = t.clientX; mouseDownY = t.clientY;
+}, {passive:true});
+canvas.addEventListener('touchend', () => {
+  isDragging = false;
+  if(dragDist < 8 && Date.now() - mouseDownTime < 400) showMuseum();
+  else setTimeout(() => { autoRotate = true; }, 1800);
+});
+
+(function animate() {
+  requestAnimationFrame(animate);
+  if(bookModel) {
+    if(autoRotate && !isDragging) rotY += 0.005;
+    else if(!isDragging) { velY *= 0.94; velX *= 0.94; rotY += velY; rotX += velX; }
+    bookModel.rotation.y = rotY;
+    bookModel.rotation.x = rotX;
+  }
+  renderer.render(scene, camera);
+})();
+
+// ── COUNTDOWN ───────────────────────────────────────────
+if(SHOW_COUNTDOWN) {
+  document.getElementById('cdWrap').classList.add('visible');
+  function tick() {
+    const diff = new Date(DROP_DATE) - new Date();
+    if(diff <= 0) { document.getElementById('cdWrap').innerHTML = '<div style="font-size:10px;letter-spacing:0.3em;color:var(--gold2);text-align:center">Drop Is Live</div>'; return; }
+    const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+    ['cdD','cdH','cdM','cdS'].forEach((id,i) => document.getElementById(id).textContent = String([d,h,m,s][i]).padStart(2,'0'));
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+// ── MUSEUM DOTS ─────────────────────────────────────────
+const NS = 'http://www.w3.org/2000/svg';
+let dotsBuilt = false;
+
+function buildDots() {
+  if(dotsBuilt) return; dotsBuilt = true;
+  const layer = document.getElementById('dotsLayer');
+  DOTS.forEach(d => {
+    const p = PAGES[d.i];
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('transform', `translate(${d.x},${d.y})`);
+    g.setAttribute('cursor', 'pointer');
+    g.setAttribute('data-idx', d.i);
+
+    // tick mark (like a museum plan marker)
+    const tick = document.createElementNS(NS, 'rect');
+    tick.setAttribute('x', '-1'); tick.setAttribute('y', '-7');
+    tick.setAttribute('width', '2'); tick.setAttribute('height', '6');
+    tick.setAttribute('fill', '#2A5A2A');
+    g.appendChild(tick);
+
+    // dot
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('r', '4.5');
+    dot.setAttribute('fill', '#0F2A0F');
+    dot.setAttribute('stroke', '#2A5A2A');
+    dot.setAttribute('stroke-width', '0.8');
+    dot.classList.add('mdot');
+    dot.id = `dot-${d.i}`;
+    g.appendChild(dot);
+
+    // number
+    const num = document.createElementNS(NS, 'text');
+    num.setAttribute('x', '0'); num.setAttribute('y', '3');
+    num.setAttribute('fill', '#4A8A4A');
+    num.setAttribute('font-family', 'Cinzel,serif');
+    num.setAttribute('font-size', '3.8');
+    num.setAttribute('text-anchor', 'middle');
+    num.textContent = p.num;
+    g.appendChild(num);
+
+    g.addEventListener('mouseenter', e => showTip(e, d.i));
+    g.addEventListener('mousemove',  e => positionTooltip(e));
+    g.addEventListener('mouseleave', hideTip);
+    g.addEventListener('click', e => { e.stopPropagation(); selectWork(d.i); });
+    layer.appendChild(g);
+  });
+}
+
+// ── PDF.JS SETUP ────────────────────────────────────────
+let pdfDoc = null;
+let pdfLoading = false;
+let renderTask = null;
+
+function initPdf() {
+  if(pdfDoc || pdfLoading) return;
+  pdfLoading = true;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  pdfjsLib.getDocument('MASTERPEPESBOOK.pdf').promise.then(doc => {
+    pdfDoc = doc;
+    pdfLoading = false;
+  }).catch(() => { pdfLoading = false; });
+}
+
+async function renderPageToTooltip(pageNum) {
+  const canvas = document.getElementById('ttCanvas');
+  const loading = document.getElementById('ttLoading');
+  canvas.style.display = 'none';
+  loading.style.display = 'block';
+  if(!pdfDoc) { loading.textContent = 'PDF not loaded'; return; }
+  try {
+    if(renderTask) { try { renderTask.cancel(); } catch(e) {} }
+    const page = await pdfDoc.getPage(pageNum);
+    const viewport = page.getViewport({scale: 0.35});
+    canvas.width  = viewport.width;
+    canvas.height = viewport.height;
+    const ctx = canvas.getContext('2d');
+    renderTask = page.render({canvasContext: ctx, viewport});
+    await renderTask.promise;
+    loading.style.display = 'none';
+    canvas.style.display  = 'block';
+  } catch(e) {
+    if(e.name !== 'RenderingCancelledException') {
+      loading.textContent = 'Preview unavailable';
+    }
+  }
+}
+
+// Tooltip
+const tooltip  = document.getElementById('tooltip');
+const mapWrap  = document.querySelector('.map-wrap');
+
+function showTip(e, idx) {
+  initPdf();
+  const p = PAGES[idx];
+  document.getElementById('ttNum').textContent   = 'No. '+p.num;
+  document.getElementById('ttTitle').textContent = p.t;
+  document.getElementById('ttYear').textContent  = p.y;
+  document.getElementById('ttCanvas').style.display  = 'none';
+  document.getElementById('ttLoading').style.display = 'none';
+  tooltip.style.display = 'block';
+  positionTooltip(e);
+  // Render PDF page
+  const pdfPage = p.num + 3;
+  renderPageToTooltip(pdfPage).then(() => positionTooltip(e));
+  // Highlight dot
+  const dot = document.getElementById(`dot-${idx}`);
+  if(dot && idx !== selectedIdx) { dot.setAttribute('fill','#1A4A1A'); dot.setAttribute('r','6'); }
+}
+
+function positionTooltip(e) {
+  const r  = mapWrap.getBoundingClientRect();
+  let tx = e.clientX - r.left + 16;
+  let ty = e.clientY - r.top  - 20;
+  if(tx + 190 > r.width)  tx = e.clientX - r.left - 196;
+  if(ty + 280 > r.height) ty = e.clientY - r.top  - 280;
+  if(ty < 0) ty = 4;
+  tooltip.style.left = tx+'px';
+  tooltip.style.top  = ty+'px';
+}
+function hideTip(e) {
+  tooltip.style.display = 'none';
+  const idx = parseInt(e.currentTarget.dataset.idx);
+  if(idx !== selectedIdx) resetDot(idx);
+}
+function resetDot(idx) {
+  const dot = document.getElementById(`dot-${idx}`);
+  if(dot) { dot.setAttribute('fill','#0F2A0F'); dot.setAttribute('r','4.5'); dot.setAttribute('stroke','#2A5A2A'); }
+}
+function selectWork(idx) {
+  if(selectedIdx !== null && selectedIdx !== idx) resetDot(selectedIdx);
+  selectedIdx = idx;
+  const dot = document.getElementById(`dot-${idx}`);
+  if(dot) { dot.setAttribute('fill','#C8901A'); dot.setAttribute('r','7'); dot.setAttribute('stroke','#E8B030'); }
+  const p = PAGES[idx];
+  document.getElementById('apNum').textContent   = 'No. '+p.num;
+  document.getElementById('apTitle').textContent = p.t;
+  document.getElementById('apYear').textContent  = p.y+' · '+p.mat;
+  document.getElementById('apAsset').textContent = p.asset;
+  document.getElementById('apLink').href = 'https://cp20.tokenscan.io/asset/'+p.asset;
+  currentPdfPage = p.num + 3;
+  document.getElementById('assetPanel').classList.add('show');
+}
+function closePanel() {
+  if(selectedIdx !== null) resetDot(selectedIdx);
+  selectedIdx = null;
+  document.getElementById('assetPanel').classList.remove('show');
+}
+
+let currentPdfPage = 4;
+function openPdfPanel() {
+  const p = PAGES[selectedIdx];
+  document.getElementById('pdfPanelTitle').textContent = 'No. '+p.num+' — '+p.t;
+  document.getElementById('pdfFrame').src = 'MASTERPEPESBOOK.pdf#page='+currentPdfPage;
+  document.getElementById('pdfPanel').style.display = 'flex';
+}
+function closePdfPanel() {
+  document.getElementById('pdfPanel').style.display = 'none';
+  document.getElementById('pdfFrame').src = '';
+}
+document.getElementById('museumSvg').addEventListener('click', closePanel);
+
+// ── METAMASK ────────────────────────────────────────────
+async function connectWallet() {
+  if(typeof window.ethereum==='undefined'){alert('MetaMask not detected.\nInstall from metamask.io and refresh.');return;}
+  try{
+    const accounts = await window.ethereum.request({method:'eth_requestAccounts'});
+    walletAddress  = accounts[0];
+    const chainId  = await window.ethereum.request({method:'eth_chainId'});
+    const net      = chainId==='0x1' ? 'Ethereum Mainnet' : 'Wrong Network — Switch to Mainnet';
+    const short    = walletAddress.slice(0,6)+'...'+walletAddress.slice(-4);
+    document.getElementById('wsAddr').textContent    = short.toUpperCase();
+    document.getElementById('wsNetwork').textContent = net.toUpperCase();
+    document.getElementById('walletStatus').classList.add('show');
+    document.getElementById('mmBtn').style.display   = 'none';
+    document.getElementById('mmTopBtn').textContent  = short.toUpperCase();
+    document.getElementById('mmTopBtn').classList.add('connected');
+    loadEth(); checkReady();
+    window.ethereum.on('accountsChanged', a => { if(!a.length) disconnectWallet(); else { walletAddress=a[0]; connectWallet(); } });
+  }catch(e){if(e.code===4001)alert('Cancelled.');else alert('Error: '+e.message);}
+}
+function disconnectWallet(){
+  walletAddress = null;
+  document.getElementById('walletStatus').classList.remove('show');
+  document.getElementById('mmBtn').style.display   = 'block';
+  document.getElementById('mmTopBtn').textContent  = 'Connect Wallet';
+  document.getElementById('mmTopBtn').classList.remove('connected');
+  checkReady();
+}
+function checkReady(){
+  const ok = document.getElementById('addr').value.trim().length>25 && walletAddress!==null;
+  document.getElementById('btn').classList.toggle('on',ok);
+  document.getElementById('pbox').classList.toggle('on',ok);
+  if(ok) loadEth();
+}
+async function loadEth(){
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    const d=await r.json();
+    document.getElementById('usd').textContent='~$'+d.ethereum.usd.toLocaleString()+' USD at current rate';
+  }catch(e){document.getElementById('usd').textContent='Current ETH market rate';}
+}
+function bid(){
+  const btc=document.getElementById('addr').value.trim();
+  alert('Smart contract coming soon!\n\nETH Wallet: '+walletAddress+'\nBTC/XCP Address: '+btc+'\n\nFollow @robnessofficial on X for launch date.');
+}
+
+
+
+
+  
+
+
+// ── DROP MECHANICS ───────────────────────────────────────────────────────────
+const ETH_ADDR  = '0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329';
+const BTC_ADDR  = '1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH';
+const ESCAN_KEY = '9GWK5I3YAXQ29TCCGDN4RKP7YZPGP31HNZ';
+let qrDone=false,pollTimer=null,pollStart=0,pendingName='',pendingXcp='',pendingFrom='';
+// Load used txids from localStorage so they persist across page reloads
+const usedTxids=new Set(JSON.parse(localStorage.getItem('mp_used_txids')||'[]'));
+function saveTxid(txid){
+  usedTxids.add(txid);
+  try{localStorage.setItem('mp_used_txids',JSON.stringify([...usedTxids]));}catch(e){}
+}
+
+function openAcq(){
+  document.getElementById('acqModal').classList.add('open');
+  loadAcqPrices();
+  if(!qrDone){
+    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    setTimeout(()=>{
+      overlayQrLogo('qrEth','ETH');
+      overlayQrLogo('qrBtc','BTC');
+    },300);
+    qrDone=true;
+  }
+}
+
+function overlayQrLogo(containerId, type){
+  const wrap = document.getElementById(containerId);
+  if(!wrap) return;
+  const img = wrap.querySelector('img');
+  const canvas = wrap.querySelector('canvas');
+  // QRCode lib renders to either img or canvas depending on browser
+  if(img){
+    // Convert img to canvas so we can draw on it
+    const c = document.createElement('canvas');
+    c.width = 130; c.height = 130;
+    const ctx = c.getContext('2d');
+    const i = new Image();
+    i.onload = () => {
+      ctx.drawImage(i, 0, 0, 130, 130);
+      drawLogo(ctx, type, 130);
+      img.src = c.toDataURL();
+    };
+    i.src = img.src;
+  } else if(canvas){
+    const ctx = canvas.getContext('2d');
+    drawLogo(ctx, type, canvas.width);
+  }
+}
+
+function drawLogo(ctx, type, size){
+  const cx = size/2, cy = size/2, r = size*0.1;
+  // White circle background
+  ctx.beginPath();
+  ctx.arc(cx, cy, r+2, 0, Math.PI*2);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fill();
+
+  if(type === 'ETH'){
+    // Ethereum diamond
+    const s = r * 0.85;
+    ctx.fillStyle = '#627EEA';
+    // Top triangle
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - s);
+    ctx.lineTo(cx + s*0.6, cy);
+    ctx.lineTo(cx - s*0.6, cy);
+    ctx.closePath();
+    ctx.fill();
+    // Bottom triangle
+    ctx.fillStyle = '#4A6FD4';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + s);
+    ctx.lineTo(cx + s*0.6, cy);
+    ctx.lineTo(cx - s*0.6, cy);
+    ctx.closePath();
+    ctx.fill();
+    // Middle lighter strip
+    ctx.fillStyle = '#8EAAF0';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - s*0.1);
+    ctx.lineTo(cx + s*0.6, cy);
+    ctx.lineTo(cx - s*0.6, cy);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    // Bitcoin B
+    ctx.fillStyle = '#F7931A';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = `bold ${r*1.2}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('₿', cx+1, cy+1);
+  }
+}
+
+function closeAcq(){
+  document.getElementById('acqModal').classList.remove('open');
+  clearInterval(pollTimer);pollTimer=null;
+  setStatus('','');
+  document.getElementById('acqName').value='';
+  document.getElementById('acqXcp').value='';
+  document.getElementById('acqFrom').value='';
+  pendingFrom='';
+  const s4=document.getElementById('step4');if(s4)s4.classList.remove('revealed');
+}
+function setStatus(msg,cls){
+  const s=document.getElementById('acqStatus');
+  if(!msg){s.style.display='none';s.className='';s.innerHTML='';return;}
+  s.style.display='block';s.className=cls;s.innerHTML=msg;
+}
+function chkAcq(){
+  const name=document.getElementById('acqName').value.trim();
+  const xcp=document.getElementById('acqXcp').value.trim();
+  const from=document.getElementById('acqFrom').value.trim();
+  const ready=name.length>1&&xcp.length>25&&from.length>10;
+  if(ready&&!pollTimer){
+    pendingName=name;pendingXcp=xcp;pendingFrom=from;
+    pollStart=Math.floor(Date.now()/1000);
+    console.log('Auto-scan started at',pollStart,'watching for from:',pendingFrom);
+    setStatus('&#9888; WATCHING FOR YOUR PAYMENT &nbsp;&middot;&nbsp; DO NOT CLOSE THIS WINDOW DURING CONFIRMATION','scanning');
+    const s4=document.getElementById('step4');if(s4)s4.classList.add('revealed');
+    pollTimer=setInterval(checkPayment,12000);
+    setTimeout(checkPayment,3000);
+  } else if(!ready&&pollTimer){
+    clearInterval(pollTimer);pollTimer=null;
+    setStatus('','');
+  }
+}
+function cpAddr(addr,btn){
+  navigator.clipboard.writeText(addr).then(()=>{const t=btn.textContent;btn.textContent='COPIED!';setTimeout(()=>btn.textContent=t,2000);});
+}
+async function loadAcqPrices(){
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin&vs_currencies=usd');
+    const d=await r.json();
+    const eu=d.ethereum.usd,bu=d.bitcoin.usd;
+    if(document.getElementById('acqUsd2'))document.getElementById('acqUsd2').textContent='~$'+eu.toLocaleString();
+    if(document.getElementById('acqBtc'))document.getElementById('acqBtc').textContent=(eu/bu).toFixed(5)+' BTC';
+    if(document.getElementById('usd'))document.getElementById('usd').textContent='~$'+eu.toLocaleString()+' USD at current rate';
+  }catch(e){}
+}
+async function checkPayment(){
+  const eth=await chkEth(),btc=await chkBtc();
+  if(eth||btc){
+    clearInterval(pollTimer);pollTimer=null;
+    onDetected(eth?'ETH':'BTC',eth||btc);
+  }
+}
+async function chkEth(){
+  try{
+    console.log('Checking ETH... pollStart='+pollStart+' now='+Math.floor(Date.now()/1000));
+    const r=await fetch('https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address='+ETH_ADDR+'&sort=desc&apikey='+ESCAN_KEY);
+    const d=await r.json();
+    console.log('Etherscan status:',d.status,'result type:',typeof d.result,'tx count:',Array.isArray(d.result)?d.result.length:d.result);
+    if(!Array.isArray(d.result)||d.result.length===0) return null;
+    for(const tx of d.result.slice(0,20)){
+      const txTime = parseInt(tx.timeStamp);
+      console.log('TX:',tx.hash,'to:',tx.to,'value:',(parseFloat(tx.value)/1e18).toFixed(6),'ETH','txTime:',txTime,'pollStart:',pollStart,'fresh:',txTime>=pollStart);
+      // MUST be after pollStart — no grace period, strict
+      if(tx.to&&tx.to.toLowerCase()===ETH_ADDR.toLowerCase()&&parseFloat(tx.value)/1e18>=0.98&&tx.isError==='0'&&txTime>=pollStart){
+        if(usedTxids.has(tx.hash)){console.log('TX already used:',tx.hash);continue;}
+        if(pendingFrom&&pendingFrom.startsWith('0x')){
+          if(tx.from.toLowerCase()===pendingFrom.toLowerCase()){saveTxid(tx.hash);return tx.from;}
+        } else {
+          saveTxid(tx.hash);return tx.from;
+        }
+      }
+    }
+  }catch(e){console.log('ETH check error:',e);}
+  return null;
+}
+async function chkBtc(){
+  try{
+    console.log('Checking BTC... pollStart='+pollStart+' now='+Math.floor(Date.now()/1000)+' pendingFrom='+pendingFrom);
+    // Check mempool first (unconfirmed)
+    const r=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs/mempool');
+    const mempool=await r.json();
+    console.log('BTC mempool txs:',mempool.length);
+    for(const tx of mempool){
+      if(usedTxids.has(tx.txid)){console.log('BTC mempool tx already used:',tx.txid);continue;}
+      for(const out of tx.vout){
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012){
+          const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'';
+          console.log('BTC mempool match! txid:',tx.txid,'sender:',sender,'amount:',out.value/1e8);
+          if(pendingFrom&&!pendingFrom.startsWith('0x')){
+            if(sender===pendingFrom){saveTxid(tx.txid);return sender;}
+          } else {
+            saveTxid(tx.txid);return sender||'BTC Sender';
+          }
+        }
+      }
+    }
+    // Check confirmed txs
+    const r2=await fetch('https://mempool.space/api/address/'+BTC_ADDR+'/txs');
+    const txs=await r2.json();
+    console.log('BTC confirmed txs:',txs.length);
+    for(const tx of txs){
+      if(usedTxids.has(tx.txid)){console.log('BTC confirmed tx already used:',tx.txid);continue;}
+      const ts=tx.status.block_time;
+      const sender=tx.vin[0]?.prevout?.scriptpubkey_address||'?';
+      console.log('BTC confirmed tx:',tx.txid,'block_time:',ts,'pollStart:',pollStart,'fresh:',ts>=pollStart,'sender:',sender);
+      if(!ts||ts<pollStart) continue;
+      for(const out of tx.vout){
+        if(out.scriptpubkey_address===BTC_ADDR&&out.value/1e8>=0.012){
+          console.log('BTC confirmed MATCH! amount:',out.value/1e8);
+          saveTxid(tx.txid);return sender;
+        }
+      }
+    }
+  }catch(e){console.log('BTC check error:',e);}
+  return null;
+}
+async function onDetected(chain,fromAddr){
+  // Write to Firebase
+  try{
+    if(typeof window._fbPush==='function'){
+      await window._fbPush({name:pendingName,xcp:pendingXcp,from:fromAddr,sendingAddr:pendingFrom,chain,ts:Date.now()});
+      console.log('Firebase write successful');
+    } else {
+      setTimeout(async()=>{
+        try{await window._fbPush({name:pendingName,xcp:pendingXcp,from:fromAddr,sendingAddr:pendingFrom,chain,ts:Date.now()});}catch(e){console.log('Firebase retry:',e);}
+      },3000);
+    }
+  }catch(e){console.log('Firebase error:',e);}
+  // Close acquire modal, open celebration
+  closeAcq();
+  openCeleb(chain);
+}
+
+let celebRenderer=null,celebScene=null,celebCamera=null,celebModel=null,celebAnim=null;
+function openCeleb(chain){
+  document.getElementById('celebModal').classList.add('open');
+  initCelebCanvas();
+}
+function closeCeleb(){
+  document.getElementById('celebModal').classList.remove('open');
+  if(celebAnim){cancelAnimationFrame(celebAnim);celebAnim=null;}
+  if(celebRenderer){celebRenderer.dispose();celebRenderer=null;}
+  celebScene=null;celebCamera=null;celebModel=null;
+}
+function initCelebCanvas(){
+  const canvas=document.getElementById('celebCanvas');
+  if(celebRenderer) return;
+  celebScene=new THREE.Scene();
+  celebCamera=new THREE.PerspectiveCamera(45,1,0.1,100);
+  celebCamera.position.set(0,0,4);
+  celebRenderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  celebRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  celebRenderer.setSize(200,200);
+  celebRenderer.outputEncoding=THREE.sRGBEncoding;
+  // Rich gold lighting
+  celebScene.add(new THREE.AmbientLight(0xFFD700,1.2));
+  const p1=new THREE.PointLight(0xFFAA00,3,10);p1.position.set(2,2,2);celebScene.add(p1);
+  const p2=new THREE.PointLight(0xFFDD00,2,10);p2.position.set(-2,-1,1);celebScene.add(p2);
+  const p3=new THREE.PointLight(0xFFFFAA,1.5,8);p3.position.set(0,3,0);celebScene.add(p3);
+  // Load LORDKEK
+  if(typeof THREE.GLTFLoader!=='undefined'){
+    new THREE.GLTFLoader().load('LORDKEK.glb',
+      gltf=>{
+        const model=gltf.scene;
+        const box=new THREE.Box3().setFromObject(model);
+        const center=box.getCenter(new THREE.Vector3());
+        const size=box.getSize(new THREE.Vector3());
+        const scale=2.8/Math.max(size.x,size.y,size.z);
+        // Center the model at origin exactly
+        model.position.set(-center.x*scale,-center.y*scale,-center.z*scale);
+        model.scale.setScalar(scale);
+        // Override all materials with solid gold
+        const goldMat=new THREE.MeshStandardMaterial({
+          color:0xFFD700,
+          emissive:new THREE.Color(0xAA6600),
+          emissiveIntensity:0.6,
+          roughness:0.25,
+          metalness:0.9
+        });
+        model.traverse(c=>{
+          if(c.isMesh){c.material=goldMat;}
+        });
+        // Wrap in pivot group — rotation happens on group, model stays centered
+        celebModel=new THREE.Group();
+        celebModel.add(model);
+        celebScene.add(celebModel);
+      },
+      null,
+      ()=>{
+        // fallback: gold spinning torus if GLB not found
+        const geo=new THREE.TorusGeometry(0.7,0.3,16,100);
+        const mat=new THREE.MeshStandardMaterial({color:0xFFD700,emissive:0xAA6600,emissiveIntensity:0.5,roughness:0.3,metalness:0.8});
+        celebModel=new THREE.Mesh(geo,mat);
+        celebScene.add(celebModel);
+      }
+    );
+  }
+  let lastT=performance.now();
+  (function animCeleb(){
+    celebAnim=requestAnimationFrame(animCeleb);
+    const now=performance.now();
+    const delta=Math.min((now-lastT)/1000,0.05);
+    lastT=now;
+    if(celebModel){
+      celebModel.rotation.y+=1.2*delta;
+      celebModel.rotation.x+=0.4*delta;
+      celebModel.rotation.z+=0.3*delta;
+    }
+    celebRenderer.render(celebScene,celebCamera);
+  })();
+}
+window._renderCollectors=function(entries){
+  const n=entries.length;
+  document.getElementById('clCount').textContent=n;
+  const el=document.getElementById('clList');
+  el.innerHTML=n===0?'<div class="cl-empty">AWAITING<br>FIRST COLLECTOR</div>'
+    :entries.map((e,i)=>'<div class="cl-entry"><div class="cl-n">No.'+String(i+1).padStart(3,'0')+'</div><div class="cl-name">'+e.name.toUpperCase()+'</div><div class="cl-addr">'+e.xcp.slice(0,8)+'...'+e.xcp.slice(-6)+'</div></div>').join('');
+  if(n>0)el.scrollTop=el.scrollHeight;
+  const dots=document.getElementById('clDots');
+  dots.innerHTML='';
+  for(let i=0;i<300;i++){const d=document.createElement('div');d.className='cl-dot'+(i<n?' on':'');dots.appendChild(d);}
+  const s=document.getElementById('slots');if(s)s.textContent=300-n;
+  checkSoldOut(n);
+};
+loadAcqPrices();
+
+
+// ── SOLD OUT ─────────────────────────────────────────────────────────────────
+let soldRenderer=null,soldModel=null,soldAnim=null;
+
+function checkSoldOut(n){
+  if(n<300) return;
+  const overlay=document.getElementById('soldOverlay');
+  if(overlay.classList.contains('show')) return; // already showing
+  overlay.classList.add('show');
+  // Fill dot grid gold
+  const dots=document.getElementById('soldDots');
+  dots.innerHTML='';
+  for(let i=0;i<300;i++){
+    const d=document.createElement('div');d.className='sold-dot';dots.appendChild(d);
+  }
+  // Disable acquire button
+  const btn=document.querySelector('.btn-acquire');
+  if(btn){btn.textContent='&#9670; SOLD OUT &#9670;';btn.style.opacity='0.5';btn.style.pointerEvents='none';}
+  // Spin LORDKEK in gold
+  initSoldCanvas();
+}
+
+function initSoldCanvas(){
+  if(soldRenderer) return;
+  const canvas=document.getElementById('soldCanvas');
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(45,1,0.1,100);
+  cam.position.set(0,0,4);
+  soldRenderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  soldRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  soldRenderer.setSize(220,220);
+  soldRenderer.outputEncoding=THREE.sRGBEncoding;
+  scene.add(new THREE.AmbientLight(0xFFD700,1.2));
+  const p1=new THREE.PointLight(0xFFAA00,3,10);p1.position.set(2,2,2);scene.add(p1);
+  const p2=new THREE.PointLight(0xFFDD00,2,10);p2.position.set(-2,-1,1);scene.add(p2);
+  const p3=new THREE.PointLight(0xFFFFAA,1.5,8);p3.position.set(0,3,0);scene.add(p3);
+  const goldMat=new THREE.MeshStandardMaterial({color:0xFFD700,emissive:new THREE.Color(0xAA6600),emissiveIntensity:0.6,roughness:0.25,metalness:0.9});
+  if(typeof THREE.GLTFLoader!=='undefined'){
+    new THREE.GLTFLoader().load('LORDKEK.glb',
+      gltf=>{
+        const model=gltf.scene;
+        const box=new THREE.Box3().setFromObject(model);
+        const center=box.getCenter(new THREE.Vector3());
+        const size=box.getSize(new THREE.Vector3());
+        const scale=2.4/Math.max(size.x,size.y,size.z);
+        model.position.set(-center.x*scale,-center.y*scale,-center.z*scale);
+        model.scale.setScalar(scale);
+        model.traverse(c=>{if(c.isMesh)c.material=goldMat;});
+        soldModel=new THREE.Group();soldModel.add(model);scene.add(soldModel);
+      },null,
+      ()=>{
+        const geo=new THREE.TorusGeometry(0.6,0.25,16,100);
+        soldModel=new THREE.Mesh(geo,goldMat);scene.add(soldModel);
+      }
+    );
+  }
+  let lastT=performance.now();
+  (function anim(){
+    soldAnim=requestAnimationFrame(anim);
+    const now=performance.now();
+    const dt=Math.min((now-lastT)/1000,0.05);lastT=now;
+    if(soldModel){soldModel.rotation.y+=1.2*dt;soldModel.rotation.x+=0.4*dt;soldModel.rotation.z+=0.3*dt;}
+    soldRenderer.render(scene,cam);
+  })();
+}
+
+
+// ── HELP MODALS ───────────────────────────────────────────────────────────────
+const HELP_CONTENT = {
+  name: 'THIS IS THE NAME THAT WILL APPEAR ON THE COLLECTOR LIST ON THE LEFT OF THIS SITE.',
+  xcp:  'SO YOU DIDN\'T LISTEN AND FORGOT TO GET AN XCP ADDRESS TO BE ABLE TO RECEIVE THE MASTERPEPES?<br><br>NO WORRIES FAM, JUST GO HERE TO GENERATE ONE REALLY QUICK:<br><br><a href="https://freewallet.io/mobile/" target="_blank" rel="noopener">&#9654; FREEWALLET.IO/MOBILE</a><br><br><strong>WARNING: DO NOT LOSE YOUR PRIVATE KEY / SEED PHRASE!!!</strong>',
+  from: 'MAKE SURE THIS IS THE WALLET YOU\'RE PAYING FROM. TRIPLE CHECK IF YOU NEED TO... ACTUALLY TRIPLE CHECK ALL FIELDS SO YOU DON\'T BRICK AND SEND FUNDS INTO OUTER SPACE. &#128514;<br><br><strong>&#9888; DO NOT PAY DIRECTLY FROM COINBASE.</strong><br><br>COINBASE USES INTERNAL CUSTODIAL WALLETS THAT ARE NOT THE SAME AS YOUR COINBASE ACCOUNT ADDRESS. IF YOU PAY FROM COINBASE YOUR TRANSACTION CANNOT BE MATCHED TO YOUR SPOT.<br><br>SEND YOUR FUNDS TO METAMASK OR ANOTHER SELF-CUSTODY WALLET FIRST, THEN PAY FROM THERE.'
+};
+function openHelp(key){
+  document.getElementById('helpText').innerHTML = HELP_CONTENT[key];
+  document.getElementById('helpModal').classList.add('open');
+}
+function closeHelp(){
+  document.getElementById('helpModal').classList.remove('open');
+}
+
+
+// ── BOOK PANEL BG SLIDESHOW ───────────────────────────────────────────────────
+(function(){
+  var bgs = document.querySelectorAll('#bookView .bg-slide');
+  var bi = 0;
+  setInterval(function(){
+    bgs[bi].classList.remove('on');
+    bi = (bi + 1) % bgs.length;
+    bgs[bi].classList.add('on');
+  }, 6000);
+})();
+
+
+</script>
+
+<div id="acqModal">
+  <div class="acq-box">
+    <div class="acq-hdr">
+      <div class="acq-ttl">&#9670; ACQUIRE MASTERPEPES &#9670;</div>
+      <button class="acq-x" onclick="closeAcq()">&#10005;</button>
+    </div>
+    <div id="acqStatus"></div>
+    <div class="acq-body">
+      <!-- STEP 1 -->
+      <div>
+        <div class="acq-step"><div class="acq-step-num">1</div><div class="acq-step-lbl">YOUR NAME <button class="help-btn" onclick="openHelp('name')">?</button></div></div>
+        <input class="acq-inp" id="acqName" type="text" placeholder="Name that will appear on the collector list" oninput="chkAcq()">
+      </div>
+      <!-- STEP 2 -->
+      <div>
+        <div class="acq-step"><div class="acq-step-num">2</div><div class="acq-step-lbl">XCP / COUNTERPARTY RECEIVING ADDRESS <button class="help-btn" onclick="openHelp('xcp')">?</button></div></div>
+        <input class="acq-inp" id="acqXcp" type="text" placeholder="Where you will RECEIVE your works — starts with 1..." oninput="chkAcq()">
+        <p class="acq-note">Double-check carefully. Must be a Counterparty-compatible Bitcoin address starting with 1.</p>
+      </div>
+      <!-- STEP 3 -->
+      <div>
+        <div class="acq-step"><div class="acq-step-num">3</div><div class="acq-step-lbl">YOUR SENDING ADDRESS <button class="help-btn" onclick="openHelp('from')">?</button></div></div>
+        <div style="background:rgba(255,60,60,0.08);border:0.5px solid rgba(255,60,60,0.4);padding:7px 12px;margin-bottom:6px;font-size:7.5px;letter-spacing:0.1em;color:#FF6B6B;line-height:1.9;text-transform:none;">&#9888; DO NOT PAY DIRECTLY FROM COINBASE. Send funds to MetaMask or another self-custody wallet first, then pay from there.</div>
+        <input class="acq-inp" id="acqFrom" type="text" placeholder="The ETH (0x...) or BTC (1... bc1...) address you are paying FROM" oninput="chkAcq()">
+        <p class="acq-note">Used to match your payment to your spot. ETH starts with 0x, BTC starts with 1, 3, or bc1.</p>
+      </div>
+      <!-- STEP 4 — revealed when scanning starts -->
+      <div id="step4">
+        <div class="acq-step"><div class="acq-step-num">4</div><div class="acq-step-lbl">SEND PAYMENT TO EITHER ADDRESS BELOW</div></div>
+        <div class="acq-qrs">
+          <div class="acq-qb">
+            <div class="acq-ql">&#9660; SEND ETH HERE &#9660;</div>
+            <div style="font-size:14px;letter-spacing:0.15em;color:var(--gold2);text-align:center;margin-bottom:4px;">1 ETH</div>
+            <div class="acq-qw"><div id="qrEth"></div></div>
+            <div class="acq-qa">0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329</div>
+            <button class="acq-cp" onclick="cpAddr('0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329',this)">COPY ETH ADDRESS</button>
+          </div>
+          <div class="acq-qb">
+            <div class="acq-ql">&#9660; SEND BTC HERE &#9660;</div>
+            <div style="font-size:14px;letter-spacing:0.15em;color:var(--gold2);text-align:center;margin-bottom:4px;" id="acqBtc">...</div>
+            <div class="acq-qw"><div id="qrBtc"></div></div>
+            <div class="acq-qa">1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH</div>
+            <button class="acq-cp" onclick="cpAddr('1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH',this)">COPY BTC ADDRESS</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CELEBRATION MODAL -->
+<div id="celebModal">
+  <div class="celeb-box">
+    <div class="celeb-title">&#9670; PAYMENT CONFIRMED &#9670;</div>
+    <canvas id="celebCanvas" width="200" height="200"></canvas>
+    <div class="celeb-msg">
+      <strong>YOU ARE NOW A MASTERPEPES COLLECTOR.</strong><br><br>
+      AFTER THE DROP CONCLUDES, ROBNESS WILL PERSONALLY SEND ALL 150 MASTERPEPES ARTWORKS TO YOUR XCP ADDRESS.<br><br>
+      THIS IS BEING DONE MANUALLY TO ENSURE EVERY COLLECTOR RECEIVES THEIR WORKS WITH ZERO FUSS.<br><br>
+      <strong>&#9670; WELCOME TO THE COLLECTION. &#9670;</strong>
+    </div>
+    <button class="celeb-close" onclick="closeCeleb()">&#10005; CLOSE</button>
+  </div>
+</div>
+
+<!-- HELP MODAL -->
+<div id="helpModal">
+  <div class="help-box">
+    <div class="help-icon">&#9670;</div>
+    <div class="help-text" id="helpText"></div>
+    <button class="help-close" onclick="closeHelp()">&#10005; GOT IT</button>
+  </div>
+</div>
+</body>
+</html>

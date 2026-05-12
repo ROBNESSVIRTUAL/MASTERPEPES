@@ -1105,8 +1105,8 @@ function bid(){
 
 
 // ── DROP MECHANICS ───────────────────────────────────────────────────────────
-const ETH_ADDR  = '0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329';
-const BTC_ADDR  = '1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH';
+const ETH_ADDR  = '';
+const BTC_ADDR  = '';
 const ESCAN_KEY = '9GWK5I3YAXQ29TCCGDN4RKP7YZPGP31HNZ';
 let qrDone=false,pollTimer=null,pollStart=0,pendingName='',pendingXcp='',pendingFrom='';
 // Load used txids from localStorage so they persist across page reloads
@@ -1116,19 +1116,8 @@ function saveTxid(txid){
   try{localStorage.setItem('mp_used_txids',JSON.stringify([...usedTxids]));}catch(e){}
 }
 
-function openAcq(){
-  document.getElementById('acqModal').classList.add('open');
-  loadAcqPrices();
-  if(!qrDone){
-    new QRCode(document.getElementById('qrEth'),{text:ETH_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
-    new QRCode(document.getElementById('qrBtc'),{text:BTC_ADDR,width:130,height:130,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
-    setTimeout(()=>{
-      overlayQrLogo('qrEth','ETH');
-      overlayQrLogo('qrBtc','BTC');
-    },300);
-    qrDone=true;
-  }
-}
+// Payment rail removed
+function openAcq(){}
 
 function overlayQrLogo(containerId, type){
   const wrap = document.getElementById(containerId);
@@ -1248,13 +1237,6 @@ async function loadAcqPrices(){
     if(document.getElementById('acqBtc'))document.getElementById('acqBtc').textContent=(eu/bu).toFixed(5)+' BTC';
     if(document.getElementById('usd'))document.getElementById('usd').textContent='~$'+eu.toLocaleString()+' USD at current rate';
   }catch(e){}
-}
-async function checkPayment(){
-  const eth=await chkEth(),btc=await chkBtc();
-  if(eth||btc){
-    clearInterval(pollTimer);pollTimer=null;
-    onDetected(eth?'ETH':'BTC',eth||btc);
-  }
 }
 async function chkEth(){
   try{
@@ -1526,55 +1508,7 @@ function closeHelp(){
 
 </script>
 
-<div id="acqModal">
-  <div class="acq-box">
-    <div class="acq-hdr">
-      <div class="acq-ttl">&#9670; ACQUIRE MASTERPEPES &#9670;</div>
-      <button class="acq-x" onclick="closeAcq()">&#10005;</button>
-    </div>
-    <div id="acqStatus"></div>
-    <div class="acq-body">
-      <!-- STEP 1 -->
-      <div>
-        <div class="acq-step"><div class="acq-step-num">1</div><div class="acq-step-lbl">YOUR NAME <button class="help-btn" onclick="openHelp('name')">?</button></div></div>
-        <input class="acq-inp" id="acqName" type="text" placeholder="Name that will appear on the collector list" oninput="chkAcq()">
-      </div>
-      <!-- STEP 2 -->
-      <div>
-        <div class="acq-step"><div class="acq-step-num">2</div><div class="acq-step-lbl">XCP / COUNTERPARTY RECEIVING ADDRESS <button class="help-btn" onclick="openHelp('xcp')">?</button></div></div>
-        <input class="acq-inp" id="acqXcp" type="text" placeholder="Where you will RECEIVE your works — starts with 1..." oninput="chkAcq()">
-        <p class="acq-note">Double-check carefully. Must be a Counterparty-compatible Bitcoin address starting with 1.</p>
-      </div>
-      <!-- STEP 3 -->
-      <div>
-        <div class="acq-step"><div class="acq-step-num">3</div><div class="acq-step-lbl">YOUR SENDING ADDRESS <button class="help-btn" onclick="openHelp('from')">?</button></div></div>
-        <div style="background:rgba(255,60,60,0.08);border:0.5px solid rgba(255,60,60,0.4);padding:7px 12px;margin-bottom:6px;font-size:7.5px;letter-spacing:0.1em;color:#FF6B6B;line-height:1.9;text-transform:none;">&#9888; DO NOT PAY DIRECTLY FROM COINBASE. Send funds to MetaMask or another self-custody wallet first, then pay from there.</div>
-        <input class="acq-inp" id="acqFrom" type="text" placeholder="The ETH (0x...) or BTC (1... bc1...) address you are paying FROM" oninput="chkAcq()">
-        <p class="acq-note">Used to match your payment to your spot. ETH starts with 0x, BTC starts with 1, 3, or bc1.</p>
-      </div>
-      <!-- STEP 4 — revealed when scanning starts -->
-      <div id="step4">
-        <div class="acq-step"><div class="acq-step-num">4</div><div class="acq-step-lbl">SEND PAYMENT TO EITHER ADDRESS BELOW</div></div>
-        <div class="acq-qrs">
-          <div class="acq-qb">
-            <div class="acq-ql">&#9660; SEND ETH HERE &#9660;</div>
-            <div style="font-size:14px;letter-spacing:0.15em;color:var(--gold2);text-align:center;margin-bottom:4px;">1 ETH</div>
-            <div class="acq-qw"><div id="qrEth"></div></div>
-            <div class="acq-qa">0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329</div>
-            <button class="acq-cp" onclick="cpAddr('0x8Db74464e46Cf33fF68f28fCC1031CF05BBe9329',this)">COPY ETH ADDRESS</button>
-          </div>
-          <div class="acq-qb">
-            <div class="acq-ql">&#9660; SEND BTC HERE &#9660;</div>
-            <div style="font-size:14px;letter-spacing:0.15em;color:var(--gold2);text-align:center;margin-bottom:4px;" id="acqBtc">...</div>
-            <div class="acq-qw"><div id="qrBtc"></div></div>
-            <div class="acq-qa">1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH</div>
-            <button class="acq-cp" onclick="cpAddr('1DA3F26qox4iMroFUpVAy3UwttkVLJF1cH',this)">COPY BTC ADDRESS</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <!-- CELEBRATION MODAL -->
 <div id="celebModal">
